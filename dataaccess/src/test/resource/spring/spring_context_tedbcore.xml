@@ -1,0 +1,68 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:context="http://www.springframework.org/schema/context"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost/temarketplace"/>
+        <property name="username" value="tedbadmin" />
+        <property name="password" value="tedbadmin" />
+</bean>	
+<bean id="sessionFactory" 
+class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+    <property name="dataSource">
+      <ref bean="dataSource"/>
+    </property>
+    <property name="hibernateProperties">
+       <props>
+       	 <prop key="hibernate.connection.release_mode">after_transaction</prop>
+         <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+         <prop key="hibernate.show_sql">false</prop>         
+       </props>
+    </property>
+    
+    <property name="annotatedClasses">
+	<list>
+	<value>com.temm.dbcore.model.tem.TEMParticipant</value>
+	<value>com.temm.dbcore.model.tem.TEMGridLoc</value>
+	<value>com.temm.dbcore.model.tem.TEMPrice</value>
+	<value>com.temm.dbcore.model.tem.TEMOrders</value>
+	<value>com.temm.dbcore.model.tem.TEMTransaction</value>
+	<!-- 
+		<value>com.ctleads.data.model.user.CTLUserType</value>
+		<value>com.ctleads.data.model.user.CTLUser</value>
+		<value>com.ctleads.data.model.user.UserAccessHistory</value>
+		<value>com.ctleads.data.model.user.CTLMember</value>
+		<value>com.ctleads.data.model.user.CTLEmployee</value>
+		<value>com.ctleads.data.model.email.EmailTemplate</value>
+		<value>com.ctleads.data.model.email.EmailHistory</value>
+		<value>com.ctleads.data.model.contact.Company</value>
+		<value>com.ctleads.data.model.contact.Contact</value>
+		<value>com.ctleads.data.model.contact.Address</value>
+		<value>com.ctleads.data.model.study.IndicationCategory</value>
+		<value>com.ctleads.data.model.study.Study</value>
+		<value>com.ctleads.data.model.study.StudyHistory</value>
+		<value>com.ctleads.data.model.version.VersionStore</value>
+		<value>com.ctleads.data.model.study.StudyContact</value>
+		<value>com.ctleads.data.model.study.StudyCriteria</value>
+		<value>com.ctleads.data.model.study.StudyLocation</value>
+		<value>com.ctleads.data.model.study.StudySponsor</value>
+		<value>com.ctleads.data.model.study.StudyIndication</value>
+		<value>com.ctleads.data.model.document.Document</value>
+		<value>com.ctleads.data.model.document.StudyDocument</value>
+		<value>com.ctleads.data.model.product.Product</value>
+		 -->
+	</list>
+    </property>
+    </bean>
+    
+    <context:annotation-config />
+    <context:component-scan base-package="com.temm.dbcore.dao" />
+    <context:component-scan base-package="com.temm.dbcore.service" />
+	<!-- context:component-scan base-package="com.ctleads.data.dao" />
+	<context:component-scan base-package="com.ctleads.data.service" / -->
+</beans>
