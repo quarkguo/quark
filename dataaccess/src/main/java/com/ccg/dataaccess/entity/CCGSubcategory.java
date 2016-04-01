@@ -18,7 +18,7 @@ public class CCGSubcategory implements Serializable {
 	
 	@Id	
 	@Column(name = "subcategoryID", unique = true)
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	public Integer getSubcategoryID() {
 		return subcategoryID;
 	}
@@ -90,7 +90,7 @@ public class CCGSubcategory implements Serializable {
 	public void setEndposi(int endposi) {
 		this.endposi = endposi;
 	}
-	@Column(name = "createTS")
+	@Column(name = "createdTS")
 	public Date getCreatedTS() {
 		return createdTS;
 	}

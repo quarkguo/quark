@@ -17,7 +17,7 @@ public class CCGContent implements Serializable {
 	
 	@Id	
 	@Column(name = "contentID", unique = true)
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 		public Integer getContentID() {
 		return contentID;
 	}
@@ -64,9 +64,8 @@ public class CCGContent implements Serializable {
 		this.metatype = metatype;
 	}
 	
-	@Lob
-	@Column(name = "content")
-	public String getContent() {
+	@Column(name = "content",columnDefinition="mediumtext")
+		public String getContent() {
 		return content;
 	}
 	public void setContent(String content) {

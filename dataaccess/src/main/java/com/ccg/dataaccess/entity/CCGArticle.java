@@ -10,7 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -28,7 +28,7 @@ public class CCGArticle implements Serializable{
 	private static final long serialVersionUID = 5714871082795314674L;
 	@Id	
 	@Column(name = "articleID", unique = true)
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	public Integer getArticleID() {
 		return articleID;
 	}
@@ -75,14 +75,6 @@ public class CCGArticle implements Serializable{
 		this.subdomain = subdomain;
 	}
 	
-	@Column(name = "contentID", nullable = true)
-	public Integer getContentID() {
-		return contentID;
-	}
-	public void setContentID(Integer contentID) {
-		this.contentID = contentID;
-	}
-	
 	@Column(name = "title", nullable = true)
 	public String getTitle() {
 		return title;
@@ -126,7 +118,7 @@ public class CCGArticle implements Serializable{
 	private Integer articleID;
 	private String domain;
 	private String subdomain;
-	private Integer contentID;
+//	private Integer contentID;
 	private String title;
 	private int startPosi=-1;
 	private int endPosi=-1;
@@ -136,17 +128,10 @@ public class CCGArticle implements Serializable{
 	// mappings
 	private CCGContent content;
 	private List<CCGCategory> categorylist;
-	private CCGArticleMetadata metadata;
+
 	
-	@OneToOne
-	public CCGArticleMetadata getMetadata() {
-		return metadata;
-	}
-	public void setMetadata(CCGArticleMetadata metadata) {
-		this.metadata = metadata;
-	}
-	
-	@OneToOne
+	@OneToOne(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name="contentID")
 	public CCGContent getContent() {
 		return content;
 	}
@@ -155,6 +140,7 @@ public class CCGArticle implements Serializable{
 	}
 	
 	@OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name="articleID")
 	public List<CCGCategory> getCategorylist() {
 		return categorylist;
 	}
