@@ -1,6 +1,7 @@
 package com.ccg.dataaccess.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -114,5 +115,9 @@ public class CCGCategory implements Serializable {
 	private String categoryref; //  for example 1.
 	private String categorycontent;
 	private int categoryseq;
+	
+	// mappings
+	private CCGArticle article;
+	private List<CCGSubcategory> subcategorylist;
 
 }
