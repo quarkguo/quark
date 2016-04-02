@@ -1,13 +1,19 @@
 package com.ccg.dataaccess.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -49,13 +55,7 @@ public class CCGCategory implements Serializable {
 		this.categoryID = categoryID;
 	}
 	
-	@Column(name = "articleID")
-	public Integer getArticleID() {
-		return articleID;
-	}
-	public void setArticleID(Integer articleID) {
-		this.articleID = articleID;
-	}
+
 	@Column(name = "type")
 	public String getType() {
 		return type;
@@ -106,8 +106,8 @@ public class CCGCategory implements Serializable {
 	public void setCategoryseq(int categoryseq) {
 		this.categoryseq = categoryseq;
 	}
+
 	private Integer categoryID;
-	private Integer articleID;
 	private String type;
 	private int startposi;
 	private int endposi;
@@ -118,6 +118,22 @@ public class CCGCategory implements Serializable {
 	
 	// mappings
 	private CCGArticle article;
-	private List<CCGSubcategory> subcategorylist;
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="articleID")
+	public CCGArticle getArticle() {
+		return article;
+	}
+	public void setArticle(CCGArticle article) {
+		this.article = article;
+	}
+	@OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL,mappedBy="category")
+	public List<CCGSubcategory> getSubcategorylist() {
+		return subcategorylist;
+	}
+	public void setSubcategorylist(List<CCGSubcategory> subcategorylist) {
+		this.subcategorylist = subcategorylist;
+	}
+
+	private List<CCGSubcategory> subcategorylist=new ArrayList<CCGSubcategory>();
 
 }

@@ -1,6 +1,7 @@
 package com.ccg.dataaccess.entity;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -127,9 +128,17 @@ public class CCGArticle implements Serializable{
 	
 	// mappings
 	private CCGContent content;
-	private List<CCGCategory> categorylist;
+	private List<CCGCategory> categorylist=new ArrayList<CCGCategory>();
+	private CCGArticleMetadata metadata;
 
-	
+	@OneToOne(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name="articleID")
+	public CCGArticleMetadata getMetadata() {
+		return metadata;
+	}
+	public void setMetadata(CCGArticleMetadata metadata) {
+		this.metadata = metadata;
+	}
 	@OneToOne(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name="contentID")
 	public CCGContent getContent() {
@@ -139,8 +148,7 @@ public class CCGArticle implements Serializable{
 		this.content = content;
 	}
 	
-	@OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name="articleID")
+	@OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL,mappedBy="article")
 	public List<CCGCategory> getCategorylist() {
 		return categorylist;
 	}

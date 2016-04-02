@@ -5,9 +5,12 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -47,20 +50,6 @@ public class CCGSubcategory implements Serializable {
 	}
 	public void setSubcategoryID(Integer subcategoryID) {
 		this.subcategoryID = subcategoryID;
-	}
-	@Column(name = "articleID")
-	public Integer getArticleID() {
-		return articleID;
-	}
-	public void setArticleID(Integer articleID) {
-		this.articleID = articleID;
-	}
-	@Column(name = "categoryID")
-	public Integer getCateogryID() {
-		return cateogryID;
-	}
-	public void setCateogryID(Integer cateogryID) {
-		this.cateogryID = cateogryID;
 	}
 	@Column(name = "type")
 	public String getType() {
@@ -105,12 +94,30 @@ public class CCGSubcategory implements Serializable {
 		this.lastupdateTS = lastupdateTS;
 	}
 	private Integer subcategoryID;
-	private Integer articleID;
-	private Integer cateogryID;
 	private String type;
 	private String subcategorytitle;
 	private int startposi;
 	private int endposi;
 	private Date createdTS;
 	private Date lastupdateTS;
+	
+	private CCGArticle article;
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="articleID")
+	public CCGArticle getArticle() {
+		return article;
+	}
+	public void setArticle(CCGArticle article) {
+		this.article = article;
+	}
+	
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="categoryID")
+	public CCGCategory getCategory() {
+		return category;
+	}
+	public void setCategory(CCGCategory category) {
+		this.category = category;
+	}
+	private CCGCategory category;
 }
