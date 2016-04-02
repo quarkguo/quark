@@ -1,15 +1,20 @@
 package com.ccg.dataaccess.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @NamedQueries({
@@ -23,7 +28,7 @@ public class CCGArticle implements Serializable{
 	private static final long serialVersionUID = 5714871082795314674L;
 	@Id	
 	@Column(name = "articleID", unique = true)
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	public Integer getArticleID() {
 		return articleID;
 	}
@@ -70,14 +75,6 @@ public class CCGArticle implements Serializable{
 		this.subdomain = subdomain;
 	}
 	
-	@Column(name = "contentID", nullable = true)
-	public Integer getContentID() {
-		return contentID;
-	}
-	public void setContentID(Integer contentID) {
-		this.contentID = contentID;
-	}
-	
 	@Column(name = "title", nullable = true)
 	public String getTitle() {
 		return title;
@@ -121,10 +118,34 @@ public class CCGArticle implements Serializable{
 	private Integer articleID;
 	private String domain;
 	private String subdomain;
-	private Integer contentID;
+//	private Integer contentID;
 	private String title;
 	private int startPosi=-1;
 	private int endPosi=-1;
 	private String articleType;
 	private Integer rfpReference;
+	
+	// mappings
+	private CCGContent content;
+	private List<CCGCategory> categorylist;
+
+	
+	@OneToOne(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name="contentID")
+	public CCGContent getContent() {
+		return content;
+	}
+	public void setContent(CCGContent content) {
+		this.content = content;
+	}
+	
+	@OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name="articleID")
+	public List<CCGCategory> getCategorylist() {
+		return categorylist;
+	}
+	public void setCategorylist(List<CCGCategory> categorylist) {
+		this.categorylist = categorylist;
+	}
+	
 }

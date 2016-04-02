@@ -1,6 +1,7 @@
 package com.ccg.dataaccess.entity;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,14 +11,14 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="cccategory")
+@Table(name="ccgcategory")
 public class CCGCategory implements Serializable {
 
 	private static final long serialVersionUID = -8424915265747552093L;
 	
 	@Id	
 	@Column(name = "categoryID", unique = true)
-	@GeneratedValue(strategy=GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	public Integer getCategoryID() {
 		return categoryID;
 	}
@@ -91,7 +92,7 @@ public class CCGCategory implements Serializable {
 	public void setCategoryref(String categoryref) {
 		this.categoryref = categoryref;
 	}
-	@Column(name = "categorycontent")
+	@Column(name = "categorycontent",columnDefinition="mediumtext")
 	public String getCategorycontent() {
 		return categorycontent;
 	}
@@ -114,5 +115,9 @@ public class CCGCategory implements Serializable {
 	private String categoryref; //  for example 1.
 	private String categorycontent;
 	private int categoryseq;
+	
+	// mappings
+	private CCGArticle article;
+	private List<CCGSubcategory> subcategorylist;
 
 }
