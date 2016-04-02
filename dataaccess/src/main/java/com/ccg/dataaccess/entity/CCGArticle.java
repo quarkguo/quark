@@ -156,4 +156,5 @@ public class CCGArticle implements Serializable{
 		this.categorylist = categorylist;
 	}
 	
+	// this is test
 }
