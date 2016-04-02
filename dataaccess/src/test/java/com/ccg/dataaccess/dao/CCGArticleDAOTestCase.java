@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ccg.dataaccess.dao.api.CCGArticleDAO;
 import com.ccg.dataaccess.entity.CCGArticle;
+import com.ccg.dataaccess.entity.CCGCategory;
 import com.ccg.dataaccess.entity.CCGContent;
 
 
@@ -45,7 +46,7 @@ public class CCGArticleDAOTestCase {
 		System.out.println("number:"+number);
 	}
 	
-	@Test
+//	@Test
 	@Rollback(false)
 	public void testCasecadeContentMapping()
 	{
@@ -64,6 +65,33 @@ public class CCGArticleDAOTestCase {
 		content.setMetatype("pdf");
 		content.setUrl("http://ccg.com");
 		a.setContent(content);
+		articleDAO.save(a);
+	}
+	
+	@Test
+	@Rollback(false)
+	public void testCasecadeCategoryMapping()
+	{
+		CCGArticle a=new CCGArticle();
+		a.setArticleType("proposal");
+		a.setDomain("DOE");
+		a.setEndPosi(10);
+		a.setStartPosi(0);
+		a.setTitle("Test");
+		a.setSubdomain("test case2");
+		for(int i=0;i<3;i++)
+		{
+			CCGCategory cg=new CCGCategory();
+			cg.setArticle(a);
+			cg.setCategorycontent("cate"+i);
+			cg.setCategoryref(i+".");
+			cg.setStartposi(1);
+			cg.setEndposi(2);
+			cg.setCategorytitle("title"+1);
+			cg.setCategoryseq(i);
+			cg.setType("main");
+			a.getCategorylist().add(cg);
+		}
 		articleDAO.save(a);
 	}
 }
