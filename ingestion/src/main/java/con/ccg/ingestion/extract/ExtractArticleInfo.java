@@ -1,4 +1,4 @@
-package com.ccg.ingestion.extract;
+package con.ccg.ingestion.extract;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package com.ccg.ingestion.extract;
+package con.ccg.ingestion.extract;
 
 public class ArticleTypePattern {
 	public static final String PROPOSAL = "(Executive\\s+Summary)|(\\r?\\n\\d+\\.(\\d+\\.)*)";

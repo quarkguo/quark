@@ -1,4 +1,4 @@
-package con.ccg.ingestion.extract;
+package com.ccg.ingestion.extract;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,10 +8,10 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import com.ccg.ingestion.extract.ArticleInfo;
-import com.ccg.ingestion.extract.ArticleTypePattern;
-import com.ccg.ingestion.extract.Category;
-import com.ccg.ingestion.extract.ExtractArticleInfo;
+import con.ccg.ingestion.extract.ArticleInfo;
+import con.ccg.ingestion.extract.ArticleTypePattern;
+import con.ccg.ingestion.extract.Category;
+import con.ccg.ingestion.extract.ExtractArticleInfo;
 
 public class ExtracArticleInfoFromPDFTest {
 	
