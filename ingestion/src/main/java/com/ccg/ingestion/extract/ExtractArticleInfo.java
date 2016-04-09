@@ -1,4 +1,4 @@
-package con.ccg.ingestion.extract;
+package com.ccg.ingestion.extract;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -98,6 +98,70 @@ public class ExtractArticleInfo {
 			}
 		}
 		return cList;
+	}
+
+	private String findHeader(){
+		Map<String, Integer> possibleHeaders = new HashMap<String, Integer>();
+		for(PageInfo pInfo: pageList){
+			String content = pInfo.content.trim();
+			String[] lines = content.split("\n");
+			if(lines.length > 0){
+				String key = lines[0];
+				if(possibleHeaders.containsKey(key)){
+					int n = possibleHeaders.get(key);
+					possibleHeaders.put(key, ++n);
+				}else{
+					possibleHeaders.put(key, 1);
+				}
+			}			
+		}
+		Set<String> keySet = possibleHeaders.keySet();
+		int i = 0;
+		String header = "";
+		for(String key : keySet){
+			int value = possibleHeaders.get(key);
+			if(value > i){
+				i = value;
+				header = key;
+			}
+		}
+		if(i > pageList.size()*2/3){
+			return header;
+		}else{
+			return null;
+		}
+	}
+	
+	private String findFooter(){
+		Map<String, Integer> possibleFooters = new HashMap<String, Integer>();
+		for(PageInfo pInfo: pageList){
+			String content = pInfo.content.trim();
+			String[] lines = content.split("\n");
+			if(lines.length > 0){
+				String key = lines[0];
+				if(possibleFooters.containsKey(key)){
+					int n = possibleFooters.get(key);
+					possibleFooters.put(key, ++n);
+				}else{
+					possibleFooters.put(key, 1);
+				}
+			}			
+		}
+		Set<String> keySet = possibleFooters.keySet();
+		int i = 0;
+		String header = "";
+		for(String key : keySet){
+			int value = possibleFooters.get(key);
+			if(value > i){
+				i = value;
+				header = key;
+			}
+		}
+		if(i > pageList.size()*2/3){
+			return header;
+		}else{
+			return null;
+		}
 	}
 	
 	private void findTitle(){

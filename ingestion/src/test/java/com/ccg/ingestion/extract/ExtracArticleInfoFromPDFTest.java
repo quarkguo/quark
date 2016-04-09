@@ -8,10 +8,10 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import con.ccg.ingestion.extract.ArticleInfo;
-import con.ccg.ingestion.extract.ArticleTypePattern;
-import con.ccg.ingestion.extract.Category;
-import con.ccg.ingestion.extract.ExtractArticleInfo;
+import com.ccg.ingestion.extract.ArticleInfo;
+import com.ccg.ingestion.extract.ArticleTypePattern;
+import com.ccg.ingestion.extract.Category;
+import com.ccg.ingestion.extract.ExtractArticleInfo;
 
 public class ExtracArticleInfoFromPDFTest {
 	
@@ -19,7 +19,8 @@ public class ExtracArticleInfoFromPDFTest {
 	public void testExtractArticleInfoFromPDF() throws IOException{
 
 		InputStream is = new FileInputStream(
-				new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
+				//new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
+				new File("/Users/zchen323/Downloads/proposals/FEDITC_SIEMENS_138th FW Command-System_final tech proposal.pdf"));
 		ExtractArticleInfo extract = new ExtractArticleInfo();
 		ArticleInfo info = extract.fromPDF(is, ArticleTypePattern.PROPOSALS);
 		System.out.println("Title: " + info.getTitle());

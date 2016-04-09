@@ -1,4 +1,4 @@
-package con.ccg.ingestion.extract;
+package com.ccg.ingestion.extract;
 
 import java.util.ArrayList;
 import java.util.List;
