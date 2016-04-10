@@ -19,6 +19,7 @@ public class ExtractArticleInfo {
 	
 	private List<PageInfo> pageList = new ArrayList<PageInfo>();
 	private ArticleInfo aInfo = new ArticleInfo();
+	private List<Integer> pageEndIndex = new ArrayList<Integer>();
 
 	public ArticleInfo fromPDF(InputStream is, String[] pattern) throws IOException {
 		aInfo.setType("PDF");
@@ -45,6 +46,7 @@ public class ExtractArticleInfo {
 		}
 		findTitle();
 		aInfo.setContent(sb.toString());
+		setPageEndIndex();
 		
 		if(pattern.length > 0){
 			// extract level 1 category
@@ -59,9 +61,46 @@ public class ExtractArticleInfo {
 					pattern[1], c.getStartPosition()));
 			}
 		}
+		printPageInfo();
 		return aInfo;
 	}
-
+	
+	private void setPageEndIndex(){
+		int counter = 0;
+		for(int i = 0; i < pageList.size(); i++){
+			counter = counter + pageList.get(i).content.length();
+			this.pageEndIndex.add(counter);
+		}
+		for(int i= 0; i < this.pageEndIndex.size(); i++){
+			System.out.println(i + 1 + ", " + pageEndIndex.get(i));
+		}
+	}
+	
+	private void printPageInfo(){
+		for(PageInfo pageInfo : pageList){
+			System.out.println(pageInfo.numOfPages + ", " + pageInfo.numOfChars);
+		}
+	}
+	private void setPageNumberInfoToCategory(List<Category> catList){
+		for(Category cat : catList){
+			cat.setStartPage(this.indexToPageNumber(cat.getStartPosition()));
+			cat.setEndPage(this.indexToPageNumber(cat.getEndPosition()));
+		}
+	}
+	
+	private int indexToPageNumber(int index){
+		int count = 0;
+		int page = -1;
+		for(int i = 0; i < this.pageList.size(); i++){
+			count = count + pageList.get(i).content.length();
+			if(index <= count){
+				page = pageList.get(i).numOfPages;
+				break;
+			}
+		}
+		return page;
+	}
+	
 	private List<Category> extractCategory(String content, String regex, int offset){
 		
 		List<Category> cList = new ArrayList<Category>();
@@ -97,6 +136,7 @@ public class ExtractArticleInfo {
 				current.setEndPosition(content.length() + offset);
 			}
 		}
+		this.setPageNumberInfoToCategory(cList);
 		return cList;
 	}
 

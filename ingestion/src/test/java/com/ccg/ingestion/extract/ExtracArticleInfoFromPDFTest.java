@@ -28,13 +28,19 @@ public class ExtracArticleInfoFromPDFTest {
 		System.out.println("Num of Pages: " + info.getPages());
 		
 		for(Category c : info.getCategoryList()){
-			System.out.println(c.getTitle() + ", " + c.getStartPosition() + ", " + c.getEndPosition());
+			System.out.println(c.getTitle() + ", " 
+					+ c.getStartPosition() + ", " + c.getEndPosition() + ", p"
+					+ c.getStartPage() + ", p" + c.getEndPage());
 			if(c.getSubCategory().size() > 0){
 				for(Category sub : c.getSubCategory()){
-					System.out.println(sub.getTitle() + ", " + sub.getStartPosition() + ", " + sub.getEndPosition());
+					System.out.println(sub.getTitle() + ", " 
+							+ sub.getStartPosition() + ", " + sub.getEndPosition() + ", p"
+							+ sub.getStartPage() + ", p" + sub.getEndPage());
 				}
 			}
 		}
+		//System.out.println(
+		//info.getContent().substring(8188, 11996));
 	}
 
 }
