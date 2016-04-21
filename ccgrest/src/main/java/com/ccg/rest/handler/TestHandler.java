@@ -1,13 +1,14 @@
 package com.ccg.rest.handler;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ccg.dataaccess.dao.api.CCGArticleDAO;
-import com.ccg.services.data.CCGDBService;;
+import com.ccg.services.data.CCGDBService;
+
 
 @RestController
 public class TestHandler {
@@ -34,6 +35,6 @@ public class TestHandler {
 		{
 			System.out.println("autowired success!!");
 		}
-		return dataservice.getArticleCouont()+"";
+		return dataservice.getArticleCouont()+" henry is a chabby boy and Smarty pants!!! <img src=image.jpg/>";
 	}
 }

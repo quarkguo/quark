@@ -24,7 +24,7 @@ public class CCGArticleDAOTestCase {
 	@Autowired
 	private CCGArticleDAO articleDAO;
 	
-//	@Test
+	@Test
 	@Rollback(true)
 	public void testCountAll() {
 		int number=articleDAO.countAll();
@@ -68,7 +68,7 @@ public class CCGArticleDAOTestCase {
 		articleDAO.save(a);
 	}
 	
-	@Test
+	//@Test
 	@Rollback(false)
 	public void testCasecadeCategoryMapping()
 	{
