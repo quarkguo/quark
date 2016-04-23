@@ -101,6 +101,24 @@ public class CCGSubcategory implements Serializable {
 	private Date createdTS;
 	private Date lastupdateTS;
 	
+	@Column(name = "startpage")
+	public int getStartpage() {
+		return startpage;
+	}
+	public void setStartpage(int startpage) {
+		this.startpage = startpage;
+	}
+	
+	@Column(name = "endpage")
+	public int getEndpage() {
+		return endpage;
+	}
+	public void setEndpage(int endpage) {
+		this.endpage = endpage;
+	}
+	private int startpage;
+	private int endpage;
+	
 	private CCGArticle article;
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="articleID")

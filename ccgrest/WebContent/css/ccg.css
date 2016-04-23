@@ -1,0 +1,18 @@
+.ccg-app-header
+{
+	background-image: -webkit-linear-gradient(top,#66b3ff, #1a8cff);
+}
+.ccg-logo
+{
+	width:12pt;
+	height:26pt;
+
+}
+.ccg-header-title
+{
+    padding: 15px 0 10px 0;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 0 1px 0 #4e691f;
+}
