@@ -1,0 +1,26 @@
+[
+  { "text":"document 1",
+     leaf: true,
+    "id":"1"
+    },
+    { "text":"document 2",
+    "cls":"file",
+    leaf: true,
+    "id":"v2"
+    },
+    { "text":"document 3",
+    "cls":"file",
+    leaf: true,
+    "id":"v3"
+    },
+    { "text":"document 4",
+    "cls":"file",
+    leaf: true,
+    "id":"v4"
+    },
+   { "text":"document 5",
+    "cls":"file",
+    leaf: true,
+    "id":"v5"
+    }
+]
