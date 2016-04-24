@@ -61,9 +61,25 @@ Ext.define("com.ccg.portalheader",{
 
 Ext.define('com.ccg.toolbar',{
 		  extend:"Ext.toolbar.Toolbar",
-		  layout: 'hbox',
+		  style: 'background-image: -webkit-linear-gradient(top,#66b3ff, #1a8cff)',
+			height:48,
+			layout:{
+				type:'hbox',
+				align:'middle'
+			},
+		  title:document.title,	
 		  xtype:"ccg-toolbar",		
 		  items:[
+		         {
+		        	 xtype:'component',
+		        	 cls:'ccg-logo'
+		         },
+		         {
+		        	 xtype:'component',
+		        	 cls:'ccg-header-title',
+		        	 html:document.title,
+		        	 flex:1
+		         },
 		    {
                     text: 'Content Ingestion',
                     iconCls: 'edit',                    

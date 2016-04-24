@@ -23,6 +23,14 @@ public class TestHandler {
 		return "hello world!!";
 	}
 	
+	@RequestMapping(value="/articleList",method=RequestMethod.GET)
+	public String articleList(ModelMap para)
+	{
+		String res=dataservice.getArticleListJson();
+		System.out.println(res);
+		return res;
+	}
+	
 	@RequestMapping(value="/countArticle",method=RequestMethod.GET)
 	public String countArticle(ModelMap para)
 	{
