@@ -61,7 +61,7 @@ Ext.define("com.ccg.portalheader",{
 
 Ext.define('com.ccg.toolbar',{
 		  extend:"Ext.toolbar.Toolbar",
-		  style: 'background-image: -webkit-linear-gradient(top,#66b3ff, #1a8cff)',
+		  style: 'background-image: -webkit-linear-gradient(top,#2ba4c4, #2589a3)',
 			height:48,
 			layout:{
 				type:'hbox',
