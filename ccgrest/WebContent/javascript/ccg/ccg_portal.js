@@ -7,7 +7,7 @@ Ext.onReady(function(){
 	Ext.create('Ext.container.Viewport',{
 		layout:'border',
 		items:[{
-			region:'north',
+			region:'north',			
 			xtype:"ccg-toolbar"
 		},
 		{ 
@@ -15,15 +15,29 @@ Ext.onReady(function(){
 		     split:true,
 		     collapsible:true,
 			items:[
-			   	ccg.ui.doclist
+			   	ccg.ui.doclist,
+			    ccg.ui.relateddoclist 
 			]
 		},
 		{
-			title:'Content',
+			title:'Main',
 			region:'center',
+			layout:'hbox',
+			 frame: true,
+			defaults: {		        
+		        bodyPadding: 10
+		    },
 			items:[
-			       	
-			]
+			       	{			       		
+			       		title:'Content',
+			       		flex:1
+			       			
+			       	},
+			       	ccg.ui.metapanel,
+			       	{
+			       		width:'20px'
+			       	}
+			       	]
 				
 		},
 		{
@@ -32,7 +46,7 @@ Ext.onReady(function(){
 			   split:true,
 			     collapsible:true,
 			items:[
-			       ccg.ui.doccategory   	
+			       ccg.ui.doccategory			       		       			        
 			]
 				
 		}
