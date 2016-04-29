@@ -4,9 +4,11 @@
 }
 .ccg-logo
 {
-	width:12pt;
-	height:26pt;
-
+	width:42px;
+	height:32px;
+    background: url(../images/ccg_new.png);
+    background-repeat: no-repeat;
+    background-size: 42px,32px
 }
 .ccg-header-title
 {

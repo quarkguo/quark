@@ -5,8 +5,7 @@ ccg.data.doccategorystore = Ext.create('Ext.data.TreeStore', {
             url: 'json/doc1_category.json'
         },
         root: {
-            text: 'Document Category:',
-            id: 'src',
+            text: 'Document Category:',        
             expanded: true
         },
         folderSort: true,
@@ -15,12 +14,39 @@ ccg.data.doccategorystore = Ext.create('Ext.data.TreeStore', {
             direction: 'ASC'
         }]
     });
+ccg.data.relateddocstore = Ext.create('Ext.data.TreeStore', {
+    proxy: {
+        type: 'ajax',
+        url: 'json/doclist.json'
+    },
+    root: {
+        text: 'Related Document:',        
+        expanded: true
+    },
+    folderSort: true,
+    sorters: [{
+        property: 'text',
+        direction: 'ASC'
+    }]
+});
 
 ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
     store: ccg.data.doccategorystore,
     height: 500,
     width: 300,
     title: 'Document Cateogry',
+    useArrows: true,
+    dockedItems: [{
+        xtype: 'toolbar',
+        items: []
+    }]
+});
+
+ccg.ui.relateddoclist =Ext.create('Ext.tree.Panel', {
+    store: ccg.data.relateddocstore,
+    height: 500,
+    width: 300,
+    title: 'Related Documents:',
     useArrows: true,
     dockedItems: [{
         xtype: 'toolbar',
@@ -37,8 +63,47 @@ ccg.ui.docmainpanel=Ext.create("Ext.panel.Panel",{
 	{ 
 		region: 'center',
 		items:[
-		       	ccg.ui.doccategory
+		  
 		]
 	}
 	]
 });
+
+ccg.ui.metapanel=Ext.create('Ext.form.Panel', {  
+    title: 'Document Metadata',
+    height: 450,
+    width: 300,
+    bodyPadding: 10,
+    defaultType: 'textfield',
+    items: [
+        {
+            fieldLabel: 'Title',
+            name: 'title'
+        },
+        {
+            fieldLabel: 'Type',
+            name: 'type'
+        },
+        {
+            fieldLabel: 'Author',
+            name: 'title'
+        },
+        {
+            fieldLabel: 'Company',
+            name: 'type'
+        },
+        {
+            fieldLabel: 'Accept Status',
+            name: 'title'
+        },
+        {
+            fieldLabel: 'Praisal Scores',
+            name: 'type'
+        },
+        {
+            xtype: 'datefield',
+            fieldLabel: 'CreatedTS',
+            name: 'createTS'
+        }
+    ]
+})
