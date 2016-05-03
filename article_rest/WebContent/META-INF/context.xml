@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context>
+    <Resource name="jdbc/ccgcontent" auth="Container" type="javax.sql.DataSource"
+              maxActive="50" maxIdle="30" maxWait="10000"
+              username="ccg" password="ccg"
+              driverClassName="com.mysql.jdbc.Driver"
+              url="jdbc:mysql://72.177.234.240:3306/ccgcontent"/>
+</Context>
