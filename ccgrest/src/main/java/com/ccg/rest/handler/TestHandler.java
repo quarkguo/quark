@@ -1,13 +1,23 @@
 package com.ccg.rest.handler;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ccg.common.data.ArticleBasicInfo;
+import com.ccg.common.data.ArticleContent;
 import com.ccg.services.data.CCGDBService;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 
 @RestController
@@ -44,5 +54,37 @@ public class TestHandler {
 			System.out.println("autowired success!!");
 		}
 		return dataservice.getArticleCouont()+" henry is a chabby boy and Smarty pants!!! <img src=image.jpg/>";
+	}
+	
+	@RequestMapping(method=RequestMethod.GET, value="/article/basicInfo/listAll")
+	public ResponseEntity<String> getArticleBasicInfoList() {
+		List<ArticleBasicInfo> infoList =dataservice.getArticleBasicInfo();
+	    HttpHeaders responseHeaders = new HttpHeaders();
+	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+	    return new ResponseEntity<String>(toJson(infoList), responseHeaders, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(method=RequestMethod.GET, value="/article/{articleId}/content")
+	public ResponseEntity<String> getContent(@PathVariable("articleId") Integer articleId) {
+		ArticleContent content = dataservice.getArticleContent(articleId);
+		String json = toJson(content);
+	    HttpHeaders responseHeaders = new HttpHeaders();
+	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+	    return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(method=RequestMethod.GET, value="/content/{contentId}")
+	public ResponseEntity<String> getContentById(@PathVariable("contentId") Integer contentId) {
+		ArticleContent content = dataservice.getContentById(contentId);
+		String json = toJson(content);
+	    HttpHeaders responseHeaders = new HttpHeaders();
+	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+	    return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
+	}
+	
+	
+	private String toJson(Object obj){
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		return gson.toJson(obj);
 	}
 }

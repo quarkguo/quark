@@ -20,7 +20,7 @@ public class ExtracArticleInfoFromPDFTest {
 
 		InputStream is = new FileInputStream(
 				//new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
-				new File("/Users/zchen323/Downloads/proposals/FEDITC_SIEMENS_138th FW Command-System_final tech proposal.pdf"));
+				new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx (1).pdf"));
 		ExtractArticleInfo extract = new ExtractArticleInfo();
 		ArticleInfo info = extract.fromPDF(is, ArticleTypePattern.PROPOSALS);
 		System.out.println("Title: " + info.getTitle());

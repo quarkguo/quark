@@ -39,12 +39,12 @@ public class InsertArticleToDBTest {
 		CCGArticle article = new CCGArticle();
 		
 		InputStream is = new FileInputStream(
-				new File("/Users/zchen323/Downloads/proposals/FEDITC_SIEMENS_138th FW Command-System_final tech proposal.pdf"));
+				new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx (1).pdf"));
 		ExtractArticleInfo extract = new ExtractArticleInfo();
 		ArticleInfo info = extract.fromPDF(is, ArticleTypePattern.PROPOSALS);
 		
 		article.setArticleType(info.getType());
-		article.setTitle(info.getTitle());
+		article.setTitle(info.getTitle().trim());
 		//article.set
 		
 		CCGContent content = new CCGContent();
@@ -65,6 +65,8 @@ public class InsertArticleToDBTest {
 			cat.setCategorytitle(c.getTitle());
 			cat.setStartposi(c.getStartPosition());
 			cat.setEndposi(c.getEndPosition());
+			cat.setStartpage(cat.getStartpage());
+			cat.setEndpage(c.getEndPage());
 			article.getCategorylist().add(cat);
 			for(Category sub : c.getSubCategory()){
 				CCGSubcategory subCat = new CCGSubcategory();
@@ -75,6 +77,8 @@ public class InsertArticleToDBTest {
 				subCat.setLastupdateTS(new Date());
 				subCat.setStartposi(sub.getStartPosition());
 				subCat.setEndposi(sub.getEndPosition());
+				subCat.setStartpage(sub.getStartPage());
+				subCat.setEndpage(sub.getEndPage());
 				cat.getSubcategorylist().add(subCat);
 			}
 		}

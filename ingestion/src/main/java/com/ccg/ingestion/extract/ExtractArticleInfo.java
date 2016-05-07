@@ -1,5 +1,7 @@
 package com.ccg.ingestion.extract;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.ccg.dataaccess.entity.CCGArticle;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
 import com.itextpdf.text.pdf.parser.SimpleTextExtractionStrategy;
@@ -61,7 +64,10 @@ public class ExtractArticleInfo {
 					pattern[1], c.getStartPosition()));
 			}
 		}
-		printPageInfo();
+		//printPageInfo();
+		List<Category> catList = aInfo.getCategoryList();
+		catList = this.removeDuplicateCategory(catList);
+		aInfo.setCategoryList(catList);
 		return aInfo;
 	}
 	
@@ -71,9 +77,9 @@ public class ExtractArticleInfo {
 			counter = counter + pageList.get(i).content.length();
 			this.pageEndIndex.add(counter);
 		}
-		for(int i= 0; i < this.pageEndIndex.size(); i++){
-			System.out.println(i + 1 + ", " + pageEndIndex.get(i));
-		}
+//		for(int i= 0; i < this.pageEndIndex.size(); i++){
+//			System.out.println(i + 1 + ", " + pageEndIndex.get(i));
+//		}
 	}
 	
 	private void printPageInfo(){
@@ -252,6 +258,70 @@ public class ExtractArticleInfo {
 		}
 		
 	}
+	
+
+	private List<Category> removeDuplicateCategory(List<Category> catList){
+		List<Category> newCatList = new ArrayList<Category>();
+		int n = 0;
+		boolean foundDuplicate = false;
+		for( int i = n; i < catList.size() - 1; i++){
+			Category cat = catList.get(i);
+			String catTitle = cat.getTitle().replace(".","").trim();
+			//int contentSize = cat.getContent().length();
+			for(int j = i+1; j < catList.size(); j++){
+				Category cat2 = catList.get(j);
+				String catTitle2 = cat2.getTitle().replace(".","").trim();
+				//int contentSize2 = cat2.getContent().length();
+				double similarity = StringSimilarity.similarity(catTitle, catTitle2);				
+				if(similarity > .60){
+					//System.out.println("======= similarity: " + similarity);
+					newCatList.add(cat2);
+					foundDuplicate = true;
+				}
+			}
+			if(!foundDuplicate){
+				// no duplicate found, use original
+				newCatList.add(cat);
+				foundDuplicate = false;
+			}
+		}
+		
+		// do i missed the last one?
+		boolean doImissedLastOne = true;
+		Category lastOne = catList.get(catList.size() -1);
+		for(int i = 0; i < newCatList.size(); i++){
+			if(lastOne == newCatList.get(i)){
+				doImissedLastOne = false;
+			}
+		}
+		if(doImissedLastOne){
+			newCatList.add(lastOne);
+		}
+		return newCatList;
+	}
+	
+	public static void main(String[] args) throws Exception{
+		InputStream is = new FileInputStream(
+				new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx (1).pdf"));
+		ExtractArticleInfo extract = new ExtractArticleInfo();
+		ArticleInfo info = extract.fromPDF(is, ArticleTypePattern.PROPOSALS);
+		
+		List<Category> categoryList = info.getCategoryList();
+		List<Category> newcategoryList = extract.removeDuplicateCategory(categoryList);
+//		for(Category cat : categoryList){
+//			String catTitle = cat.getTitle();
+//			System.out.println(catTitle);
+//		}
+		System.out.println(info.getTitle());
+		for(Category cat : categoryList){
+			String catTitle = cat.getTitle();
+			System.out.println(catTitle);
+			for(Category sub : cat.getSubCategory()){
+				String subTitle = sub.getTitle();
+				System.out.println("\t" + subTitle);
+			}
+		}		
+	}	
 }
 
 class PageInfo {
