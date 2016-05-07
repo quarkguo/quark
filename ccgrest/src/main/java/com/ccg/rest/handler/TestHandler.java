@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ccg.common.data.ArticleBasicInfo;
 import com.ccg.common.data.ArticleContent;
+import com.ccg.common.data.Category;
+import com.ccg.common.data.CategoryContent;
 import com.ccg.services.data.CCGDBService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -82,6 +84,23 @@ public class TestHandler {
 	    return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
 	}
 	
+	@RequestMapping(method=RequestMethod.GET, value="/article/{articleId}/category")
+	public ResponseEntity<String> getCategoryByArticleId(@PathVariable("articleId") Integer articleId) {
+		List<Category> catList = dataservice.getCategoryByArticleId(articleId);
+		String json = toJson(catList);
+	    HttpHeaders responseHeaders = new HttpHeaders();
+	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+	    return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
+	}
+
+	@RequestMapping(method=RequestMethod.GET, value="/category/{categoryId}/content")
+	public ResponseEntity<String> getCategoryContentById(@PathVariable("categoryId") Integer categoryId) {
+		CategoryContent content = dataservice.getCategoryContentById(categoryId);
+		String json = toJson(content);
+	    HttpHeaders responseHeaders = new HttpHeaders();
+	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+	    return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
+	}	
 	
 	private String toJson(Object obj){
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();

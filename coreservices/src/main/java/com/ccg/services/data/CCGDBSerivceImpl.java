@@ -12,10 +12,15 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ccg.common.data.ArticleBasicInfo;
 import com.ccg.common.data.ArticleContent;
 import com.ccg.common.data.Category;
+import com.ccg.common.data.CategoryContent;
+import com.ccg.common.data.SubCategory;
 import com.ccg.dataaccess.dao.api.CCGArticleDAO;
+import com.ccg.dataaccess.dao.api.CCGCategoryDAO;
 import com.ccg.dataaccess.dao.api.CCGContentDAO;
 import com.ccg.dataaccess.entity.CCGArticle;
+import com.ccg.dataaccess.entity.CCGCategory;
 import com.ccg.dataaccess.entity.CCGContent;
+import com.ccg.dataaccess.entity.CCGSubcategory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -27,6 +32,9 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	
 	@Autowired
 	private CCGContentDAO contentDAO;
+	
+	@Autowired
+	private CCGCategoryDAO categoryDAO;
 	
 	@Override
 	public void saveArticle(CCGArticle article) {
@@ -90,14 +98,43 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		return articleContent;
 	}
 	@Override
-	public Category getCategory(Integer articleId) {
-		// TODO Auto-generated method stub
-		return null;
+	@Transactional(readOnly=true)
+	public List<Category> getCategoryByArticleId(Integer articleId) {
+		List<Category> catList = new ArrayList<Category>();
+		List<CCGCategory> ccgCatList = articleDAO.findById(articleId).getCategorylist();
+		for(CCGCategory ccgCat : ccgCatList){
+			Category cat = new Category();
+			cat.setCategoryID(ccgCat.getCategoryID());
+			cat.setCategorytitle(ccgCat.getCategorytitle());
+			cat.setCategoryseq(ccgCat.getCategoryseq());
+			cat.setStartposi(ccgCat.getStartposi());
+			cat.setEndposi(ccgCat.getEndposi());
+			if(ccgCat.getSubcategorylist() != null 
+					&& ccgCat.getSubcategorylist().size() != 0){
+				List<SubCategory> subCatList = new ArrayList<SubCategory>();
+				List<CCGSubcategory> ccgSubList = ccgCat.getSubcategorylist();
+				for(CCGSubcategory ccgSub : ccgSubList){
+					SubCategory subCat = new SubCategory();
+					subCat.setSubcategoryID(ccgSub.getSubcategoryID());
+					subCat.setSubcategorytitle(ccgSub.getSubcategorytitle());
+					subCat.setStartposi(ccgSub.getStartposi());
+					subCat.setEndposi(ccgSub.getEndposi());
+					cat.getSubCategories().add(subCat);
+				}
+			}
+			catList.add(cat);
+		}		
+		return catList;
 	}
 	@Override
-	public String getCategoryContent(Integer categoryId) {
-		// TODO Auto-generated method stub
-		return null;
+	public CategoryContent getCategoryContentById(Integer categoryId) {
+		CCGCategory ccgCategory = categoryDAO.findById(categoryId);
+		CategoryContent catContent = new CategoryContent();
+		catContent.setCategoryID(categoryId);
+		catContent.setCategorytitle(ccgCategory.getCategorytitle());
+		catContent.setCategorycontent(ccgCategory.getCategorycontent());
+		
+		return catContent;
 	}
 	
 	@Override
