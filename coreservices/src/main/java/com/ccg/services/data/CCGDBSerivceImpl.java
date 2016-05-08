@@ -60,9 +60,6 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			map.put("leaf",new Boolean(true));
 			tmp.add(map);
 		}
-//		for(CCGArticle art :res){
-//			art.g
-//		}
 		
 		return toJson(tmp);
 	}
@@ -109,9 +106,11 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			cat.setCategoryseq(ccgCat.getCategoryseq());
 			cat.setStartposi(ccgCat.getStartposi());
 			cat.setEndposi(ccgCat.getEndposi());
+			cat.setStartPage(ccgCat.getStartpage());
+			cat.setEndPage(ccgCat.getEndpage());
 			if(ccgCat.getSubcategorylist() != null 
 					&& ccgCat.getSubcategorylist().size() != 0){
-				List<SubCategory> subCatList = new ArrayList<SubCategory>();
+				//List<SubCategory> subCatList = new ArrayList<SubCategory>();
 				List<CCGSubcategory> ccgSubList = ccgCat.getSubcategorylist();
 				for(CCGSubcategory ccgSub : ccgSubList){
 					SubCategory subCat = new SubCategory();
@@ -119,6 +118,8 @@ public class CCGDBSerivceImpl implements CCGDBService {
 					subCat.setSubcategorytitle(ccgSub.getSubcategorytitle());
 					subCat.setStartposi(ccgSub.getStartposi());
 					subCat.setEndposi(ccgSub.getEndposi());
+					subCat.setStartPage(ccgSub.getStartpage());
+					subCat.setEndPage(ccgSub.getEndpage());
 					cat.getSubCategories().add(subCat);
 				}
 			}

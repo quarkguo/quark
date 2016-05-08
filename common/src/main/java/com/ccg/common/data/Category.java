@@ -11,6 +11,10 @@ public class Category{
 	Integer endposi;
 	Integer categoryseq;
 	String type;
+	Integer startPage;
+	Integer endPage;
+	
+	
 	List<SubCategory> subCategories;
 	
 	public Integer getCategoryID() {
@@ -57,4 +61,18 @@ public class Category{
 	public void setSubCategories(List<SubCategory> subCategories) {
 		this.subCategories = subCategories;
 	}
+	public Integer getStartPage() {
+		return startPage;
+	}
+	public void setStartPage(Integer startPage) {
+		this.startPage = startPage;
+	}
+	public Integer getEndPage() {
+		return endPage;
+	}
+	public void setEndPage(Integer endPage) {
+		this.endPage = endPage;
+	}
+	
+	
 }

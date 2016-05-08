@@ -302,7 +302,7 @@ public class ExtractArticleInfo {
 	
 	public static void main(String[] args) throws Exception{
 		InputStream is = new FileInputStream(
-				new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx (1).pdf"));
+				new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
 		ExtractArticleInfo extract = new ExtractArticleInfo();
 		ArticleInfo info = extract.fromPDF(is, ArticleTypePattern.PROPOSALS);
 		
@@ -316,9 +316,14 @@ public class ExtractArticleInfo {
 		for(Category cat : categoryList){
 			String catTitle = cat.getTitle();
 			System.out.println(catTitle);
+			int startPage = cat.getStartPage();
+			int endPage = cat.getEndPage();
+			System.out.println("==Ps=" + startPage + ", Pe=" + endPage);
+			
 			for(Category sub : cat.getSubCategory()){
 				String subTitle = sub.getTitle();
 				System.out.println("\t" + subTitle);
+				System.out.println("==Ps=" + sub.getStartPage() + ", Pe=" + sub.getEndPage());
 			}
 		}		
 	}	
