@@ -16,8 +16,8 @@ ccg.data.docliststore = Ext.create('Ext.data.TreeStore', {
     });
  ccg.ui.doclist =Ext.create('Ext.tree.Panel', {
      store: ccg.data.docliststore,
-     height: 300,
-     flex:1,
+     height: 360,
+     width:320,
      title: 'Document List',     
      useArrows: true,
      listeners: {

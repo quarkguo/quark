@@ -10,10 +10,7 @@ ccg.data.doccategorystore = Ext.create('Ext.data.TreeStore', {
             expanded: true
         },
         listeners: {
-            load: function(store, records, success) {
-            	console.log("loading the category");
-            	console.log(records.length);
-            }
+            
         }
     });
 ccg.data.relateddocstore = Ext.create('Ext.data.TreeStore', {
@@ -29,20 +26,43 @@ ccg.data.relateddocstore = Ext.create('Ext.data.TreeStore', {
 
 ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
     store: ccg.data.doccategorystore,
-    height: 500,
-    flex:2,
+ //   height: 360,
+    width: 300,
     title: 'Document Cateogry',
     useArrows: true,
     autoload:false,
     dockedItems: [{
         xtype: 'toolbar',
         items: []
-    }]
+    }],
+    listeners: {
+        itemclick: function(s,r) {           
+       	 	console.log(r);
+       	 	if(r.data.categoryID)
+       	 	{
+       	 		// pull content of categoryID
+       	 	   var urlstr="rest/category/"+r.data.categoryID+"/content";
+       	 	   console.log(urlstr);      	 	   
+       	 	   // ajax call
+       	 	Ext.Ajax.request({
+       	     url: urlstr,
+
+       	     callback: function(options, success, response) {
+       	    	 console.log(response.responseText);
+       	    	var o= Ext.util.JSON.decode(response.responseText);
+       	    	console.log(o);
+       	    	Ext.getCmp('contentpanel').update(o.categorycontent);
+       	     }
+       	 });
+       	 	}
+       	 
+        }
+    },
 });
 
 ccg.ui.relateddoclist =Ext.create('Ext.tree.Panel', {
     store: ccg.data.relateddocstore,
-    height: 500,
+    height: 240,
     width: 300,
     title: 'Related Documents:',
     useArrows: true,
@@ -69,7 +89,7 @@ ccg.ui.docmainpanel=Ext.create("Ext.panel.Panel",{
 
 ccg.ui.metapanel=Ext.create('Ext.form.Panel', {  
     title: 'Document Metadata',
-    height: 450,
+    height: 360,
     width: 300,
     bodyPadding: 10,
     defaultType: 'textfield',

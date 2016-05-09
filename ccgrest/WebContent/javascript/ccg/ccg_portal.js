@@ -28,10 +28,16 @@ Ext.onReady(function(){
 		        bodyPadding: 10
 		    },
 			items:[
-			       	{			       		
-			       		title:'Content',
-			       		flex:1
-			       			
+			       	{			
+			       		xtype:'panel',
+			       		title:'Content Panel',
+			       		id:'contentpanel',
+			       		height:500,
+			       		style: {
+			             color: '#66b3ff'			             
+			       		},
+			       		flex:1,
+			       		autoScroll: true
 			       	},
 			       	ccg.ui.metapanel,
 			       	{
