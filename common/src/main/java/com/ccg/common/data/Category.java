@@ -3,15 +3,27 @@ package com.ccg.common.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Category{
 	
+	public boolean isLeaf() {
+		return leaf;
+	}
+	public void setLeaf(boolean leaf) {
+		this.leaf = leaf;
+	}
 	Integer categoryID;
+	@SerializedName("text") 
 	String categorytitle;
 	Integer startposi;
 	Integer endposi;
 	Integer categoryseq;
 	String type;
+	@SerializedName("children")
 	List<SubCategory> subCategories;
+	
+	boolean leaf;
 	
 	public Integer getCategoryID() {
 		return categoryID;

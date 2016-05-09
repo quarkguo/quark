@@ -12,12 +12,7 @@ ccg.data.docliststore = Ext.create('Ext.data.TreeStore', {
             text: 'Document List:',
             id: 'src',
             expanded: true
-        },
-        folderSort: true,
-        sorters: [{
-            property: 'text',
-            direction: 'ASC'
-        }]
+        }
     });
  ccg.ui.doclist =Ext.create('Ext.tree.Panel', {
      store: ccg.data.docliststore,
@@ -25,7 +20,16 @@ ccg.data.docliststore = Ext.create('Ext.data.TreeStore', {
      width: 250,
      title: 'Document List',
      useArrows: true,
-
+     listeners: {
+         itemclick: function(s,r) {           
+        	 ccg.ui.doccategory.getRootNode().removeAll();
+                 var arcID=r.data.articleID;
+                 var urlstr="rest/article/"+arcID+"/category";
+                 console.log(urlstr);         
+               //  ccg.data.doccategorystore.removeAll();
+                 ccg.data.doccategorystore.load({url:urlstr});
+         }
+     },
      dockedItems: [{
          xtype: 'toolbar',
          items: []

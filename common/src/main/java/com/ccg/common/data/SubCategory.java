@@ -1,13 +1,17 @@
 package com.ccg.common.data;
 
+import com.google.gson.annotations.SerializedName;
+
 public class SubCategory {
 	
 	Integer subcategoryID;
 	Integer categoryID;
+	@SerializedName("text") 
 	String subcategorytitle;
 	Integer startposi;
 	Integer endposi;
 	String type;
+	boolean leaf=true;
 	
 	public Integer getSubcategoryID() {
 		return subcategoryID;

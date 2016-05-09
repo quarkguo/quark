@@ -1,18 +1,20 @@
 
 ccg.data.doccategorystore = Ext.create('Ext.data.TreeStore', {
         proxy: {
-            type: 'ajax',
-            url: 'json/doc1_category.json'
+            type: 'ajax'
+           // url: 'json/doc1_category.json'
         },
+        autoLoad:false,
         root: {
             text: 'Document Category:',        
             expanded: true
         },
-        folderSort: true,
-        sorters: [{
-            property: 'text',
-            direction: 'ASC'
-        }]
+        listeners: {
+            load: function(store, records, success) {
+            	console.log("loading the category");
+            	console.log(records.length);
+            }
+        }
     });
 ccg.data.relateddocstore = Ext.create('Ext.data.TreeStore', {
     proxy: {
@@ -22,12 +24,7 @@ ccg.data.relateddocstore = Ext.create('Ext.data.TreeStore', {
     root: {
         text: 'Related Document:',        
         expanded: true
-    },
-    folderSort: true,
-    sorters: [{
-        property: 'text',
-        direction: 'ASC'
-    }]
+    }
 });
 
 ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
@@ -36,6 +33,7 @@ ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
     width: 300,
     title: 'Document Cateogry',
     useArrows: true,
+    autoload:false,
     dockedItems: [{
         xtype: 'toolbar',
         items: []

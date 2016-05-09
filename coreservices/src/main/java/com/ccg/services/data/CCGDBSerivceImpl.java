@@ -58,6 +58,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			map.put("text","Doc"+art.getTitle());
 			map.put("cls","file");
 			map.put("leaf",new Boolean(true));
+			map.put("articleID",art.getArticleID()+"");
 			tmp.add(map);
 		}
 //		for(CCGArticle art :res){
@@ -111,7 +112,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			cat.setEndposi(ccgCat.getEndposi());
 			if(ccgCat.getSubcategorylist() != null 
 					&& ccgCat.getSubcategorylist().size() != 0){
-				List<SubCategory> subCatList = new ArrayList<SubCategory>();
+			//	List<SubCategory> subCatList = new ArrayList<SubCategory>();
 				List<CCGSubcategory> ccgSubList = ccgCat.getSubcategorylist();
 				for(CCGSubcategory ccgSub : ccgSubList){
 					SubCategory subCat = new SubCategory();
@@ -121,6 +122,11 @@ public class CCGDBSerivceImpl implements CCGDBService {
 					subCat.setEndposi(ccgSub.getEndposi());
 					cat.getSubCategories().add(subCat);
 				}
+				cat.setLeaf(false);
+			}
+			else
+			{
+				cat.setLeaf(true);
 			}
 			catList.add(cat);
 		}		
