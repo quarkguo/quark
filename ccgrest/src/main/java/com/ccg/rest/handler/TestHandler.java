@@ -17,6 +17,7 @@ import com.ccg.common.data.ArticleBasicInfo;
 import com.ccg.common.data.ArticleContent;
 import com.ccg.common.data.Category;
 import com.ccg.common.data.CategoryContent;
+import com.ccg.common.data.SubCategoryContent;
 import com.ccg.services.data.CCGDBService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -100,7 +101,17 @@ public class TestHandler {
 	    HttpHeaders responseHeaders = new HttpHeaders();
 	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 	    return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
+	}
+	
+	@RequestMapping(method=RequestMethod.GET, value="/subcategory/{subcategoryId}/content")
+	public ResponseEntity<String> getSubCategoryContentById(@PathVariable("subcategoryId") Integer subcategoryId) {
+		SubCategoryContent content = dataservice.getSubCategoryContentById(subcategoryId);
+		String json = toJson(content);
+	    HttpHeaders responseHeaders = new HttpHeaders();
+	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+	    return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
 	}	
+	
 	
 	private String toJson(Object obj){
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();

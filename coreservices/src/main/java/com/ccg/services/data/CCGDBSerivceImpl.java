@@ -14,9 +14,11 @@ import com.ccg.common.data.ArticleContent;
 import com.ccg.common.data.Category;
 import com.ccg.common.data.CategoryContent;
 import com.ccg.common.data.SubCategory;
+import com.ccg.common.data.SubCategoryContent;
 import com.ccg.dataaccess.dao.api.CCGArticleDAO;
 import com.ccg.dataaccess.dao.api.CCGCategoryDAO;
 import com.ccg.dataaccess.dao.api.CCGContentDAO;
+import com.ccg.dataaccess.dao.api.CCGSubcategoryDAO;
 import com.ccg.dataaccess.entity.CCGArticle;
 import com.ccg.dataaccess.entity.CCGCategory;
 import com.ccg.dataaccess.entity.CCGContent;
@@ -35,6 +37,10 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	
 	@Autowired
 	private CCGCategoryDAO categoryDAO;
+	
+	@Autowired
+	private CCGSubcategoryDAO subcategoryDAO;
+	
 	
 	@Override
 	public void saveArticle(CCGArticle article) {
@@ -156,4 +162,23 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		return articleContent;
 	}
 
+    @Override
+    @Transactional(readOnly=true)
+    public SubCategoryContent getSubCategoryContentById(Integer subCategoryId) {
+            SubCategoryContent subCatContent = new SubCategoryContent();
+            CCGSubcategory subCat = subcategoryDAO.findById(subCategoryId);
+            CCGArticle article = subCat.getArticle();
+            
+            CCGContent ccgContent = article.getContent();
+            String articleContent = ccgContent.getContent();
+            int startPosition = subCat.getStartposi();
+            int endPosition = subCat.getEndposi();
+            
+            subCatContent.setSubcategorycontent(articleContent.substring(startPosition, endPosition));
+            subCatContent.setSubcategoryID(subCategoryId);
+            subCatContent.setSubcategorytitle(subCat.getSubcategorytitle());
+            
+            return subCatContent;
+    }
+	
 }

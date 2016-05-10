@@ -30,6 +30,7 @@
    <bean id="CCGArticleDAO" class="com.ccg.dataaccess.dao.impl.CCGArticleDAOImpl" />
    <bean id="CCGContentDAO" class="com.ccg.dataaccess.dao.impl.CCGContentDAOImpl" />
    <bean id="CCGCategoryDAO" class="com.ccg.dataaccess.dao.impl.CCGCategoryDAOImpl" />
+   <bean id="CCGSubcategoryDAO" class="com.ccg.dataaccess.dao.impl.CCGSubcategoryDAOImpl" />
   
    
    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">

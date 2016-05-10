@@ -6,6 +6,7 @@ import com.ccg.common.data.ArticleBasicInfo;
 import com.ccg.common.data.ArticleContent;
 import com.ccg.common.data.Category;
 import com.ccg.common.data.CategoryContent;
+import com.ccg.common.data.SubCategoryContent;
 import com.ccg.dataaccess.entity.CCGArticle;
 
 public interface CCGDBService {
@@ -19,6 +20,5 @@ public interface CCGDBService {
 	public ArticleContent getContentById(Integer contentId);
 	public List<Category> getCategoryByArticleId(Integer articleId);
 	public CategoryContent getCategoryContentById(Integer categoryId);
-
-	
+	public SubCategoryContent getSubCategoryContentById(Integer subCategoryId);	
 }
