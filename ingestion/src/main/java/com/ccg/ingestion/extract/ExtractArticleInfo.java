@@ -12,8 +12,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.ccg.dataaccess.entity.CCGArticle;
 import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
 import com.itextpdf.text.pdf.parser.SimpleTextExtractionStrategy;
 import com.itextpdf.text.pdf.parser.TextExtractionStrategy;
@@ -23,6 +23,8 @@ public class ExtractArticleInfo {
 	private List<PageInfo> pageList = new ArrayList<PageInfo>();
 	private ArticleInfo aInfo = new ArticleInfo();
 	private List<Integer> pageEndIndex = new ArrayList<Integer>();
+	private List<PossiblePageHeaderOrFooter> possibleHeaderList = new ArrayList<PossiblePageHeaderOrFooter>();
+	private List<PossiblePageHeaderOrFooter> possibleFooterList = new ArrayList<PossiblePageHeaderOrFooter>();
 
 	public ArticleInfo fromPDF(InputStream is, String[] pattern) throws IOException {
 		aInfo.setType("PDF");
@@ -35,17 +37,20 @@ public class ExtractArticleInfo {
 		StringBuffer sb = new StringBuffer();
 
 
+		
+		
 		//PDF file page number starts from 1, not 0
 		for (int i = 1; i <= reader.getNumberOfPages(); i++) {
 			strategy = parser.processContent(i, new SimpleTextExtractionStrategy());
 			// System.out.println(strategy.getResultantText());
 			String temp = strategy.getResultantText() + "\n";
 			PageInfo pageInfo = new PageInfo();
-			pageInfo.numOfPages = i;
+			pageInfo.pageNumber = i;
 			pageInfo.content = temp;
 			pageInfo.numOfChars = temp.length();
 			pageList.add(pageInfo);
 			sb.append(temp);
+			this.processPage(temp, i);
 		}
 		findTitle();
 		aInfo.setContent(sb.toString());
@@ -64,8 +69,19 @@ public class ExtractArticleInfo {
 					pattern[1], c.getStartPosition()));
 			}
 		}
-		//printPageInfo();
+		/////
+		printPageInfo();
+		findPageHeader();
+		findPageFooter();
+		/////
 		List<Category> catList = aInfo.getCategoryList();
+		if(catList.size() == 0){
+			String patternString = "";
+			for(String s : pattern){
+				patternString += s + ", ";
+			}
+			throw new RuntimeException("Category size is 0, a wrong pattern may used:  )" + patternString);
+		}		
 		catList = this.removeDuplicateCategory(catList);
 		aInfo.setCategoryList(catList);
 		return aInfo;
@@ -81,10 +97,103 @@ public class ExtractArticleInfo {
 //			System.out.println(i + 1 + ", " + pageEndIndex.get(i));
 //		}
 	}
+	private List<String> findPageHeader(){
+		List<String> headerList = new ArrayList<String>();
+		if(this.possibleHeaderList.size() / 2 > 5){
+			// more than 10 pages
+			// check from middle of the page number
+			int startPage = possibleHeaderList.size() / 2;
+			PossiblePageHeaderOrFooter header1 = possibleHeaderList.get(startPage);
+			PossiblePageHeaderOrFooter header2 = possibleHeaderList.get(startPage + 1);
+			double line1_similarity = StringSimilarity.similarity(header1.getLine1(), header2.getLine1());
+			System.out.println("===>>> Similarity 1: " + line1_similarity);
+			if(line1_similarity > .6){
+				headerList.add(header1.getLine1());
+				double line2_similarity = StringSimilarity.similarity(header1.getLine2(), header2.getLine2());
+				System.out.println("===>>> Similarity 2: " + line2_similarity);
+				if(line2_similarity > 0.6){
+					headerList.add(header1.getLine2());
+					double line3_similarity = StringSimilarity.similarity(header1.getLine3(), header2.getLine3());
+					System.out.println("===>>> Similarity 3: " + line3_similarity);
+					if(line3_similarity > .6){
+						headerList.add(header1.getLine3());
+					}
+				}
+			}
+			
+			System.out.println("===== Page Header ======");
+			System.out.println(">>>" + headerList + "<<<");
+		}
+		return headerList;
+	}
+	private List<String> findPageFooter(){
+		List<String> footerList = new ArrayList<String>();
+		if(this.possibleFooterList.size() / 2 > 5){
+			// more than 10 pages
+			// check from middle of the page number
+			int startPage = possibleFooterList.size() / 2;
+			PossiblePageHeaderOrFooter footer1 = possibleFooterList.get(startPage);
+			PossiblePageHeaderOrFooter footer2 = possibleFooterList.get(startPage + 1);
+			double line1_similarity = StringSimilarity.similarity(footer1.getLine1(), footer2.getLine1());
+			System.out.println("===>>> Similarity 1: " + line1_similarity);
+			if(line1_similarity > .6){
+				footerList.add(footer1.getLine1());
+				double line2_similarity = StringSimilarity.similarity(footer1.getLine2(), footer2.getLine2());
+				System.out.println("===>>> Similarity 2: " + line2_similarity);
+				if(line2_similarity > 0.6){
+					footerList.add(footer1.getLine2());
+					double line3_similarity = StringSimilarity.similarity(footer1.getLine3(), footer2.getLine3());
+					System.out.println("===>>> Similarity 3: " + line3_similarity);
+					if(line3_similarity > .6){
+						footerList.add(footer1.getLine3());
+					}
+				}
+			}
+			
+			System.out.println("===== Page Footer ======");
+			System.out.println(">>>" + footerList + "<<<");
+		}
+		return footerList;
+	}	
+	
+	private void processPage(String pageContent, int pageNumber){
+		String[] ss = pageContent.trim().split("\n");
+		PossiblePageHeaderOrFooter header = new PossiblePageHeaderOrFooter();
+		header.setPageNumber(pageNumber);
+		for(int i = 0; i < ss.length; i++){
+			if(i == 0){
+				header.setLine1(ss[0]);
+			}
+			if(i == 1){
+				header.setLine2(ss[1]);
+			}
+			if(i == 2){
+				header.setLine3(ss[2]);
+			}
+		}
+		this.possibleHeaderList.add(header);
+		
+		PossiblePageHeaderOrFooter footer = new PossiblePageHeaderOrFooter();	
+		footer.setPageNumber(pageNumber);
+		for(int i = ss.length -1; i >= 0; i--){
+			if(i == ss.length -1){
+				footer.setLine1(ss[i]);
+			}
+			if(i == ss.length -1 - 1 ){
+				footer.setLine2(ss[i]);
+			}
+			if(i == ss.length -1 - 2){
+				footer.setLine3(ss[i]);
+			}
+		}
+		this.possibleFooterList.add(footer);
+	}
 	
 	private void printPageInfo(){
 		for(PageInfo pageInfo : pageList){
-			System.out.println(pageInfo.numOfPages + ", " + pageInfo.numOfChars);
+			System.out.println("=============================");
+			System.out.println(pageInfo.pageNumber + ", " + pageInfo.numOfChars);
+			System.out.println(pageInfo.content);
 		}
 	}
 	private void setPageNumberInfoToCategory(List<Category> catList){
@@ -100,7 +209,7 @@ public class ExtractArticleInfo {
 		for(int i = 0; i < this.pageList.size(); i++){
 			count = count + pageList.get(i).content.length();
 			if(index <= count){
-				page = pageList.get(i).numOfPages;
+				page = pageList.get(i).pageNumber;
 				break;
 			}
 		}
@@ -122,6 +231,7 @@ public class ExtractArticleInfo {
 				String temp = content.substring(p0, p1);
 				sub.setTitle(temp.trim());
 				sub.setStartPosition(matcher.start() + offset);
+				sub.setContent(content);
 				cList.add(sub);
 			}
 
@@ -302,7 +412,8 @@ public class ExtractArticleInfo {
 	
 	public static void main(String[] args) throws Exception{
 		InputStream is = new FileInputStream(
-				new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx (1).pdf"));
+				new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
+				//new File("/Users/zchen323/Downloads/AFNCRITSAlliantCorpsFinal.pdf"));
 		ExtractArticleInfo extract = new ExtractArticleInfo();
 		ArticleInfo info = extract.fromPDF(is, ArticleTypePattern.PROPOSALS);
 		
@@ -313,19 +424,27 @@ public class ExtractArticleInfo {
 //			System.out.println(catTitle);
 //		}
 		System.out.println(info.getTitle());
+		//System.out.println(info.getContent());
 		for(Category cat : categoryList){
 			String catTitle = cat.getTitle();
 			System.out.println(catTitle);
+			int startPage = cat.getStartPage();
+			int endPage = cat.getEndPage();
+			//System.out.println(cat.getContent());
+			//System.out.println("==Ps=" + startPage + ", Pe=" + endPage);
+			
 			for(Category sub : cat.getSubCategory()){
 				String subTitle = sub.getTitle();
 				System.out.println("\t" + subTitle);
+				//System.out.println(sub.getContent());
+				//System.out.println("==Ps=" + sub.getStartPage() + ", Pe=" + sub.getEndPage());
 			}
 		}		
 	}	
 }
 
 class PageInfo {
-	int numOfPages;
+	int pageNumber;
 	String content;
 	int numOfChars;
 }

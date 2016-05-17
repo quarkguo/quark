@@ -39,7 +39,7 @@ public class InsertArticleToDBTest {
 		CCGArticle article = new CCGArticle();
 		
 		InputStream is = new FileInputStream(
-				new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx (1).pdf"));
+				new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
 		ExtractArticleInfo extract = new ExtractArticleInfo();
 		ArticleInfo info = extract.fromPDF(is, ArticleTypePattern.PROPOSALS);
 		
@@ -65,7 +65,7 @@ public class InsertArticleToDBTest {
 			cat.setCategorytitle(c.getTitle());
 			cat.setStartposi(c.getStartPosition());
 			cat.setEndposi(c.getEndPosition());
-			cat.setStartpage(cat.getStartpage());
+			cat.setStartpage(c.getStartPage());
 			cat.setEndpage(c.getEndPage());
 			article.getCategorylist().add(cat);
 			for(Category sub : c.getSubCategory()){
@@ -80,10 +80,10 @@ public class InsertArticleToDBTest {
 				subCat.setStartpage(sub.getStartPage());
 				subCat.setEndpage(sub.getEndPage());
 				cat.getSubcategorylist().add(subCat);
+				
 			}
 		}
-		articleDAO.save(article);
-		
+		articleDAO.save(article);	
 	}
 	
 //	public static void main(String[] args) throws Exception{

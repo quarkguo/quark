@@ -12,6 +12,8 @@ public class SubCategory {
 	Integer endposi;
 	String type;
 	boolean leaf=true;
+	Integer startPage;
+	Integer endPage;
 	
 	public Integer getSubcategoryID() {
 		return subcategoryID;
@@ -52,4 +54,22 @@ public class SubCategory {
 	public void setType(String type) {
 		this.type = type;
 	}
+
+	public Integer getStartPage() {
+		return startPage;
+	}
+
+	public void setStartPage(Integer startPage) {
+		this.startPage = startPage;
+	}
+
+	public Integer getEndPage() {
+		return endPage;
+	}
+
+	public void setEndPage(Integer endPage) {
+		this.endPage = endPage;
+	}
+	
+	
 }
