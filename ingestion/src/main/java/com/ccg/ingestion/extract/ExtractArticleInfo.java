@@ -116,7 +116,7 @@ public class ExtractArticleInfo {
 					double line3_similarity = StringSimilarity.similarity(header1.getLine3(), header2.getLine3());
 					System.out.println("===>>> Similarity 3: " + line3_similarity);
 					if(line3_similarity > .6){
-						headerList.add(header1.line3);
+						headerList.add(header1.getLine3());
 					}
 				}
 			}
@@ -145,7 +145,7 @@ public class ExtractArticleInfo {
 					double line3_similarity = StringSimilarity.similarity(footer1.getLine3(), footer2.getLine3());
 					System.out.println("===>>> Similarity 3: " + line3_similarity);
 					if(line3_similarity > .6){
-						footerList.add(footer1.line3);
+						footerList.add(footer1.getLine3());
 					}
 				}
 			}
