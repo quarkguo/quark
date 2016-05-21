@@ -1,6 +1,7 @@
 package com.ccg.services.data;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,15 +12,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ccg.common.data.ArticleBasicInfo;
 import com.ccg.common.data.ArticleContent;
+import com.ccg.common.data.ArticleMetaData;
 import com.ccg.common.data.Category;
 import com.ccg.common.data.CategoryContent;
 import com.ccg.common.data.SubCategory;
 import com.ccg.common.data.SubCategoryContent;
 import com.ccg.dataaccess.dao.api.CCGArticleDAO;
+import com.ccg.dataaccess.dao.api.CCGArticleMetadataDAO;
 import com.ccg.dataaccess.dao.api.CCGCategoryDAO;
 import com.ccg.dataaccess.dao.api.CCGContentDAO;
 import com.ccg.dataaccess.dao.api.CCGSubcategoryDAO;
 import com.ccg.dataaccess.entity.CCGArticle;
+import com.ccg.dataaccess.entity.CCGArticleMetadata;
 import com.ccg.dataaccess.entity.CCGCategory;
 import com.ccg.dataaccess.entity.CCGContent;
 import com.ccg.dataaccess.entity.CCGSubcategory;
@@ -40,6 +44,9 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	
 	@Autowired
 	private CCGSubcategoryDAO subcategoryDAO;
+	
+	@Autowired
+	private CCGArticleMetadataDAO metadataDAO;
 	
 	
 	@Override
@@ -182,5 +189,60 @@ public class CCGDBSerivceImpl implements CCGDBService {
             
             return subCatContent;
     }
+    
+	@Override
+	public ArticleMetaData getArticleMetaDataByArticleId(Integer articleId) {
+		CCGArticleMetadata ccgMetadata = metadataDAO.findById(articleId);
+		ArticleMetaData metadata = new ArticleMetaData();
+		if(ccgMetadata != null){
+			metadata.setAcceptStatus(ccgMetadata.getAcceptStatus());
+			metadata.setAuthor(ccgMetadata.getAuthor());
+			metadata.setCompany(ccgMetadata.getCompany());
+			metadata.setCreateDate(ccgMetadata.getCreatedTS());
+			metadata.setLastUpdateDate(ccgMetadata.getLastUpdateTS());
+			metadata.setPraisalscore(ccgMetadata.getPraisalscore());
+			metadata.setTitle(ccgMetadata.getTitle());
+			metadata.setType(ccgMetadata.getType());
+		}
+		return metadata;
+	}
+	
+	@Override
+	@Transactional(readOnly=false)
+	public void saveOrUpdateArticleMetaData(ArticleMetaData metadata) {
+		boolean update = true;
+		CCGArticleMetadata ccgMetadata = metadataDAO.findById(metadata.getArtileId());
+		
+		if(ccgMetadata == null){
+			ccgMetadata = new CCGArticleMetadata();
+			update = false;
+		}
+		ccgMetadata.setAcceptStatus(metadata.getAcceptStatus());
+		ccgMetadata.setArticleID(metadata.getArtileId());
+		ccgMetadata.setAuthor(metadata.getAuthor());
+		ccgMetadata.setCompany(metadata.getCompany());
+		ccgMetadata.setCreatedTS(metadata.getCreateDate());
+		
+		if(metadata.getLastUpdateDate() == null){
+			ccgMetadata.setLastUpdateTS(new Date());
+		}else{
+			ccgMetadata.setLastUpdateTS(metadata.getLastUpdateDate());
+		}
+		
+		ccgMetadata.setPraisalscore(metadata.getPraisalscore());
+		ccgMetadata.setTitle(metadata.getTitle());
+		ccgMetadata.setType(metadata.getType());
+
+		if(update){		
+			metadataDAO.update(ccgMetadata);
+		}else{
+			metadataDAO.save(ccgMetadata);
+		}		
+	}
+	
+
+    
+    
+    
 	
 }

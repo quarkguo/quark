@@ -5,15 +5,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfStamper;
 import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
 import com.itextpdf.text.pdf.parser.SimpleTextExtractionStrategy;
 import com.itextpdf.text.pdf.parser.TextExtractionStrategy;
@@ -33,11 +29,7 @@ public class ExtractArticleInfo {
 		PdfReaderContentParser parser = new PdfReaderContentParser(reader);
 		TextExtractionStrategy strategy;
 
-		aInfo.setPages(reader.getNumberOfPages());
-		StringBuffer sb = new StringBuffer();
-
-
-		
+		aInfo.setPages(reader.getNumberOfPages());		
 		
 		//PDF file page number starts from 1, not 0
 		for (int i = 1; i <= reader.getNumberOfPages(); i++) {
@@ -47,13 +39,18 @@ public class ExtractArticleInfo {
 			PageInfo pageInfo = new PageInfo();
 			pageInfo.pageNumber = i;
 			pageInfo.content = temp;
-			pageInfo.numOfChars = temp.length();
+			//pageInfo.numOfChars = temp.length();
 			pageList.add(pageInfo);
-			sb.append(temp);
-			this.processPage(temp, i);
+			//sb.append(temp);
+			setPossiblePageHeaderAndFooter(temp, i);
 		}
-		findTitle();
-		aInfo.setContent(sb.toString());
+		////////////
+		List<String> pageHeader = findPageHeader();
+		List<String> pageFooter = findPageFooter();
+		removePageHeaderAndFooter(pageHeader, pageFooter);
+		setContent();
+		setTitle(pageHeader);
+		//printPageInfo();
 		setPageEndIndex();
 		
 		if(pattern.length > 0){
@@ -69,11 +66,7 @@ public class ExtractArticleInfo {
 					pattern[1], c.getStartPosition()));
 			}
 		}
-		/////
-		printPageInfo();
-		findPageHeader();
-		findPageFooter();
-		/////
+
 		List<Category> catList = aInfo.getCategoryList();
 		if(catList.size() == 0){
 			String patternString = "";
@@ -84,8 +77,65 @@ public class ExtractArticleInfo {
 		}		
 		catList = this.removeDuplicateCategory(catList);
 		aInfo.setCategoryList(catList);
+		
 		return aInfo;
 	}
+	
+	private void setTitle(List<String> pageHeader){
+		StringBuffer sb = new StringBuffer();
+		for(String line : pageHeader){
+			sb.append(line).append("\n");
+		}
+		aInfo.setTitle(sb.toString());
+	}
+	private void setContent(){
+		StringBuffer sb = new StringBuffer();
+		for(PageInfo pageInfo : pageList){
+			sb.append(pageInfo.content);
+		}
+		aInfo.setContent(sb.toString());
+	}
+	
+	private void removePageHeaderAndFooter(List<String> pageHeader, List<String> pageFooter){
+		int numOfHeaderLine = pageHeader.size();
+		int numOfFooterLine = pageFooter.size();
+		
+		for(int i = 0; i < pageList.size(); i++){
+			PageInfo pageInfo = pageList.get(i);
+			String content = pageInfo.content;
+			String[] lines = content.split("\\n");
+			if(lines.length > numOfHeaderLine + numOfFooterLine){
+				// remove header
+				for(int j = 0; j < numOfHeaderLine; j++){
+					String header = pageHeader.get(j);
+					double similarity = StringSimilarity.similarity(header, lines[j]);
+					if(similarity > 0.6){
+						lines[j] = "";
+					}
+				}
+				// remove footer
+				for(int k = 0; k < numOfFooterLine; k++ ){
+					String footer = pageFooter.get(k);
+					int numOfContentLine = lines.length;
+					double similarity = StringSimilarity.similarity(
+							footer, lines[numOfContentLine - 1 - k]);
+					if(similarity > 0.6){
+						lines[numOfContentLine -1 - k] = "";
+					}
+				}
+				
+			}
+			StringBuffer sb = new StringBuffer();
+			for(int k = 0 ; k < lines.length; k++){
+				sb.append(lines[k]).append("\n");
+			}
+			pageInfo.content = sb.toString();
+			pageInfo.numOfChars = content.length();
+		}
+		
+	}
+	
+	
 	
 	private void setPageEndIndex(){
 		int counter = 0;
@@ -107,15 +157,15 @@ public class ExtractArticleInfo {
 			PossiblePageHeaderOrFooter header2 = possibleHeaderList.get(startPage + 1);
 			double line1_similarity = StringSimilarity.similarity(header1.getLine1(), header2.getLine1());
 			System.out.println("===>>> Similarity 1: " + line1_similarity);
-			if(line1_similarity > .6){
+			if(line1_similarity > .6 && header1.getLine1().trim().length() != 0){
 				headerList.add(header1.getLine1());
 				double line2_similarity = StringSimilarity.similarity(header1.getLine2(), header2.getLine2());
 				System.out.println("===>>> Similarity 2: " + line2_similarity);
-				if(line2_similarity > 0.6){
+				if(line2_similarity > 0.6 && header1.getLine2().trim().length() != 0){
 					headerList.add(header1.getLine2());
 					double line3_similarity = StringSimilarity.similarity(header1.getLine3(), header2.getLine3());
 					System.out.println("===>>> Similarity 3: " + line3_similarity);
-					if(line3_similarity > .6){
+					if(line3_similarity > .6 && header1.getLine3().trim().length() != 0){
 						headerList.add(header1.getLine3());
 					}
 				}
@@ -156,7 +206,7 @@ public class ExtractArticleInfo {
 		return footerList;
 	}	
 	
-	private void processPage(String pageContent, int pageNumber){
+	private void setPossiblePageHeaderAndFooter(String pageContent, int pageNumber){
 		String[] ss = pageContent.trim().split("\n");
 		PossiblePageHeaderOrFooter header = new PossiblePageHeaderOrFooter();
 		header.setPageNumber(pageNumber);
@@ -193,7 +243,7 @@ public class ExtractArticleInfo {
 		for(PageInfo pageInfo : pageList){
 			System.out.println("=============================");
 			System.out.println(pageInfo.pageNumber + ", " + pageInfo.numOfChars);
-			System.out.println(pageInfo.content);
+			//System.out.println(pageInfo.content);
 		}
 	}
 	private void setPageNumberInfoToCategory(List<Category> catList){
@@ -231,11 +281,13 @@ public class ExtractArticleInfo {
 				String temp = content.substring(p0, p1);
 				sub.setTitle(temp.trim());
 				sub.setStartPosition(matcher.start() + offset);
-				sub.setContent(content);
+				//sub.setContent(content);
 				cList.add(sub);
 			}
 
 		}
+		// at this point, we got all the categories and categories starting position
+		// now let find the ending position
 		
 		// find endPosition, the endPositon is the startPositon of next Category
 		if(cList.size() > 0){
@@ -246,129 +298,16 @@ public class ExtractArticleInfo {
 				pre.setEndPosition(current.getStartPosition() - 1);
 				pre = current;			
 			}
-			if(current == null){
+			
+			if(current == null){  // in this case, there is only one category
 				pre.setEndPosition(content.length() + offset);
-			}else{
+			}else{	// in this case, the current category is the last catey
 				current.setEndPosition(content.length() + offset);
 			}
 		}
 		this.setPageNumberInfoToCategory(cList);
 		return cList;
 	}
-
-	private String findHeader(){
-		Map<String, Integer> possibleHeaders = new HashMap<String, Integer>();
-		for(PageInfo pInfo: pageList){
-			String content = pInfo.content.trim();
-			String[] lines = content.split("\n");
-			if(lines.length > 0){
-				String key = lines[0];
-				if(possibleHeaders.containsKey(key)){
-					int n = possibleHeaders.get(key);
-					possibleHeaders.put(key, ++n);
-				}else{
-					possibleHeaders.put(key, 1);
-				}
-			}			
-		}
-		Set<String> keySet = possibleHeaders.keySet();
-		int i = 0;
-		String header = "";
-		for(String key : keySet){
-			int value = possibleHeaders.get(key);
-			if(value > i){
-				i = value;
-				header = key;
-			}
-		}
-		if(i > pageList.size()*2/3){
-			return header;
-		}else{
-			return null;
-		}
-	}
-	
-	private String findFooter(){
-		Map<String, Integer> possibleFooters = new HashMap<String, Integer>();
-		for(PageInfo pInfo: pageList){
-			String content = pInfo.content.trim();
-			String[] lines = content.split("\n");
-			if(lines.length > 0){
-				String key = lines[0];
-				if(possibleFooters.containsKey(key)){
-					int n = possibleFooters.get(key);
-					possibleFooters.put(key, ++n);
-				}else{
-					possibleFooters.put(key, 1);
-				}
-			}			
-		}
-		Set<String> keySet = possibleFooters.keySet();
-		int i = 0;
-		String header = "";
-		for(String key : keySet){
-			int value = possibleFooters.get(key);
-			if(value > i){
-				i = value;
-				header = key;
-			}
-		}
-		if(i > pageList.size()*2/3){
-			return header;
-		}else{
-			return null;
-		}
-	}
-	
-	private void findTitle(){
-		// assume first line of first page is Title
-		String titleFromFirstLine = null;
-		for(int p = 0; p < pageList.size(); p++){
-			PageInfo pInfo = pageList.get(0);
-			String content = pInfo.content.trim();
-			String[] lines = content.split("\n");
-			if(lines.length > 0){
-				String firstLine = lines[0];
-				titleFromFirstLine = firstLine;
-				break;
-			}
-		}
-		
-		// article title could be in page header. In this case, the title should be 
-		// appeared in most of the pages.
-		Map<String, Integer> possibleTitle = new HashMap<String, Integer>();
-		for(PageInfo pInfo: pageList){
-			String content = pInfo.content.trim();
-			String[] lines = content.split("\n");
-			if(lines.length > 0){
-				String key = lines[0];
-				if(possibleTitle.containsKey(key)){
-					int n = possibleTitle.get(key);
-					possibleTitle.put(key, ++n);
-				}else{
-					possibleTitle.put(key, 1);
-				}
-			}			
-		}
-		Set<String> keySet = possibleTitle.keySet();
-		int i = 0;
-		String titleFromHeader = "";
-		for(String key : keySet){
-			int value = possibleTitle.get(key);
-			if(value > i){
-				i = value;
-				titleFromHeader = key;
-			}
-		}
-		//
-		if( i > pageList.size()*2/3){
-			aInfo.setTitle(titleFromHeader);
-		}else{
-			aInfo.setTitle(titleFromFirstLine);
-		}
-		
-	}
-	
 
 	private List<Category> removeDuplicateCategory(List<Category> catList){
 		List<Category> newCatList = new ArrayList<Category>();
@@ -412,34 +351,28 @@ public class ExtractArticleInfo {
 	
 	public static void main(String[] args) throws Exception{
 		InputStream is = new FileInputStream(
-				new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
-				//new File("/Users/zchen323/Downloads/AFNCRITSAlliantCorpsFinal.pdf"));
+				//new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
+				new File("/Users/zchen323/Downloads/AFNCRITSAlliantCorpsFinal.pdf"));
 		ExtractArticleInfo extract = new ExtractArticleInfo();
-		ArticleInfo info = extract.fromPDF(is, ArticleTypePattern.PROPOSALS);
+		ArticleInfo info = extract.fromPDF(is, ArticleTypePattern.PROPOSALS_2);
 		
 		List<Category> categoryList = info.getCategoryList();
-		List<Category> newcategoryList = extract.removeDuplicateCategory(categoryList);
-//		for(Category cat : categoryList){
-//			String catTitle = cat.getTitle();
-//			System.out.println(catTitle);
-//		}
+
 		System.out.println(info.getTitle());
 		//System.out.println(info.getContent());
 		for(Category cat : categoryList){
+
+			int start = cat.getStartPosition();
+			int end = cat.getEndPosition();
 			String catTitle = cat.getTitle();
-			System.out.println(catTitle);
-			int startPage = cat.getStartPage();
-			int endPage = cat.getEndPage();
-			//System.out.println(cat.getContent());
-			//System.out.println("==Ps=" + startPage + ", Pe=" + endPage);
-			
+			System.out.println(catTitle + " " + start + ", " + end);
 			for(Category sub : cat.getSubCategory()){
 				String subTitle = sub.getTitle();
-				System.out.println("\t" + subTitle);
-				//System.out.println(sub.getContent());
-				//System.out.println("==Ps=" + sub.getStartPage() + ", Pe=" + sub.getEndPage());
-			}
-		}		
+				int sbstart = sub.getStartPosition();
+				int sbend = sub.getEndPosition();
+				System.out.println("\t" + subTitle + " " + sbstart + ", " + sbend);
+			}			
+		}	
 	}	
 }
 

@@ -38,10 +38,16 @@ public class InsertArticleToDBTest {
 	public void insertArticle() throws Exception{
 		CCGArticle article = new CCGArticle();
 		
+//		InputStream is = new FileInputStream(
+//				new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
+//		ExtractArticleInfo extract = new ExtractArticleInfo();
+//		ArticleInfo info = extract.fromPDF(is, ArticleTypePattern.PROPOSALS);
+		
 		InputStream is = new FileInputStream(
-				new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
+				//new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
+				new File("/Users/zchen323/Downloads/AFNCRITSAlliantCorpsFinal.pdf"));
 		ExtractArticleInfo extract = new ExtractArticleInfo();
-		ArticleInfo info = extract.fromPDF(is, ArticleTypePattern.PROPOSALS);
+		ArticleInfo info = extract.fromPDF(is, ArticleTypePattern.PROPOSALS_2);
 		
 		article.setArticleType(info.getType());
 		article.setTitle(info.getTitle().trim());

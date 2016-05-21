@@ -1,5 +1,6 @@
 package com.ccg.rest.handler;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +10,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ccg.common.data.ArticleBasicInfo;
 import com.ccg.common.data.ArticleContent;
+import com.ccg.common.data.ArticleMetaData;
 import com.ccg.common.data.Category;
 import com.ccg.common.data.CategoryContent;
 import com.ccg.common.data.SubCategoryContent;
@@ -111,10 +114,52 @@ public class TestHandler {
 	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 	    return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
 	}	
+	@RequestMapping(method = RequestMethod.GET, value="/article/{articleId}/metadata")
+	ResponseEntity<String> getArticleMetadata(@PathVariable("articleId") Integer articleId) {
+		String json = "";
+		ArticleMetaData metadata = dataservice.getArticleMetaDataByArticleId(articleId);		
+//		meta.setAcceptStatus("acceptStatus");
+//		meta.setArtileId(articleId);
+//		meta.setAuthor("author");
+//		meta.setCompany("company");
+//		meta.setCreateDate(new Date());
+//		meta.setLastUpdateDate(new Date());
+//		meta.setPraisalscore(12.0f);
+//		meta.setTitle("title");
+//		meta.setType("type");
+		
+		json = toJson(metadata);
+		
+	    HttpHeaders responseHeaders = new HttpHeaders();
+	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+	    return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
+	}	
 	
+	@RequestMapping(method = RequestMethod.POST, value="/article/metadata")
+	ResponseEntity<?> addArticleMetadata(@RequestBody String input) {
+		String json = "";
+		System.out.println("====>>>" + input + "<<<<<====");
+		
+		ArticleMetaData meta = fromJson(input, ArticleMetaData.class);
+		
+		json = toJson(meta);
+		
+		System.out.println(json);
+		
+		dataservice.saveOrUpdateArticleMetaData(meta);
+		
+	    HttpHeaders responseHeaders = new HttpHeaders();
+	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+	    return new ResponseEntity<String>(input, responseHeaders, HttpStatus.CREATED);
+	}
 	
 	private String toJson(Object obj){
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		return gson.toJson(obj);
+	}
+	
+	private <T>T fromJson(String json, Class<T> type){
+		Gson gson = new GsonBuilder().create();
+		return gson.fromJson(json, type);
 	}
 }

@@ -27,6 +27,7 @@
    <!-- all the DAO bean has to be defined here in the context xml -->
     
    <bean id="CCGArticleDAO" class="com.ccg.dataaccess.dao.impl.CCGArticleDAOImpl" />
+   <bean id="CCGArticleMetadataDAO" class="com.ccg.dataaccess.dao.impl.CCGArticleMetadataDAOImpl" />
    
    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="dataSource" />

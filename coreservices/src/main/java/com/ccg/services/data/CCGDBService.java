@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ccg.common.data.ArticleBasicInfo;
 import com.ccg.common.data.ArticleContent;
+import com.ccg.common.data.ArticleMetaData;
 import com.ccg.common.data.Category;
 import com.ccg.common.data.CategoryContent;
 import com.ccg.common.data.SubCategoryContent;
@@ -21,4 +22,6 @@ public interface CCGDBService {
 	public List<Category> getCategoryByArticleId(Integer articleId);
 	public CategoryContent getCategoryContentById(Integer categoryId);
 	public SubCategoryContent getSubCategoryContentById(Integer subCategoryId);	
+	public ArticleMetaData getArticleMetaDataByArticleId(Integer articleId);
+	public void saveOrUpdateArticleMetaData(ArticleMetaData metadata);
 }

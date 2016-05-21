@@ -88,6 +88,7 @@ public  class CCGBaseDAOImpl  <T, ID extends Serializable> implements CCGGeneric
 	@Override
 	public T update(T entity) {
 	
+		entityManager.merge(entity);
 		return null;
 	}
 

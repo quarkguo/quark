@@ -1,17 +1,25 @@
 package com.ccg.common.data;
 
-import java.sql.Date;
+import java.util.Date;
 
 public class ArticleMetaData {
+	private Integer artileId;
 	private String title;
 	private String type;
 	private String author;
 	private String company;
 	private String acceptStatus;
-	private float praisalscore;
+	private Float praisalscore;
 	
-	private Date date;
+	private Date createDate;
+	private Date lastUpdateDate;
 	
+	public Integer getArtileId() {
+		return artileId;
+	}
+	public void setArtileId(Integer artileId) {
+		this.artileId = artileId;
+	}
 	public String getTitle() {
 		return title;
 	}
@@ -42,16 +50,25 @@ public class ArticleMetaData {
 	public void setAcceptStatus(String acceptStatus) {
 		this.acceptStatus = acceptStatus;
 	}
-	public Date getDate() {
-		return date;
-	}
-	public void setDate(Date date) {
-		this.date = date;
-	}
-	public float getPraisalscore() {
+
+	public Float getPraisalscore() {
 		return praisalscore;
 	}
-	public void setPraisalscore(float praisalscore) {
+	public void setPraisalscore(Float praisalscore) {
 		this.praisalscore = praisalscore;
-	}		
+	}
+	public Date getCreateDate() {
+		return createDate;
+	}
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+	public Date getLastUpdateDate() {
+		return lastUpdateDate;
+	}
+	public void setLastUpdateDate(Date lastUpdateDate) {
+		this.lastUpdateDate = lastUpdateDate;
+	}	
+	
+	
 }

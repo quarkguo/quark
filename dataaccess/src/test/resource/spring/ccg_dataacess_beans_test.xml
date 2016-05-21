@@ -31,7 +31,7 @@
    <bean id="CCGContentDAO" class="com.ccg.dataaccess.dao.impl.CCGContentDAOImpl" />
    <bean id="CCGCategoryDAO" class="com.ccg.dataaccess.dao.impl.CCGCategoryDAOImpl" />
    <bean id="CCGSubcategoryDAO" class="com.ccg.dataaccess.dao.impl.CCGSubcategoryDAOImpl" />
-  
+   <bean id="CCGArticleMetadataDAO" class="com.ccg.dataaccess.dao.impl.CCGArticleMetadataDAOImpl" />
    
    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
         <property name="dataSource" ref="dataSource" />
