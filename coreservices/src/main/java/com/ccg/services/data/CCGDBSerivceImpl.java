@@ -50,10 +50,11 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	
 	
 	@Override
+	@Transactional(readOnly=false)
 	public void saveArticle(CCGArticle article) {
-		// TODO Auto-generated method stub
-		
+		articleDAO.save(article);		
 	}
+	
 	@Override
 	public int getArticleCouont() {
 		// TODO Auto-generated method stub
@@ -106,6 +107,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		articleContent.setContentTitle(content.getContentTitle());
 		articleContent.setLength(content.getLength());
 		articleContent.setFileName(content.getFilename());
+		articleContent.setUrl(content.getUrl());
 		return articleContent;
 	}
 	@Override
@@ -229,7 +231,8 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			ccgMetadata.setLastUpdateTS(metadata.getLastUpdateDate());
 		}
 		
-		ccgMetadata.setPraisalscore(metadata.getPraisalscore());
+		if(metadata.getPraisalscore() != null)
+			ccgMetadata.setPraisalscore(metadata.getPraisalscore());
 		ccgMetadata.setTitle(metadata.getTitle());
 		ccgMetadata.setType(metadata.getType());
 

@@ -2,7 +2,7 @@ package com.ccg.ingestion.extract;
 
 public class ArticleTypePattern {
 	
-	public static final String[] PROPOSALS = {
+	public static final String[] PROPOSALS_1 = {
 			// 1. , 2.1., 3.2.1., ...
 			"(\\nExecutive\\s+Summary)|(\\r?\\n\\d+\\.\\D)", // LEVEL 1
 			"(\\r?\\n\\d+\\.\\d+\\.\\D)"		// LEVEL 2
