@@ -22,7 +22,7 @@ public class ExtracArticleInfoFromPDFTest {
 				//new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
 				new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx (1).pdf"));
 		ExtractArticleInfo extract = new ExtractArticleInfo();
-		ArticleInfo info = extract.fromPDF(is, ArticleTypePattern.PROPOSALS);
+		ArticleInfo info = extract.fromPDF(is, ArticleTypePattern.PROPOSALS_1);
 		System.out.println("Title: " + info.getTitle());
 		System.out.println("File Type: " + info.getType());
 		System.out.println("Num of Pages: " + info.getPages());

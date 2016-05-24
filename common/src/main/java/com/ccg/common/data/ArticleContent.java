@@ -8,7 +8,7 @@ public class ArticleContent {
 	private String url;
 	private String metatpe;
 	private String content;
-	private int length;
+	private Integer length;
 	
 	public Integer getContentID() {
 		return contentID;
@@ -46,10 +46,10 @@ public class ArticleContent {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	public int getLength() {
+	public Integer getLength() {
 		return length;
 	}
-	public void setLength(int length) {
+	public void setLength(Integer length) {
 		this.length = length;
 	}
 }

@@ -101,62 +101,69 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	@Transactional(readOnly=true)
 	public ArticleContent getArticleContent(Integer articleId) {
 		ArticleContent articleContent = new ArticleContent();
-		CCGContent content = articleDAO.findById(articleId).getContent();
-		articleContent.setContent(content.getContent());
-		articleContent.setContentID(content.getContentID());
-		articleContent.setContentTitle(content.getContentTitle());
-		articleContent.setLength(content.getLength());
-		articleContent.setFileName(content.getFilename());
-		articleContent.setUrl(content.getUrl());
+		CCGArticle article = articleDAO.findById(articleId);
+		if(article != null){
+			CCGContent content = article.getContent();
+			articleContent.setContent(content.getContent());
+			articleContent.setContentID(content.getContentID());
+			articleContent.setContentTitle(content.getContentTitle());
+			articleContent.setLength(content.getLength());
+			articleContent.setFileName(content.getFilename());
+			articleContent.setUrl(content.getUrl());
+		}
 		return articleContent;
 	}
 	@Override
 	@Transactional(readOnly=true)
 	public List<Category> getCategoryByArticleId(Integer articleId) {
 		List<Category> catList = new ArrayList<Category>();
-		List<CCGCategory> ccgCatList = articleDAO.findById(articleId).getCategorylist();
-		for(CCGCategory ccgCat : ccgCatList){
-			Category cat = new Category();
-			cat.setCategoryID(ccgCat.getCategoryID());
-			cat.setCategorytitle(ccgCat.getCategorytitle());
-			cat.setCategoryseq(ccgCat.getCategoryseq());
-			cat.setStartposi(ccgCat.getStartposi());
-			cat.setEndposi(ccgCat.getEndposi());
-			cat.setStartPage(ccgCat.getStartpage());
-			cat.setEndPage(ccgCat.getEndpage());
-			if(ccgCat.getSubcategorylist() != null 
-					&& ccgCat.getSubcategorylist().size() != 0){
-			//	List<SubCategory> subCatList = new ArrayList<SubCategory>();
-				//List<SubCategory> subCatList = new ArrayList<SubCategory>();
-				List<CCGSubcategory> ccgSubList = ccgCat.getSubcategorylist();
-				for(CCGSubcategory ccgSub : ccgSubList){
-					SubCategory subCat = new SubCategory();
-					subCat.setSubcategoryID(ccgSub.getSubcategoryID());
-					subCat.setSubcategorytitle(ccgSub.getSubcategorytitle());
-					subCat.setStartposi(ccgSub.getStartposi());
-					subCat.setEndposi(ccgSub.getEndposi());
-					subCat.setStartPage(ccgSub.getStartpage());
-					subCat.setEndPage(ccgSub.getEndpage());
-					cat.getSubCategories().add(subCat);
+		CCGArticle article = articleDAO.findById(articleId);
+		if(article != null){
+			List<CCGCategory> ccgCatList = articleDAO.findById(articleId).getCategorylist();
+			for(CCGCategory ccgCat : ccgCatList){
+				Category cat = new Category();
+				cat.setCategoryID(ccgCat.getCategoryID());
+				cat.setCategorytitle(ccgCat.getCategorytitle());
+				cat.setCategoryseq(ccgCat.getCategoryseq());
+				cat.setStartposi(ccgCat.getStartposi());
+				cat.setEndposi(ccgCat.getEndposi());
+				cat.setStartPage(ccgCat.getStartpage());
+				cat.setEndPage(ccgCat.getEndpage());
+				if(ccgCat.getSubcategorylist() != null 
+						&& ccgCat.getSubcategorylist().size() != 0){
+				//	List<SubCategory> subCatList = new ArrayList<SubCategory>();
+					//List<SubCategory> subCatList = new ArrayList<SubCategory>();
+					List<CCGSubcategory> ccgSubList = ccgCat.getSubcategorylist();
+					for(CCGSubcategory ccgSub : ccgSubList){
+						SubCategory subCat = new SubCategory();
+						subCat.setSubcategoryID(ccgSub.getSubcategoryID());
+						subCat.setSubcategorytitle(ccgSub.getSubcategorytitle());
+						subCat.setStartposi(ccgSub.getStartposi());
+						subCat.setEndposi(ccgSub.getEndposi());
+						subCat.setStartPage(ccgSub.getStartpage());
+						subCat.setEndPage(ccgSub.getEndpage());
+						cat.getSubCategories().add(subCat);
+					}
+					cat.setLeaf(false);
 				}
-				cat.setLeaf(false);
+				else
+				{
+					cat.setLeaf(true);
+				}
+				catList.add(cat);
 			}
-			else
-			{
-				cat.setLeaf(true);
-			}
-			catList.add(cat);
-		}		
+		}
 		return catList;
 	}
 	@Override
 	public CategoryContent getCategoryContentById(Integer categoryId) {
 		CCGCategory ccgCategory = categoryDAO.findById(categoryId);
 		CategoryContent catContent = new CategoryContent();
-		catContent.setCategoryID(categoryId);
-		catContent.setCategorytitle(ccgCategory.getCategorytitle());
-		catContent.setCategorycontent(ccgCategory.getCategorycontent());
-		
+		if(ccgCategory != null){
+			catContent.setCategoryID(categoryId);
+			catContent.setCategorytitle(ccgCategory.getCategorytitle());
+			catContent.setCategorycontent(ccgCategory.getCategorycontent());
+		}
 		return catContent;
 	}
 	
@@ -165,11 +172,13 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	public ArticleContent getContentById(Integer contentId) {
 		ArticleContent articleContent = new ArticleContent();
 		CCGContent content = contentDAO.findById(contentId);
-		articleContent.setContent(content.getContent());
-		articleContent.setContentID(content.getContentID());
-		articleContent.setContentTitle(content.getContentTitle());
-		articleContent.setLength(content.getLength());
-		articleContent.setFileName(content.getFilename());
+		if(content != null){
+			articleContent.setContent(content.getContent());
+			articleContent.setContentID(content.getContentID());
+			articleContent.setContentTitle(content.getContentTitle());
+			articleContent.setLength(content.getLength());
+			articleContent.setFileName(content.getFilename());
+		}
 		return articleContent;
 	}
 
@@ -178,17 +187,17 @@ public class CCGDBSerivceImpl implements CCGDBService {
     public SubCategoryContent getSubCategoryContentById(Integer subCategoryId) {
             SubCategoryContent subCatContent = new SubCategoryContent();
             CCGSubcategory subCat = subcategoryDAO.findById(subCategoryId);
-            CCGArticle article = subCat.getArticle();
-            
-            CCGContent ccgContent = article.getContent();
-            String articleContent = ccgContent.getContent();
-            int startPosition = subCat.getStartposi();
-            int endPosition = subCat.getEndposi();
-            
-            subCatContent.setSubcategorycontent(articleContent.substring(startPosition, endPosition));
-            subCatContent.setSubcategoryID(subCategoryId);
-            subCatContent.setSubcategorytitle(subCat.getSubcategorytitle());
-            
+            if(subCat != null){
+	            CCGArticle article = subCat.getArticle();
+	            CCGContent ccgContent = article.getContent();
+	            String articleContent = ccgContent.getContent();
+	            int startPosition = subCat.getStartposi();
+	            int endPosition = subCat.getEndposi();
+	            
+	            subCatContent.setSubcategorycontent(articleContent.substring(startPosition, endPosition));
+	            subCatContent.setSubcategoryID(subCategoryId);
+	            subCatContent.setSubcategorytitle(subCat.getSubcategorytitle());
+            }
             return subCatContent;
     }
     
@@ -241,11 +250,5 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		}else{
 			metadataDAO.save(ccgMetadata);
 		}		
-	}
-	
-
-    
-    
-    
-	
+	}	
 }
