@@ -148,7 +148,8 @@ public class CCGArticle implements Serializable{
 		this.content = content;
 	}
 	
-	@OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL,mappedBy="article")
+	//@OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL,mappedBy="article")
+	@OneToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL,mappedBy="article")
 	public List<CCGCategory> getCategorylist() {
 		return categorylist;
 	}

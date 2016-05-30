@@ -9,6 +9,7 @@ import com.ccg.common.data.Category;
 import com.ccg.common.data.CategoryContent;
 import com.ccg.common.data.SubCategoryContent;
 import com.ccg.dataaccess.entity.CCGArticle;
+import com.ccg.dataaccess.entity.CCGCategory;
 
 public interface CCGDBService {
 
@@ -24,4 +25,9 @@ public interface CCGDBService {
 	public SubCategoryContent getSubCategoryContentById(Integer subCategoryId);	
 	public ArticleMetaData getArticleMetaDataByArticleId(Integer articleId);
 	public void saveOrUpdateArticleMetaData(ArticleMetaData metadata);
+	//////
+	public List<CCGCategory> getAllCategories();
+	public CCGArticle getCCGArticleById(Integer articleId);
+	public List<CCGArticle> getAllCCGArticle();
+
 }
