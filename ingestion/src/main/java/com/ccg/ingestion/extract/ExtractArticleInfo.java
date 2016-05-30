@@ -352,9 +352,9 @@ public class ExtractArticleInfo {
 	public static void main(String[] args) throws Exception{
 		InputStream is = new FileInputStream(
 				//new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
-				new File("/Users/zchen323/Downloads/AFNCRITSAlliantCorpsFinal.pdf"));
+				new File("/Users/zchen323/codebase/corecontent/DAVE Volume III Tech Approach.pdf"));
 		ExtractArticleInfo extract = new ExtractArticleInfo();
-		ArticleInfo info = extract.fromPDF(is, ArticleTypePattern.PROPOSALS_2);
+		ArticleInfo info = extract.fromPDF(is, ArticleTypePattern.PROPOSALS_3);
 		
 		List<Category> categoryList = info.getCategoryList();
 
