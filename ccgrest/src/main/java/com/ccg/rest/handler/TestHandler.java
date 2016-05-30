@@ -203,19 +203,19 @@ public class TestHandler {
 			@RequestParam(value="query", required=false) String query,
 			@RequestParam(value="limit", required=false) String limit) {
 		
-		/*
-		 @RequestParam(value="query", required=false) String query
-		 */
+		int default_limit = 100;
+		if(limit != null){
+			try{
+				default_limit = Integer.parseInt(limit);
+			}catch(Exception e){
+				;
+			}
+		}
 		
-		System.out.println("===== query: " + query + ", limit: " + limit);
-		
-		String json = query;
-		
-		
-		
+		String json = "";
 		try {
 			SearchEngine se = new SearchEngine();
-			List<SearchResult> srList = se.search(query, 10);
+			List<SearchResult> srList = se.search(query, default_limit);
 			json = toJson(srList);
 			
 		} catch (Exception e) {

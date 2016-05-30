@@ -309,10 +309,11 @@ public class ExtractArticleInfo {
 		return cList;
 	}
 
+	// only remove level one duplicates
 	private List<Category> removeDuplicateCategory(List<Category> catList){
 		List<Category> newCatList = new ArrayList<Category>();
 		int n = 0;
-		boolean foundDuplicate = false;
+		//boolean foundDuplicate = false;
 		for( int i = n; i < catList.size() - 1; i++){
 			Category cat = catList.get(i);
 			String catTitle = cat.getTitle().replace(".","").trim();
@@ -325,14 +326,14 @@ public class ExtractArticleInfo {
 				if(similarity > .60){
 					//System.out.println("======= similarity: " + similarity);
 					newCatList.add(cat2);
-					foundDuplicate = true;
+					//foundDuplicate = true;
 				}
 			}
-			if(!foundDuplicate){
+			//if(!foundDuplicate){
 				// no duplicate found, use original
-				newCatList.add(cat);
-				foundDuplicate = false;
-			}
+				//newCatList.add(cat);
+				//foundDuplicate = false;
+			//}
 		}
 		
 		// do i missed the last one?

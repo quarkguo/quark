@@ -93,7 +93,7 @@ public class Indexer {
     		File indexDirectory = new File(INDEX.DIRECTORY);
     		deleteDirectory(indexDirectory);
     	}
-    	
+    	//indexWriter.deleteDocuments(arg0);
         if (indexWriter == null) {
             Directory indexDir = FSDirectory.open(new File(INDEX.DIRECTORY));
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());

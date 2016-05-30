@@ -68,7 +68,6 @@ public class SearchEngine {
 	            sr.setScore(hits[i].score);
 	            
 	            System.out.println("++++" + JSON.toJson(sr));
-	            
 	            result.add(sr);
 	        }
 	    return result;
