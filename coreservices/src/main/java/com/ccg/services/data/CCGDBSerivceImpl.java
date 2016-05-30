@@ -84,6 +84,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		return gson.toJson(obj);
 	}
 	@Override
+	@Transactional(readOnly=true)
 	public List<ArticleBasicInfo> getArticleBasicInfo() {
 		
 		List<CCGArticle> articles = articleDAO.findAll();
@@ -155,7 +156,9 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		}
 		return catList;
 	}
+	
 	@Override
+	@Transactional(readOnly=true)
 	public CategoryContent getCategoryContentById(Integer categoryId) {
 		CCGCategory ccgCategory = categoryDAO.findById(categoryId);
 		CategoryContent catContent = new CategoryContent();
@@ -250,5 +253,24 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		}else{
 			metadataDAO.save(ccgMetadata);
 		}		
-	}	
+	}
+
+	@Override
+	@Transactional(readOnly=false)
+	public List<CCGCategory> getAllCategories() {
+		return categoryDAO.findAll();
+	}
+	
+	@Override
+	@Transactional(readOnly=false)
+	public CCGArticle getCCGArticleById(Integer articleId){
+		return articleDAO.findById(articleId);
+	}
+	
+	@Override
+	@Transactional(readOnly=false)
+	public List<CCGArticle> getAllCCGArticle(){
+		return articleDAO.findAll();
+	}
+	
 }
