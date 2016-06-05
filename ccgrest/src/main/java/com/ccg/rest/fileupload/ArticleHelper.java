@@ -101,7 +101,7 @@ public class ArticleHelper {
 		System.out.println("==== articleId: " + articleId);
 		
 		ArticleMetaData meta = new ArticleMetaData();
-		meta.setArtileId(articleId);
+		meta.setArticleId(articleId);
 		meta.setCompany(requestData.getCompany());
 		meta.setCreateDate(new Date());
 		meta.setLastUpdateDate(new Date());

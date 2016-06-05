@@ -24,12 +24,33 @@ ccg.data.docliststore = Ext.create('Ext.data.TreeStore', {
          itemclick: function(s,r) {           
         	 if(r.data.leaf)
         	 {
+        		 // here load category panel
         		 ccg.ui.doccategory.getRootNode().removeAll();
                  var arcID=r.data.articleID;
                  var urlstr="rest/article/"+arcID+"/category";
                  console.log(urlstr);         
                //  ccg.data.doccategorystore.removeAll();
                  ccg.data.doccategorystore.load({url:urlstr});
+                 // here load meta data panel
+                 var metaurl="rest/article/"+arcID+"/metadata";
+                 console.log(metaurl);
+                 Ext.Ajax.request({
+                	 url: metaurl,
+                	 method:"GET",
+                	 success: function(response, opts) {
+                		 var jdata = Ext.decode(response.responseText);
+                		 console.log(jdata);
+                		 console.log( ccg.ui.metapanel.getForm());
+                		 jdata.articleId=arcID;
+                		 ccg.ui.metapanel.getForm().reset();
+                		 ccg.ui.metapanel.getForm().setValues(jdata);
+                	 },
+                	 failure: function(response, opts) {
+                		 alert("load data error!!");
+                	 }
+                 });
+                
+                 
         	 }
         	 
          }
@@ -69,9 +90,10 @@ Ext.define("com.ccg.portalheader",{
 
 Ext.define('com.ccg.toolbar',{
 		  extend:"Ext.toolbar.Toolbar",
-		  style: 'background-image: -webkit-linear-gradient(top,#2ba4c4, #2589a3)',
-			height:48,
-			layout:{
+		  //style: 'background-image: -webkit-linear-gradient(top,#2ba4c4, #2589a3)',
+		  style:'backgrond-color:green',
+		  height:48,
+		  layout:{
 				type:'hbox',
 				align:'middle'
 			},
@@ -83,9 +105,9 @@ Ext.define('com.ccg.toolbar',{
 		        	 cls:'ccg-logo'
 		         },
 		         {
-		        	 xtype:'component',
-		        	 cls:'ccg-header-title',
+		        	 xtype:'component',		        	 
 		        	 html:document.title,
+		        	 cls:'.ccg-header-title',
 		        	 flex:1
 		         },
 		    {

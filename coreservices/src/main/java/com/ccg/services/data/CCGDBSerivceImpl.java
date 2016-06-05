@@ -123,6 +123,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			List<CCGCategory> ccgCatList = articleDAO.findById(articleId).getCategorylist();
 			for(CCGCategory ccgCat : ccgCatList){
 				Category cat = new Category();
+				cat.setArticleID(articleId.toString());
 				cat.setCategoryID(ccgCat.getCategoryID());
 				cat.setCategorytitle(ccgCat.getCategorytitle());
 				cat.setCategoryseq(ccgCat.getCategoryseq());
@@ -163,6 +164,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		CCGCategory ccgCategory = categoryDAO.findById(categoryId);
 		CategoryContent catContent = new CategoryContent();
 		if(ccgCategory != null){
+			catContent.setArticleID(ccgCategory.getArticle().getArticleID());
 			catContent.setCategoryID(categoryId);
 			catContent.setCategorytitle(ccgCategory.getCategorytitle());
 			catContent.setCategorycontent(ccgCategory.getCategorycontent());
@@ -217,6 +219,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			metadata.setPraisalscore(ccgMetadata.getPraisalscore());
 			metadata.setTitle(ccgMetadata.getTitle());
 			metadata.setType(ccgMetadata.getType());
+			metadata.setArticleId(articleId);
 		}
 		return metadata;
 	}
@@ -225,14 +228,14 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	@Transactional(readOnly=false)
 	public void saveOrUpdateArticleMetaData(ArticleMetaData metadata) {
 		boolean update = true;
-		CCGArticleMetadata ccgMetadata = metadataDAO.findById(metadata.getArtileId());
+		CCGArticleMetadata ccgMetadata = metadataDAO.findById(metadata.getArticleId());
 		
 		if(ccgMetadata == null){
 			ccgMetadata = new CCGArticleMetadata();
 			update = false;
 		}
 		ccgMetadata.setAcceptStatus(metadata.getAcceptStatus());
-		ccgMetadata.setArticleID(metadata.getArtileId());
+		ccgMetadata.setArticleID(metadata.getArticleId());
 		ccgMetadata.setAuthor(metadata.getAuthor());
 		ccgMetadata.setCompany(metadata.getCompany());
 		ccgMetadata.setCreatedTS(metadata.getCreateDate());

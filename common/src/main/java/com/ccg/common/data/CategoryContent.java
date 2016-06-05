@@ -5,6 +5,14 @@ public class CategoryContent {
 	private String categorytitle;
 	private String categorycontent;
 	
+	public Integer articleID;
+	
+	public Integer getArticleID() {
+		return articleID;
+	}
+	public void setArticleID(Integer articleID) {
+		this.articleID = articleID;
+	}
 	public Integer getCategoryID() {
 		return categoryID;
 	}

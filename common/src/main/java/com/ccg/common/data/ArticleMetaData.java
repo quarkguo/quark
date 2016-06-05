@@ -3,7 +3,7 @@ package com.ccg.common.data;
 import java.util.Date;
 
 public class ArticleMetaData {
-	private Integer artileId;
+	private Integer articleId;
 	private String title;
 	private String type;
 	private String author;
@@ -13,12 +13,12 @@ public class ArticleMetaData {
 	
 	private Date createDate;
 	private Date lastUpdateDate;
-	
-	public Integer getArtileId() {
-		return artileId;
+
+	public Integer getArticleId() {
+		return articleId;
 	}
-	public void setArtileId(Integer artileId) {
-		this.artileId = artileId;
+	public void setArticleId(Integer articleId) {
+		this.articleId = articleId;
 	}
 	public String getTitle() {
 		return title;

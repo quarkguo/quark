@@ -1,6 +1,6 @@
 .ccg-app-header
 {
-	background-image: -webkit-linear-gradient(top,#66b3ff, #1a8cff);
+	background-image: -moz-linear-gradient(top,#8fc33a,#739b2e) !important;
 }
 .ccg-logo
 {
@@ -17,4 +17,9 @@
     font-size: 18px;
     font-weight: bold;
     text-shadow: 0 1px 0 #4e691f;
+}
+.category-content-search-token
+{
+    background-color:#ccffee;
+    color:blue;
 }

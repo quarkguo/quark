@@ -11,14 +11,21 @@
    	<context:component-scan base-package="com.ccg.dataaccess" />
     <context:component-scan base-package="com.ccg.services.data" />
    	<context:annotation-config />
-   	
+   	<!-- 
+   		<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost/ccgcontent"/>
+        <property name="username" value="root" />
+        <property name="password" value="root" />
+	</bean>	
+   	 -->
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="url" value="jdbc:mysql://72.177.234.240:3306/ccgcontent"/>
         <property name="username" value="ccg" />
         <property name="password" value="ccg" />
 	</bean>	
-
+ 	 
     <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
         <property name="entityManagerFactory" ref="entityManagerFactory" />
     </bean>

@@ -8,7 +8,8 @@ Ext.onReady(function(){
 		layout:'border',
 		items:[{
 			region:'north',			
-			xtype:"ccg-toolbar"
+			xtype:"ccg-toolbar",
+			cls:'ccg-app-header'				
 		},
 		{ 
 			region:"west",

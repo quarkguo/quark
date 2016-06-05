@@ -10,21 +10,28 @@ public class Category{
 	public boolean isLeaf() {
 		return leaf;
 	}
+	public String getArticleID() {
+		return articleID;
+	}
+	public void setArticleID(String articleID) {
+		this.articleID = articleID;
+	}
 	public void setLeaf(boolean leaf) {
 		this.leaf = leaf;
 	}
 	Integer categoryID;
+	String articleID;
 	@SerializedName("text") 
 	String categorytitle;
 	Integer startposi;
 	Integer endposi;
 	Integer categoryseq;
 	String type;
-	@SerializedName("children")
+	
 	Integer startPage;
 	Integer endPage;
 	
-	
+	@SerializedName("children")
 	List<SubCategory> subCategories;
 	
 	boolean leaf;
