@@ -14,6 +14,36 @@ ccg.data.docliststore = Ext.create('Ext.data.TreeStore', {
             expanded: true
         }
     });
+
+ccg.ui.loadDocCategory=function(arcID)
+{
+	 ccg.ui.doccategory.getRootNode().removeAll();
+     
+     var urlstr="rest/article/"+arcID+"/category";
+     console.log(urlstr);         
+   //  ccg.data.doccategorystore.removeAll();
+     ccg.data.doccategorystore.load({url:urlstr});
+     // here load meta data panel
+     var metaurl="rest/article/"+arcID+"/metadata";
+     console.log(metaurl);
+     Ext.Ajax.request({
+    	 url: metaurl,
+    	 method:"GET",
+    	 success: function(response, opts) {
+    		 var jdata = Ext.decode(response.responseText);
+    		 console.log(jdata);
+    		 console.log( ccg.ui.metapanel.getForm());
+    		 jdata.articleId=arcID;
+    		 ccg.ui.metapanel.getForm().reset();
+    		 ccg.ui.metapanel.getForm().setValues(jdata);
+    	 },
+    	 failure: function(response, opts) {
+    		 alert("load data error!!");
+    	 }
+     });
+    
+
+};
  ccg.ui.doclist =Ext.create('Ext.tree.Panel', {
      store: ccg.data.docliststore,
      height: 360,
@@ -25,32 +55,8 @@ ccg.data.docliststore = Ext.create('Ext.data.TreeStore', {
         	 if(r.data.leaf)
         	 {
         		 // here load category panel
-        		 ccg.ui.doccategory.getRootNode().removeAll();
-                 var arcID=r.data.articleID;
-                 var urlstr="rest/article/"+arcID+"/category";
-                 console.log(urlstr);         
-               //  ccg.data.doccategorystore.removeAll();
-                 ccg.data.doccategorystore.load({url:urlstr});
-                 // here load meta data panel
-                 var metaurl="rest/article/"+arcID+"/metadata";
-                 console.log(metaurl);
-                 Ext.Ajax.request({
-                	 url: metaurl,
-                	 method:"GET",
-                	 success: function(response, opts) {
-                		 var jdata = Ext.decode(response.responseText);
-                		 console.log(jdata);
-                		 console.log( ccg.ui.metapanel.getForm());
-                		 jdata.articleId=arcID;
-                		 ccg.ui.metapanel.getForm().reset();
-                		 ccg.ui.metapanel.getForm().setValues(jdata);
-                	 },
-                	 failure: function(response, opts) {
-                		 alert("load data error!!");
-                	 }
-                 });
-                
-                 
+        		 var arcID=r.data.articleID;
+        		 ccg.ui.loadDocCategory(arcID);
         	 }
         	 
          }

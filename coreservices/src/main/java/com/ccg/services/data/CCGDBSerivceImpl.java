@@ -198,7 +198,8 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	            String articleContent = ccgContent.getContent();
 	            int startPosition = subCat.getStartposi();
 	            int endPosition = subCat.getEndposi();
-	            
+	            subCatContent.setArticleID(article.getArticleID());
+	            subCatContent.setCategoryID(subCat.getCategory().getCategoryID());
 	            subCatContent.setSubcategorycontent(articleContent.substring(startPosition, endPosition));
 	            subCatContent.setSubcategoryID(subCategoryId);
 	            subCatContent.setSubcategorytitle(subCat.getSubcategorytitle());

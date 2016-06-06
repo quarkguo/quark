@@ -31,10 +31,15 @@ ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
     title: 'Document Cateogry',
     useArrows: true,
     autoload:false,
-    dockedItems: [{
-        xtype: 'toolbar',
-        items: []
-    }],
+    tools:[
+	{
+		type: 'gear', // this doesn't appear to work, probably I need to use a valid class
+		tooltip: 'Document Meta Data',
+		handler: function() {
+			ccg.ui.metapanel.show();
+		}
+	}
+    ],
     listeners: {
         itemclick: function(s,r) {           
        	 	console.log(r);
@@ -44,19 +49,37 @@ ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
        	 	   var urlstr="rest/category/"+r.data.categoryID+"/content";
        	 	   console.log(urlstr);      	 	   
        	 	   // ajax call
-       	 	Ext.Ajax.request({
-       	     url: urlstr,
+       	 	   Ext.Ajax.request({
+       	       url: urlstr,
 
-       	     callback: function(options, success, response) {
+       	       callback: function(options, success, response) {
        	    	 console.log(response.responseText);
        	    	var o= Ext.util.JSON.decode(response.responseText);
        	    	console.log(o);
        	    	Ext.getCmp('contentpanel').update(o.categorycontent);
        	    	Ext.getCmp('contentpanel').setTitle("Content Panel -- Article:["+o.articleID+"] -- Category:["+o.categoryID+"]");
        	     }
-       	 });
+       	 	});
        	 	}
-       	 
+       	 	else if(r.data.subcategoryID)
+    	 	{
+        	 	   var urlstr="rest/subcategory/"+r.data.subcategoryID+"/content";
+           	 	   console.log(urlstr);      	 	   
+           	 	   // ajax call
+           	 	   Ext.Ajax.request({
+           	       url: urlstr,
+
+           	       callback: function(options, success, response) {
+           	    	 console.log(response.responseText);
+           	    	var o= Ext.util.JSON.decode(response.responseText);
+           	    	console.log(o);
+           	    	Ext.getCmp('contentpanel').update(o.subcategorycontent);
+           	    	Ext.getCmp('contentpanel').setTitle("Content Panel -- Article:["+o.articleID+"] -- Category:["+o.categoryID+"] -- SubCategory:["+o.subcategoryID+"]");
+           	     }
+           	 	});
+    	 		
+    	 		
+    	 	}
         }
     },
 });
@@ -153,6 +176,22 @@ ccg.ui.relateddoclist =Ext.create('Ext.tree.Panel', {
            	    	console.log(replacedtext);
            	    	Ext.getCmp('contentpanel').update(replacedtext);
            	    	Ext.getCmp('contentpanel').setTitle("Content Panel -- Article:["+o.articleID+"] -- Category:["+o.categoryID+"]");
+           	    	// need to sync the tree panel and category panel
+           	    	var root=ccg.ui.doclist.getRootNode();
+           	    	console.log(root);
+           	    	for(var i=0;i<root.childNodes.length;i++)
+           	    	{
+           	    		var child=root.childNodes[i];
+           	    		console.log(child);
+           	    		if(child.data.articleID+""==o.articleID+"")
+           	    		{
+           	    			console.log("found "+child);
+           	    			ccg.ui.doclist.getSelectionModel().select(child,true);
+           	    			//ccg.ui.doclist.fireEvent('itemclick',child,0);
+           	    			ccg.ui.loadDocCategory(o.articleID);
+           	    			break;
+           	    		}
+           	    	}
            	     }
            	 });
            	 	}}
@@ -182,6 +221,9 @@ ccg.ui.metapanel=Ext.create('Ext.form.Panel', {
     frame: true,
     id:'docmetaform',
     bodyBorder: true, 
+    floating: true,
+    closable : true,
+    draggable: true,
     items: [
             {
             	fieldLabel: 'Article ID',
@@ -218,6 +260,12 @@ ccg.ui.metapanel=Ext.create('Ext.form.Panel', {
             name: 'createDate'
         }*/
     ],
+    listeners:{
+    	beforeclose:function(win) {
+    		 ccg.ui.metapanel.hide();
+        	 return false; 
+        }
+    },
     buttons: [{
         text: 'Submit',
         handler: function () {
@@ -243,6 +291,7 @@ ccg.ui.metapanel=Ext.create('Ext.form.Panel', {
             {
             	alert("invalid data!");
             }
+            ccg.ui.metapanel.hide();
         }
     }]
 })

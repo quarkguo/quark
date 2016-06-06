@@ -40,9 +40,8 @@ Ext.onReady(function(){
 			       		flex:1,
 			       		autoScroll: true
 			       	},
-			       	ccg.ui.metapanel,
 			       	{
-			       		width:'20px'
+			       		width:'10px'
 			       	}
 			       	]
 				
