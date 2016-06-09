@@ -66,6 +66,12 @@ public class SearchEngine {
 	            sr.setArticleTitle(doc.get("aTitle"));
 	            sr.setArticleId(doc.get("aId"));
 	            sr.setScore(hits[i].score);
+	            String t=sr.getArticleTitle();
+	            if(t.length()>18)
+	            {
+	            	t=t.substring(0,15)+"...";
+	            }
+	            sr.setIndexText("Article:["+sr.getArticleId()+"]-"+t+"--Category:["+sr.getCategoryId()+"]");
 	            
 	            System.out.println("++++" + JSON.toJson(sr));
 	            result.add(sr);

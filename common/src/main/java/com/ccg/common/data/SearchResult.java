@@ -13,10 +13,10 @@ public class SearchResult {
 	@SerializedName("text") 
 	private String indexText;
 	public String getIndexText() {
-		return "Article:["+articleId+"]--"+"Category:["+categoryId+"]";
+		return indexText;
 	}
 	public void setIndexText(String indexText) {
-		//this.indexText = "Article:["+articleId+"]--"+"Category:["+categoryId+"]";
+		this.indexText=indexText;
 	}
 	public boolean isLeaf() {
 		return leaf;
