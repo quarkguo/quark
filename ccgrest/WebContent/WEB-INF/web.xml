@@ -27,4 +27,27 @@
 	<welcome-file-list>
 		<welcome-file>rest_api.html</welcome-file>
 	</welcome-file-list>
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Protected Area</web-resource-name>
+			<url-pattern>/*</url-pattern>
+			<http-method>PUT</http-method>
+			<http-method>DELETE</http-method>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>ccg</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<login-config>
+		 <auth-method>FORM</auth-method> <form-login-config> <form-login-page>/login.html</form-login-page> 
+			<form-error-page>/login-failed.html</form-error-page> </form-login-config> 
+	</login-config>
+	<security-role>
+		<role-name>ccg</role-name>
+	</security-role>
+
 </web-app>
