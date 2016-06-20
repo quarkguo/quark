@@ -294,4 +294,147 @@ ccg.ui.metapanel=Ext.create('Ext.form.Panel', {
             ccg.ui.metapanel.hide();
         }
     }]
-})
+});
+
+ccg.ui.userprofilepanel=Ext.create('Ext.form.Panel', {  
+    title: 'Profile', 
+    width: 300,
+    bodyPadding: 10,
+    defaultType: 'textfield',
+    frame: true,
+    id:'userprofile',
+    bodyBorder: true, 
+    floating: true,
+    closable : true,
+    draggable: true,
+    items: [
+            {
+            	xtype:"panel",
+            	html:'<img src="images/user-icon.jpg" width=120 height=100 align="right" />'
+            },
+            {
+            fieldLabel: 'User name (Email)',
+            name: 'useremail'
+        },
+        {
+            fieldLabel: 'Name:',
+            name: 'name'
+        },
+        {
+            fieldLabel: 'Address',
+            name: 'address'
+        },
+        {
+            fieldLabel: 'phone',
+            name: 'phone'
+        }
+        
+    ],
+    listeners:{
+    	beforeclose:function(win) {
+    		 ccg.ui.userprofilepanel.hide();
+        	 return false; 
+        }
+    },
+    buttons: [{
+        text: 'Update',
+        handler: function () {
+        	/*
+            var form = this.up('form').getForm();
+            if (form.isValid()) {
+               // making ajax calls
+               var urlstr="rest/article/metadata";
+               console.log(urlstr);
+               Ext.Ajax.request({
+                   url: urlstr,
+                   method: 'POST',
+                   jsonData: form.getValues(),
+                   success: function(response, opts) {
+                      var obj = Ext.decode(response.responseText);
+                      console.log(obj);
+                   },
+                   failure: function(response, opts) {
+                      console.log('server-side failure with status code ' + response.status);
+                   }
+                });
+            }
+            else
+            {
+            	alert("invalid data!");
+            }
+            */
+        	 ccg.ui.userprofilepanel.hide();
+        }
+    }]
+});
+
+ccg.ui.passwordresetpanel=Ext.create('Ext.form.Panel', {  
+    title: 'Password Reset', 
+    width: 300,
+    bodyPadding: 10,
+    defaultType: 'textfield',
+    frame: true,
+    id:'passwordreset',
+    bodyBorder: true, 
+    floating: true,
+    closable : true,
+    draggable: true,
+    items: [
+            {
+            	xtype:"panel",
+            	html:'<img src="images/padlock.jpg" width=100 height=100 align="right" />'
+            },
+            {
+            inputType:'password',
+            fieldLabel: 'Current Password',
+            name: 'oldpass'
+        },
+        
+        {
+        	 inputType: 'password',
+            fieldLabel: 'New Password:',
+            name: 'newpass'
+        },
+        {
+        	 inputType: 'password',
+            fieldLabel: 'Retype New Password',
+            name: 'newpass2'
+        }
+        
+    ],
+    listeners:{
+    	beforeclose:function(win) {
+    		ccg.ui.passwordresetpanel.hide();
+        	 return false; 
+        }
+    },
+    buttons: [{
+        text: 'Reset Password',
+        handler: function () {
+      /*      var form = this.up('form').getForm();
+            if (form.isValid()) {
+               // making ajax calls
+               var urlstr="rest/article/metadata";
+               console.log(urlstr);
+               Ext.Ajax.request({
+                   url: urlstr,
+                   method: 'POST',
+                   jsonData: form.getValues(),
+                   success: function(response, opts) {
+                      var obj = Ext.decode(response.responseText);
+                      console.log(obj);
+                   },
+                   failure: function(response, opts) {
+                      console.log('server-side failure with status code ' + response.status);
+                   }
+                });
+            }
+            else
+            {
+            	alert("invalid data!");
+            }
+            */
+           ccg.ui.passwordresetpanel.hide();
+        }
+    }]
+});

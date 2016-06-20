@@ -96,8 +96,8 @@ Ext.define("com.ccg.portalheader",{
 
 Ext.define('com.ccg.toolbar',{
 		  extend:"Ext.toolbar.Toolbar",
-		  //style: 'background-image: -webkit-linear-gradient(top,#2ba4c4, #2589a3)',
-		  style:'backgrond-color:green',
+		  style: 'background-image: -webkit-linear-gradient(top,#2ba4c4, #2589a3)',
+		  //style:'backgrond-color:green',
 		  height:48,
 		  layout:{
 				type:'hbox',
@@ -139,10 +139,63 @@ Ext.define('com.ccg.toolbar',{
                     displayText: 'Content Management'                  	 
 		    },
 		    {
-                text: 'Setting',
-                iconCls: 'file',                    
-                displayText: 'Content Management'                  	 
+                text: 'Profile',
+                iconCls: 'file',     
+                handler: function() {
+                    console.log('TODO: Add project');
+                    console.log(ccg.ui.contentsearchPanel);
+                    ccg.ui.userprofilepanel.show();
+                }
+                                  	
+		    },
+		    {
+                text: 'Reset Password',
+                iconCls: 'file',     
+                handler: function() {
+                    console.log('TODO: Add project');
+                    console.log(ccg.ui.contentsearchPanel);
+                    ccg.ui.passwordresetpanel.show();
+                }
+                                  	
 		    }
 		  ]
 	});
-    
+
+Ext.define('com.ccg.admintoolbar',{
+	  extend:"Ext.toolbar.Toolbar",
+	 // style: 'background-image: -webkit-linear-gradient(top,#2ba4c4, #2589a3)',
+	  //style:'backgrond-color:green',
+	  height:48,
+	  layout:{
+			type:'hbox',
+			align:'middle'
+		},
+	  title:document.title,	
+	  xtype:"ccg-admin-toolbar",		
+	  items:[
+	         {
+	        	 xtype:'component',
+	        	 cls:'ccg-logo'
+	         },
+	         {
+	        	 xtype:'component',		        	 
+	        	 html:document.title,
+	        	 cls:'.ccg-header-title',
+	        	 flex:1
+	         },
+	   
+	    {
+          text: 'User Admin',
+          iconCls: 'file'                    
+	    },
+	    {
+	    	text:'Group Admin',
+	    	iconCls:'file'	
+	    },
+	    {
+	    	text:'Article Access',
+	    	iconCls:'file'
+	    }
+	    
+	  ]
+});
