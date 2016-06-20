@@ -185,16 +185,15 @@ Ext.define('com.ccg.admintoolbar',{
 	         },
 	   
 	    {
-          text: 'User Admin',
-          iconCls: 'file'                    
+          text: 'New User',
+          iconCls: 'file',
+          handler: function() {
+              ccg.ui.newuserpanel.show();
+          }
 	    },
 	    {
-	    	text:'Group Admin',
+	    	text:'New Group',
 	    	iconCls:'file'	
-	    },
-	    {
-	    	text:'Article Access',
-	    	iconCls:'file'
 	    }
 	    
 	  ]
