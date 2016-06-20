@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+	$( "form" ).on( "submit", function( event ) {
+		  event.preventDefault();
+		  
+		  var data = $(this).serializeArray();
+		  var jsondata = data[0].value;
+		  var path = data[0].name;
+		  if(confirm("Are you sure to make update:\n" +path) === true){
+			  console.log(JSON.stringify(data));
+			  
+			  $.ajax({
+				  url:"../../rest/" + path,
+				  type: "POST",
+				  data: data[0].value,
+				  contentType: "application/json; charset=utf-8",
+				  success: function(data, textStatus, jqXHR){
+					  alert(textStatus + "\n" + data);
+				  },
+				  error:function(jqXHR, textStatus, errorThrown){
+					  alert(textStatus + "\n" + errorThrown)
+				  }
+			  });
+		  }
+		});
+  
+});
+</script>
+
+</head>
+<body>
+<h1>User REST API</h1>
+
+<p>
+<b>Get User Profile</b><br />
+<a href="../../rest/user/profile">http://localhost:8080/ccgrest/rest/user/profile</a>
+</p>
+
+
+<b>Update Profile</b><br />
+http://localhost:8080/ccgrest/rest/user/updateProfile
+<form>
+<textarea rows="6" cols="80" name="user/updateProfile">
+{
+	imageURL:'imageURL',
+	phone:'phone',
+	address: 'address'
+}
+</textarea>
+<input type="submit" />
+</form>
+<br />
+
+
+
+<b>Update Password</b><br />
+http://localhost:8080/ccgrest/rest/user/updatePassword
+<form>
+<textarea rows="6" cols="80" name="user/updatePassword">
+{
+	oldPassword:'oldPassword',
+	newPassword:'newPassword'
+}
+</textarea>
+<input type="submit" />
+</form>
+<br />
+
+</body>
+</html>

@@ -161,18 +161,20 @@ public class TestHandler {
 	@RequestMapping(method=RequestMethod.GET, value="/indexing/article/{articleId}")
 	public ResponseEntity<String> indexingArticle(@PathVariable("articleId") Integer articleId) {
 		String json = "";
-		RestResponseMessage rrm = new RestResponseMessage();
+		GenericResponseMessage response = new GenericResponseMessage();
 		CCGArticle article = dataservice.getCCGArticleById(articleId);
 		Indexer indexer = new Indexer();
 		try{
 			indexer.indexArticle(article);
-			rrm.setSuccess();
+			response.code = 0;
+			response.status = "success";
 		}catch(Exception e){
-			rrm.setFailed();
-			rrm.setMessage(e.getMessage());
+			response.status = "fail";
+			response.code = 1;
+			response.message = e.getMessage();
 			e.printStackTrace();
 		}
-		json = toJson(rrm);
+		json = toJson(response);
 	    HttpHeaders responseHeaders = new HttpHeaders();
 	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 		return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
@@ -181,18 +183,20 @@ public class TestHandler {
 	@RequestMapping(method=RequestMethod.GET, value="/indexing/article/all")
 	public ResponseEntity<String> indexingAllArticle() {
 		String json = "";
-		RestResponseMessage rrm = new RestResponseMessage();
+		GenericResponseMessage response = new GenericResponseMessage();
 		List<CCGArticle> articleList = dataservice.getAllCCGArticle();
 		Indexer indexer = new Indexer();
 		try{
 			indexer.rebuildIndexes(articleList);;
-			rrm.setSuccess();
+			response.code = 0;
+			response.status = "success";
 		}catch(Exception e){
-			rrm.setFailed();
-			rrm.setMessage(e.getMessage());
+			response.code = 1;
+			response.status = "fail";
+			response.message = e.getMessage();
 			e.printStackTrace();
 		}
-		json = toJson(rrm);
+		json = toJson(response);
 	    HttpHeaders responseHeaders = new HttpHeaders();
 	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 		return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
@@ -258,26 +262,26 @@ public class TestHandler {
 	}
 }
 
-class RestResponseMessage{
-	private String status = "failed";
-	private String message;
-	
-	public String getStatus(){
-		return this.status;
-	}
-	
-	public void setSuccess(){
-		this.status = "success";
-	}
-	
-	public void setFailed(){
-		this.status = "failed";
-	}
-	
-	public void setMessage(String message){
-		this.message = message;
-	}
-	public String getMessage(){
-		return this.message;
-	}
-}
+//class RestResponseMessage{
+//	private String status = "failed";
+//	private String message;
+//	
+//	public String getStatus(){
+//		return this.status;
+//	}
+//	
+//	public void setSuccess(){
+//		this.status = "success";
+//	}
+//	
+//	public void setFailed(){
+//		this.status = "failed";
+//	}
+//	
+//	public void setMessage(String message){
+//		this.message = message;
+//	}
+//	public String getMessage(){
+//		return this.message;
+//	}
+//}

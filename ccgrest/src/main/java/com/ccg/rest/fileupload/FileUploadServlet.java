@@ -1,13 +1,8 @@
 package com.ccg.rest.fileupload;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Base64;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -18,14 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.ccg.common.data.ArticleMetaData;
-import com.ccg.ingestion.extract.ArticleInfo;
-import com.ccg.ingestion.extract.ArticleTypePattern;
-import com.ccg.ingestion.extract.Category;
-import com.ccg.ingestion.extract.ExtractArticleInfo;
 import com.ccg.services.data.CCGDBService;
 
 /**

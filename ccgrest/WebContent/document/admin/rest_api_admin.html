@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+	$( "form" ).on( "submit", function( event ) {
+		  event.preventDefault();
+		  
+		  var data = $(this).serializeArray();
+		  var jsondata = data[0].value;
+		  var path = data[0].name;
+		  if(confirm("Are you sure to make update:\n" +path) === true){
+			  console.log(JSON.stringify(data));
+			  
+			  $.ajax({
+				  url:"../../rest/" + path,
+				  type: "POST",
+				  data: data[0].value,
+				  contentType: "application/json; charset=utf-8",
+				  success: function(data, textStatus, jqXHR){
+					  alert(textStatus + "\n" + data);
+				  },
+				  error:function(jqXHR, textStatus, errorThrown){
+					  alert(textStatus + "\n" + errorThrown)
+				  }
+			  });
+		  }
+		});
+  
+});
+</script>
+
+</head>
+<body>
+<h1>Admin REST API</h1>
+
+<p>
+<b>Get User Profile</b><br />
+<a href="../../rest/admin/profile">http://localhost:8080/ccgrest/rest/user/profile</a>
+</p>
+
+
+<b>Create a User</b><br />
+http://localhost:8080/ccgrest/rest/admin/createUser
+<form>
+<textarea rows="6" cols="80" name="admin/createUser">
+{
+	userId:'userId',
+}
+</textarea>
+<input type="submit" />
+</form>
+<br />
+
+<b>Create a Group</b><br />
+http://localhost:8080/ccgrest/rest/admin/createGroup
+<form>
+<textarea rows="6" cols="80" name="admin/createGroup">
+{
+	groupName:'groupName'
+}
+</textarea>
+<input type="submit" />
+</form>
+<br />
+
+<b>Add a User to a Group</b><br />
+http://localhost:8080/ccgrest/rest/admin/addUserToGroup
+<form>
+<textarea rows="6" cols="80" name="admin/addUserToGroup">
+{
+	userId:'userEmail',
+	groupName:'groupName'
+}
+</textarea>
+<input type="submit" />
+</form>
+<br />
+
+<b>Reset User Password</b><br />
+http://localhost:8080/ccgrest/rest/admin/resetPassword
+<form>
+<textarea rows="6" cols="80" name="admin/resetPassword">
+{
+	userId:'userEmail'
+}
+</textarea>
+<input type="submit" />
+</form>
+<br />
+
+<b>Remove User from Group</b><br />
+http://localhost:8080/ccgrest/rest/admin/removeUserFromGroup
+<form>
+<textarea rows="6" cols="80" name="admin/removeUserFromGroup">
+{
+	userId:'userEmail',
+	groupName:'groupName'
+}
+</textarea>
+<input type="submit" />
+</form>
+<br />
+
+
+
+</body>
+</html>

@@ -84,6 +84,24 @@ public class CCGGroupMembers implements Serializable {
 		this.createdTS = createdTS;
 	}
 
+	private String useremail;
+	private String groupname;
+	@Column(name="useremail")
+	public String getUseremail(){
+		return useremail;
+	}
+	public void setUseremail(String useremail){
+		this.useremail = useremail;
+	}
+	
+	@Column(name="groupname")
+	public String getGroupname(){
+		return groupname;
+	}
+	public void setGroupname(String groupname){
+		this.groupname = groupname;
+	}
+	
 
 	private CCGUserGroup group;
 	private CCGUser member;
