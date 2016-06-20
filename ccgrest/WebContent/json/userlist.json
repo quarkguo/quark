@@ -1,0 +1,42 @@
+[
+{
+  "userID": "1",
+ "icon":"images/usericon.png",
+  "text": "Ying Guo",
+  "useremail":"henguo@gmail.com",
+  "phone":"123-4567890",
+  "leaf":true
+},
+{
+  "userID": "2",
+  "leaf":true,
+  "icon":"images/usericon.png",
+  "text": "ZhongKai Chen",
+  "useremail":"charlie@gmail.com",
+  "phone":"123-4567890"
+},
+{
+  "userID": "3",
+  "leaf":true,
+  "icon":"images/usericon.png",
+  "text": "Connie Cheng",
+  "useremail":"connie@gmail.com",
+  "phone":"123-4567890"
+},
+{
+  "userID": "4",
+  "leaf":true,
+  "icon":"images/usericon.png",
+  "text": "Hong Deng",
+  "useremail":"hhong@gmail.com",
+  "phone":"123-4567890"
+},
+{
+  "userID": "5",
+  "leaf":true,
+   "icon":"images/usericon.png",
+  "text": "Admin",
+  "useremail":"admin@gmail.com",
+  "phone":"123-4567890"
+}
+]
