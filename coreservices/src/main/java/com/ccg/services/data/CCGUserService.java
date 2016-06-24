@@ -1,5 +1,9 @@
 package com.ccg.services.data;
 
+import java.util.List;
+
+import com.ccg.common.data.user.User;
+import com.ccg.common.data.user.UserGroup;
 import com.ccg.common.data.user.UserProfile;
 
 public interface CCGUserService {
@@ -12,6 +16,10 @@ public interface CCGUserService {
 	public UserProfile getUserProfile(String name);
 	public boolean updateUserProfile(UserProfile profile);
 	public boolean removeUserFromGroup(String userId, String groupName);
+	public List<User> getUserList();
+	public User getUserById(Integer id);
+	public List<UserGroup> getUserGroupList();
+	public UserGroup getUserGroupByGroupId(Integer groupId);
 	
 	
 }

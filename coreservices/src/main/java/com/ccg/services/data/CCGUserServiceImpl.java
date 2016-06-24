@@ -1,11 +1,15 @@
 package com.ccg.services.data;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ccg.common.data.user.User;
+import com.ccg.common.data.user.UserGroup;
 import com.ccg.common.data.user.UserProfile;
 import com.ccg.dataaccess.dao.api.CCGGroupMembersDAO;
 import com.ccg.dataaccess.dao.api.CCGUserDAO;
@@ -126,4 +130,58 @@ public class CCGUserServiceImpl implements CCGUserService{
 		groupMembersDAO.delete(gm);
 		return true;
 	}
+
+	@Override
+	public List<User> getUserList() {
+		List<CCGUser> ccgUsers = userDAO.findAll();
+		List<User> users = new ArrayList<User>();
+		for(CCGUser ccgUser : ccgUsers){
+			User user = new User();
+			user.setId(ccgUser.getUserID());
+			user.setUseremail(ccgUser.getUseremail());
+			users.add(user);
+		}
+		return users;
+	}
+
+	@Override
+	public User getUserById(Integer id) {
+		CCGUser ccgUser = userDAO.findById(id);
+		User user = new User();
+		user.setId(ccgUser.getUserID());
+		user.setUseremail(ccgUser.getUseremail());		
+		return user;
+	}
+
+	@Override
+	public List<UserGroup> getUserGroupList() {
+		List<CCGUserGroup> ccgGroupList = userGroupDAO.findAll();
+		List<UserGroup> groupList = new ArrayList<UserGroup>();
+		for(CCGUserGroup ccgGroup : ccgGroupList){
+			UserGroup group = new UserGroup();
+			group.setGroupId(ccgGroup.getCcggroupID());
+			group.setGroupname(ccgGroup.getGroupname());
+			if(ccgGroup.getOwner() != null){
+				group.setOwnerId(ccgGroup.getOwner().getUserID());
+			}
+			groupList.add(group);
+		}
+		
+		return groupList;
+	}
+
+	@Override
+	public UserGroup getUserGroupByGroupId(Integer groupId) {
+		CCGUserGroup ccgGroup = userGroupDAO.findById(groupId);
+		UserGroup group = new UserGroup();
+		group.setGroupId(ccgGroup.getCcggroupID());
+		group.setGroupname(ccgGroup.getGroupname());
+		if(ccgGroup.getOwner() != null)
+			group.setOwnerId(ccgGroup.getOwner().getUserID());
+		
+		return group;
+	}
+
+	
+
 }
