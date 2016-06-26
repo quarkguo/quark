@@ -1,13 +1,18 @@
 package com.ccg.rest.handler;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ccg.common.data.user.User;
+import com.ccg.common.data.user.UserGroup;
 import com.ccg.common.data.user.UserProfile;
 import com.ccg.services.data.CCGUserService;
 
@@ -17,6 +22,14 @@ public class UserHandler {
 
 	@Autowired
 	CCGUserService userService;
+
+	@RequestMapping(value="user/logout", method=RequestMethod.GET)
+	public String logout(HttpServletRequest request){
+		System.out.println("about to logout");
+		request.getSession().invalidate();
+		System.out.println("logged out");
+		return "success";
+	}	
 	
 	@RequestMapping(value="user/profile", method=RequestMethod.GET)
 	public UserProfile getUserProfile(HttpServletRequest request){
@@ -113,7 +126,27 @@ public class UserHandler {
 		return "done";
 	}
 	
+	@RequestMapping(value="admin/user/all", method=RequestMethod.GET)
+	public List<User> getAllUsers (){
+		return userService.getUserList();
+	}
+
+	@RequestMapping(value="admin/user/{id}", method=RequestMethod.GET)
+	public User getUserById (@PathVariable("id") Integer id){
+		return userService.getUserById(id);
+	}
+	@RequestMapping(value="admin/usergroup/all", method=RequestMethod.GET)
+	public List<UserGroup> getAllUserGroups (){
+		return userService.getUserGroupList();
+	}
+
+	@RequestMapping(value="admin/usergroup/{id}", method=RequestMethod.GET)
+	public UserGroup getUserGroupById (@PathVariable("id") Integer id){
+		return userService.getUserGroupByGroupId(id);
+	}
+	
 }
+
 class UpdateProfile{String imageURL, phone, address;}
 class UpdatePassword{String oldPassword, newPassword;}
 class CreateUser{String userId;}
