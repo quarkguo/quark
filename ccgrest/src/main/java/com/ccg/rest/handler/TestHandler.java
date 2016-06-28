@@ -248,7 +248,12 @@ public class TestHandler {
 		return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
 	}			
 	
-	
+	@RequestMapping(value="/article/{articleId}/delete",method=RequestMethod.GET)
+	public String deleteArticle(@PathVariable("articleId") Integer articleId)
+	{
+		dataservice.deleteArticle(articleId);
+		return "done";
+	}		
 	
 	
 	private String toJson(Object obj){
