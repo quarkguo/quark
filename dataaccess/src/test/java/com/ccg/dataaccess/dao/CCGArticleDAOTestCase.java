@@ -1,5 +1,7 @@
 package com.ccg.dataaccess.dao;
 
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import com.ccg.dataaccess.dao.api.CCGArticleDAO;
 import com.ccg.dataaccess.entity.CCGArticle;
 import com.ccg.dataaccess.entity.CCGCategory;
 import com.ccg.dataaccess.entity.CCGContent;
+import com.ccg.dataaccess.entity.CCGRelatedArticle;
 
 
 
@@ -24,7 +27,18 @@ public class CCGArticleDAOTestCase {
 	@Autowired
 	private CCGArticleDAO articleDAO;
 	
+	
 	@Test
+	public void testRelatedArticle()
+	{
+		CCGArticle art=articleDAO.findById(21);
+		List<CCGRelatedArticle> rl=art.getRelatedArticles();
+		for(CCGRelatedArticle a:rl)
+		{
+			System.out.println(a);
+		}
+	}
+//	@Test
 	@Rollback(true)
 	public void testCountAll() {
 		int number=articleDAO.countAll();

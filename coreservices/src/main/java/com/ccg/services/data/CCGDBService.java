@@ -29,5 +29,6 @@ public interface CCGDBService {
 	public List<CCGCategory> getAllCategories();
 	public CCGArticle getCCGArticleById(Integer articleId);
 	public List<CCGArticle> getAllCCGArticle();
+	public void deleteArticle(int articleID);
 
 }

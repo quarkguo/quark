@@ -1,8 +1,11 @@
 package com.ccg.common.data.user;
 
+import com.google.gson.annotations.SerializedName;
+
 public class User {
 	
 	private Integer id;
+	@SerializedName("text")
 	private String useremail;
 	
 	public Integer getId() {

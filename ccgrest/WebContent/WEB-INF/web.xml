@@ -32,6 +32,7 @@
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
 
+
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Protected Area</web-resource-name>

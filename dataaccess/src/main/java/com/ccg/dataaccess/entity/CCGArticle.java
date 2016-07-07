@@ -130,7 +130,15 @@ public class CCGArticle implements Serializable{
 	private CCGContent content;
 	private List<CCGCategory> categorylist=new ArrayList<CCGCategory>();
 	private CCGArticleMetadata metadata;
-
+	private List<CCGRelatedArticle> relatedArticles;
+	
+	@OneToMany(fetch=FetchType.LAZY,mappedBy="baseArticle")
+	public List<CCGRelatedArticle> getRelatedArticles() {
+		return relatedArticles;
+	}
+	public void setRelatedArticles(List<CCGRelatedArticle> relatedArticles) {
+		this.relatedArticles = relatedArticles;
+	}
 	@OneToOne(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name="articleID")
 	public CCGArticleMetadata getMetadata() {
@@ -157,5 +165,6 @@ public class CCGArticle implements Serializable{
 		this.categorylist = categorylist;
 	}
 	
-	// this is test
+
+
 }

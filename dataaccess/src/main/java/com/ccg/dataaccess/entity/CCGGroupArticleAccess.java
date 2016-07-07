@@ -19,7 +19,18 @@ public class CCGGroupArticleAccess implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Integer grouparticleaccessseq;
-	private Integer articleID;
+	private CCGArticle article;
+	
+	 @ManyToOne(fetch=FetchType.LAZY )
+	 @JoinColumn(name="articleID")
+	public CCGArticle getArticle() {
+		return article;
+	}
+
+	public void setArticle(CCGArticle article) {
+		this.article = article;
+	}
+
 	private Date createdTS;
 	
 	private CCGUserGroup group;
@@ -60,16 +71,7 @@ public class CCGGroupArticleAccess implements Serializable {
 		this.grouparticleaccessseq = grouparticleaccessseq;
 	}
 
-	@Column(name = "articleID")
-	public Integer getArticleID() {
-		return articleID;
-	}
-
-	public void setArticleID(Integer articleID) {
-		this.articleID = articleID;
-	}
-
-	@Column(name = "createdTS")
+		@Column(name = "createdTS")
 	public Date getCreatedTS() {
 		return createdTS;
 	}

@@ -1,8 +1,11 @@
 package com.ccg.common.data.user;
 
+import com.google.gson.annotations.SerializedName;
+
 public class UserGroup {
 	private Integer groupId;
 	private Integer ownerId;
+	@SerializedName("text")
 	private String groupname;
 	public Integer getGroupId() {
 		return groupId;
@@ -16,6 +19,7 @@ public class UserGroup {
 	public void setOwnerId(Integer ownerId) {
 		this.ownerId = ownerId;
 	}
+	
 	public String getGroupname() {
 		return groupname;
 	}

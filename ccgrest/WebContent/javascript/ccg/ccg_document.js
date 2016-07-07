@@ -385,6 +385,10 @@ ccg.ui.passwordresetpanel=Ext.create('Ext.form.Panel', {
             	html:'<img src="images/padlock.jpg" width=100 height=100 align="right" />'
             },
             {
+                fieldLabel: 'User name (Email)',
+                name: 'useremail'
+            },
+            {
             inputType:'password',
             fieldLabel: 'Current Password',
             name: 'oldpass'

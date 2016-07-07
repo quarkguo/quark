@@ -3,8 +3,9 @@
 
 Ext.onReady(function(){
 	// some initialization functions
-	Ext.create('Ext.container.Viewport',{
+	Ext.define('Ext.container.Viewport',{
 		layout:'border',
+		xtype:'ccgadminwin',
 		items:[{
 			region:'north',			
 			xtype:"ccg-admin-toolbar",

@@ -276,5 +276,11 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	public List<CCGArticle> getAllCCGArticle(){
 		return articleDAO.findAll();
 	}
+
+	@Override
+	public void deleteArticle(int articleID) {
+		// TODO Auto-generated method stub
+		articleDAO.delete(articleDAO.findById(articleID));
+	}
 	
 }

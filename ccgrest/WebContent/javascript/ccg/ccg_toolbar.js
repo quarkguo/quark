@@ -145,6 +145,23 @@ Ext.define('com.ccg.toolbar',{
                     console.log('TODO: Add project');
                     console.log(ccg.ui.contentsearchPanel);
                     ccg.ui.userprofilepanel.show();
+                    // here we need to pull all content
+                    var userprofileurl="";
+                    Ext.Ajax.request({
+                   	 url: metaurl,
+                   	 method:"GET",
+                   	 success: function(response, opts) {
+                   		 var jdata = Ext.decode(response.responseText);
+                   		 console.log(jdata);
+                   		 console.log( ccg.ui.metapanel.getForm());
+                   		 jdata.articleId=arcID;
+                   		 ccg.ui.metapanel.getForm().reset();
+                   		 ccg.ui.metapanel.getForm().setValues(jdata);
+                   	 },
+                   	 failure: function(response, opts) {
+                   		 alert("load data error!!");
+                   	 }
+                    });
                 }
                                   	
 		    },
@@ -155,6 +172,7 @@ Ext.define('com.ccg.toolbar',{
                     console.log('TODO: Add project');
                     console.log(ccg.ui.contentsearchPanel);
                     ccg.ui.passwordresetpanel.show();
+                    ccg.ui.passwordresetpanel.getForm().setValues({useremail:"ccg"});
                 }
                                   	
 		    }
