@@ -175,6 +175,20 @@ Ext.define('com.ccg.toolbar',{
                     ccg.ui.passwordresetpanel.getForm().setValues({useremail:"ccg"});
                 }
                                   	
+		    },
+		    {
+                text: 'Logout',
+                iconCls: 'file',     
+                handler: function() {                    
+                    //console.log(ccg.ui.contentsearchPanel);
+                	 Ext.Ajax.request({
+                       	 url: 'rest/user/logout',
+                       	 method:"GET",
+                       	 success: function(response, opts) {
+                       		 document.location.href="login.html";
+                       	 }
+                	 });
+                }
 		    }
 		  ]
 	});
