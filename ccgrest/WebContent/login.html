@@ -49,7 +49,7 @@ var ccglogin=
 	        			//does nothing since it will not to typical Json request
                       },
                       failure: function(form, action) {
-                    	 // console.log(action.response);
+                    	  console.log(action.response);
                     	 if(action.response.responseText.indexOf("Sorry, login failed")>0)
                     	{
                     		  Ext.Msg.alert('Failed', "Invalid Username/Password. Please Try again");	 

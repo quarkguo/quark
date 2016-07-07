@@ -185,7 +185,8 @@ Ext.define('com.ccg.toolbar',{
                        	 url: 'rest/user/logout',
                        	 method:"GET",
                        	 success: function(response, opts) {
-                       		 document.location.href="login.html";
+                       		 window.location="ccgportal.html";
+                       		 //window.refresh();
                        	 }
                 	 });
                 }
