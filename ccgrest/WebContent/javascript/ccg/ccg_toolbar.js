@@ -146,17 +146,15 @@ Ext.define('com.ccg.toolbar',{
                     console.log(ccg.ui.contentsearchPanel);
                     ccg.ui.userprofilepanel.show();
                     // here we need to pull all content
-                    var userprofileurl="";
+                    var userprofileurl="rest/user/profile";
                     Ext.Ajax.request({
-                   	 url: metaurl,
+                   	 url: userprofileurl,
                    	 method:"GET",
                    	 success: function(response, opts) {
                    		 var jdata = Ext.decode(response.responseText);
                    		 console.log(jdata);
-                   		 console.log( ccg.ui.metapanel.getForm());
-                   		 jdata.articleId=arcID;
-                   		 ccg.ui.metapanel.getForm().reset();
-                   		 ccg.ui.metapanel.getForm().setValues(jdata);
+                   		ccg.ui.userprofilepanel.getForm().reset();
+                   		ccg.ui.userprofilepanel.getForm().setValues(jdata);
                    	 },
                    	 failure: function(response, opts) {
                    		 alert("load data error!!");

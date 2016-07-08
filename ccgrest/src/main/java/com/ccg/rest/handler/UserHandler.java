@@ -33,27 +33,22 @@ public class UserHandler {
 	
 	@RequestMapping(value="user/profile", method=RequestMethod.GET)
 	public UserProfile getUserProfile(HttpServletRequest request){
-		String name = request.getRemoteUser();
-		if(name == null){
-			name = "name";
-		}
-		UserProfile profile = userService.getUserProfile(name);		 
+		String username = request.getRemoteUser();
+		
+		UserProfile profile = userService.getUserProfileByUserName(username);	 
 		return profile;
 	}
 	
 	@RequestMapping(value="user/updateProfile", method=RequestMethod.POST)
 	public String updateProfile(@RequestBody UpdateProfile input, HttpServletRequest request){
-		String name = request.getRemoteUser();
-		// for testing
-		if(name == null){
-			name = "name";
-		}
+		//String namename = request.getRemoteUser();
 		
 		UserProfile profile = new UserProfile();
 		profile.setAddress(input.address);
 		profile.setImageURL(input.imageURL);
-		profile.setName(name);
-		profile.setPhone(input.phone);		
+		profile.setName(input.name);
+		profile.setPhone(input.phone);
+		profile.setUserID(Integer.parseInt(input.userID));
 		userService.updateUserProfile(profile);		
 		return "done";
 	}
@@ -147,7 +142,7 @@ public class UserHandler {
 	
 }
 
-class UpdateProfile{String imageURL, phone, address;}
+class UpdateProfile{String imageURL, phone, address,userID,username,name;}
 class UpdatePassword{String oldPassword, newPassword;}
 class CreateUser{String userId;}
 class CreateGroup{String groupName;}

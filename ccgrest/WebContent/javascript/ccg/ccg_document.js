@@ -313,20 +313,32 @@ ccg.ui.userprofilepanel=Ext.create('Ext.form.Panel', {
             	html:'<img src="images/user-icon.jpg" width=120 height=100 align="right" />'
             },
             {
+            	fieldLabel:'User ID',
+            	name:'userID',
+            	editable:false,
+            	fieldStyle: 'color: #ccc;'            	
+            }
+            ,
+            {
             fieldLabel: 'User name (Email)',
-            name: 'useremail'
+            name: 'username',
+            editable:false,
+            fieldStyle: 'color: #ccc;'   
         },
         {
             fieldLabel: 'Name:',
-            name: 'name'
+            name: 'name',
+            fieldStyle: 'color: #336699;'   
         },
         {
             fieldLabel: 'Address',
-            name: 'address'
+            name: 'address',
+            fieldStyle: 'color: #336699;'
         },
         {
             fieldLabel: 'phone',
-            name: 'phone'
+            name: 'phone',
+            fieldStyle: 'color: #336699;'
         }
         
     ],
@@ -339,22 +351,24 @@ ccg.ui.userprofilepanel=Ext.create('Ext.form.Panel', {
     buttons: [{
         text: 'Update',
         handler: function () {
-        	/*
+        	
             var form = this.up('form').getForm();
+            console.log(form.getValues());
             if (form.isValid()) {
                // making ajax calls
-               var urlstr="rest/article/metadata";
+               var urlstr="rest/user/updateProfile";
                console.log(urlstr);
                Ext.Ajax.request({
                    url: urlstr,
                    method: 'POST',
                    jsonData: form.getValues(),
                    success: function(response, opts) {
-                      var obj = Ext.decode(response.responseText);
-                      console.log(obj);
+                    console.log(response.responseText);   
+                    ccg.ui.userprofilepanel.hide();
                    },
                    failure: function(response, opts) {
                       console.log('server-side failure with status code ' + response.status);
+                      alert("Update Error!!");
                    }
                 });
             }
@@ -362,8 +376,8 @@ ccg.ui.userprofilepanel=Ext.create('Ext.form.Panel', {
             {
             	alert("invalid data!");
             }
-            */
-        	 ccg.ui.userprofilepanel.hide();
+            
+        	 
         }
     }]
 });

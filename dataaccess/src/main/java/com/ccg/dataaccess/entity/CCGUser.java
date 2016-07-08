@@ -3,13 +3,17 @@ package com.ccg.dataaccess.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 @NamedQueries({
 	 @NamedQuery(name="CCGUser.findAll", query="select u from CCGUser u"),
@@ -108,4 +112,15 @@ public class CCGUser  implements Serializable{
 	private Date createdTS;
 	private Date lastUpdateTS;
 	private char validated;
+	
+	// now mapping
+	private CCGUserProfile profile;
+	@OneToOne(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name="userID")
+	public CCGUserProfile getProfile() {
+		return profile;
+	}
+	public void setProfile(CCGUserProfile profile) {
+		this.profile = profile;
+	}
 }

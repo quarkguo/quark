@@ -98,24 +98,29 @@ public class CCGUserServiceImpl implements CCGUserService{
 	}
 
 	@Override
-	public UserProfile getUserProfile(String name) {
-		CCGUserProfile profile = userProfileDAO.findUserProfileByName(name);
+	public UserProfile getUserProfileByUserName(String username) {
+		//CCGUserProfile profile = userProfileDAO.findUserProfileByName(username);
+		CCGUser user=userDAO.findUserByUseremail(username);
+		CCGUserProfile profile=user.getProfile();
 		UserProfile userProfile = new UserProfile();
+		userProfile.setUserID(user.getUserID());
+		userProfile.setUsername(user.getUseremail());
 		userProfile.setAddress(profile.getAddress());
 		userProfile.setImageURL(profile.getImageURL());
-		userProfile.setName(name);
+		userProfile.setName(profile.getName());
 		userProfile.setPhone(profile.getPhone());
-		userProfile.setUserID(profile.getUserID());
+		//userProfile.setUserID(profile.getUserID());
 		return userProfile;
 	}
 
 	@Override
 	@Transactional
 	public boolean updateUserProfile(UserProfile profile) {
-		CCGUserProfile ccgProfile = userProfileDAO.findUserProfileByName(profile.getName());
+		CCGUserProfile ccgProfile = userProfileDAO.findById(profile.getUserID());
 		ccgProfile.setAddress(profile.getAddress());
 		ccgProfile.setImageURL(profile.getImageURL());
 		ccgProfile.setPhone(profile.getPhone());
+		ccgProfile.setName(profile.getName());;
 		userProfileDAO.save(ccgProfile);
 		return true;
 	}

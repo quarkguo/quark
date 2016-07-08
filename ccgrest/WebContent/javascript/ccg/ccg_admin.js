@@ -3,7 +3,7 @@
 
 Ext.onReady(function(){
 	// some initialization functions
-	Ext.define('Ext.container.Viewport',{
+	Ext.create('Ext.container.Viewport',{
 		layout:'border',
 		xtype:'ccgadminwin',
 		items:[{

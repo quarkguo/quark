@@ -2,6 +2,13 @@ package com.ccg.common.data.user;
 
 public class UserProfile {
 	private Integer userID;
+	private String username;
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
 	private String name;
 	private String imageURL;
 	private String phone;
