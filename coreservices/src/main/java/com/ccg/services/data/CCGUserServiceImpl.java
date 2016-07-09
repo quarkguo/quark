@@ -39,11 +39,10 @@ public class CCGUserServiceImpl implements CCGUserService{
 
 	@Override
 	@Transactional
-	public boolean updatePassword(String userId, String oldPassword, String newPassword) {
+	public boolean updatePassword(String username, String oldPassword, String newPassword) {
 		
-		userDAO.updatePassword(userId, oldPassword, newPassword);
-		
-		return true;
+			return userDAO.updatePassword(username, oldPassword, newPassword);
+	
 	}
 
 	@Override

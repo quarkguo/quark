@@ -167,10 +167,22 @@ Ext.define('com.ccg.toolbar',{
                 text: 'Reset Password',
                 iconCls: 'file',     
                 handler: function() {
-                    console.log('TODO: Add project');
-                    console.log(ccg.ui.contentsearchPanel);
+                    var userprofileurl="rest/user/profile";
+                    Ext.Ajax.request({
+                   	 url: userprofileurl,
+                   	 method:"GET",
+                   	 success: function(response, opts) {
+                   		 var jdata = Ext.decode(response.responseText);
+                   		 console.log(jdata);
+                   		ccg.ui.passwordresetpanel.getForm().reset();
+                   		ccg.ui.passwordresetpanel.getForm().setValues(jdata);
+                   	 },
+                   	 failure: function(response, opts) {
+                   		 alert("load data error!!");
+                   	 }
+                    });
                     ccg.ui.passwordresetpanel.show();
-                    ccg.ui.passwordresetpanel.getForm().setValues({useremail:"ccg"});
+                    //ccg.ui.passwordresetpanel.getForm().setValues({useremail:"ccg"});
                 }
                                   	
 		    },

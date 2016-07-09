@@ -55,12 +55,17 @@ public class UserHandler {
 	
 	@RequestMapping(value="user/updatePassword", method=RequestMethod.POST)
 	public String updatePassword(@RequestBody UpdatePassword input, HttpServletRequest request){
-		String name = request.getRemoteUser();
-		if(name == null){
-			name = "name";
+		String username = request.getRemoteUser();
+		
+		if (userService.updatePassword(username, input.oldpass, input.newpass))
+		{
+			return "success";
 		}
-		userService.updatePassword(name, input.oldPassword, input.newPassword);		
-		return "done";
+		else
+		{
+			return "error";
+		}
+		
 	}
 	
 	@RequestMapping(value="admin/createUser",method=RequestMethod.POST)
@@ -143,7 +148,7 @@ public class UserHandler {
 }
 
 class UpdateProfile{String imageURL, phone, address,userID,username,name;}
-class UpdatePassword{String oldPassword, newPassword;}
+class UpdatePassword{String oldpass, newpass;}
 class CreateUser{String userId;}
 class CreateGroup{String groupName;}
 class AddUserToGroup{String userId, groupName;}

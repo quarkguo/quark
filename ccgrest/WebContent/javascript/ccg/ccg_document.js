@@ -399,24 +399,36 @@ ccg.ui.passwordresetpanel=Ext.create('Ext.form.Panel', {
             	html:'<img src="images/padlock.jpg" width=100 height=100 align="right" />'
             },
             {
-                fieldLabel: 'User name (Email)',
-                name: 'useremail'
-            },
+            	fieldLabel:'User ID',
+            	name:'userID',
+            	editable:false,
+            	fieldStyle: 'color: #ccc;'            	
+            }
+            ,
+            {
+            fieldLabel: 'User name (Email)',
+            name: 'username',
+            editable:false,
+            fieldStyle: 'color: #ccc;'   
+           },
             {
             inputType:'password',
             fieldLabel: 'Current Password',
-            name: 'oldpass'
+            name: 'oldpass',
+            required:true
         },
         
         {
         	 inputType: 'password',
             fieldLabel: 'New Password:',
-            name: 'newpass'
+            name: 'newpass',
+            require: true            
         },
         {
         	 inputType: 'password',
             fieldLabel: 'Retype New Password',
             name: 'newpass2'
+           
         }
         
     ],
@@ -429,30 +441,44 @@ ccg.ui.passwordresetpanel=Ext.create('Ext.form.Panel', {
     buttons: [{
         text: 'Reset Password',
         handler: function () {
-      /*      var form = this.up('form').getForm();
-            if (form.isValid()) {
-               // making ajax calls
-               var urlstr="rest/article/metadata";
-               console.log(urlstr);
+         var form = this.up('form').getForm();
+         var pv=form.getValues();
+         if(pv.oldpass==""||pv.newpass==""||pv.newpass2==-"")
+         {
+        	 Ext.Msg.alert("Error Message","Missing Data!!");
+        	 return;
+         }
+         else
+        	 {
+        	 if(pv.newpass!=pv.newpass2)
+        		 {
+        		 Ext.Msg.alert("Error Message","new Passwords do not match.");
+        		  return;
+        		 }
+        	 }
+         // here the data pass validation
+               var urlstr="rest/user/updatePassword";
+            
                Ext.Ajax.request({
                    url: urlstr,
                    method: 'POST',
-                   jsonData: form.getValues(),
+                   jsonData: pv,
                    success: function(response, opts) {
-                      var obj = Ext.decode(response.responseText);
-                      console.log(obj);
+                     if(response.responseText.indexOf("success")>-1)
+                     {
+                    	 Ext.Msg.alert("Message","Password Updated!!");
+                    	   ccg.ui.passwordresetpanel.hide();
+                     }
+                     else
+                     {
+                    	 Ext.Msg.alert("Message","Password Update Failed!")
+                     }
                    },
                    failure: function(response, opts) {
-                      console.log('server-side failure with status code ' + response.status);
+                	   Ext.Msg.alert("Error","Could not update Password");
                    }
                 });
-            }
-            else
-            {
-            	alert("invalid data!");
-            }
-            */
-           ccg.ui.passwordresetpanel.hide();
+            
         }
     }]
 });

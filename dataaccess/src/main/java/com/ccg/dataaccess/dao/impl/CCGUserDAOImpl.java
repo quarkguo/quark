@@ -15,9 +15,9 @@ public class CCGUserDAOImpl extends CCGBaseDAOImpl<CCGUser, Integer> implements 
 	}
 
 	@Override
-	public boolean updatePassword(String userId, String oldPassword, String newPassword) {
+	public boolean updatePassword(String username, String oldPassword, String newPassword) {
 		Query q = entityManager.createQuery("from CCGUser where useremail =:useremail and password =:password");
-		q.setParameter("useremail", userId);
+		q.setParameter("useremail", username);
 		q.setParameter("password", oldPassword);
 		CCGUser user = (CCGUser)q.getSingleResult();
 		if(user == null){
