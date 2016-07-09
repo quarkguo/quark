@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ccg.common.data.Article;
 import com.ccg.common.data.user.User;
 import com.ccg.common.data.user.UserGroup;
 import com.ccg.common.data.user.UserProfile;
@@ -15,6 +16,7 @@ import com.ccg.dataaccess.dao.api.CCGGroupMembersDAO;
 import com.ccg.dataaccess.dao.api.CCGUserDAO;
 import com.ccg.dataaccess.dao.api.CCGUserGroupDAO;
 import com.ccg.dataaccess.dao.api.CCGUserProfileDAO;
+import com.ccg.dataaccess.entity.CCGGroupArticleAccess;
 import com.ccg.dataaccess.entity.CCGGroupMembers;
 import com.ccg.dataaccess.entity.CCGUser;
 import com.ccg.dataaccess.entity.CCGUserGroup;
@@ -101,14 +103,18 @@ public class CCGUserServiceImpl implements CCGUserService{
 		//CCGUserProfile profile = userProfileDAO.findUserProfileByName(username);
 		CCGUser user=userDAO.findUserByUseremail(username);
 		CCGUserProfile profile=user.getProfile();
+		
 		UserProfile userProfile = new UserProfile();
 		userProfile.setUserID(user.getUserID());
 		userProfile.setUsername(user.getUseremail());
-		userProfile.setAddress(profile.getAddress());
-		userProfile.setImageURL(profile.getImageURL());
-		userProfile.setName(profile.getName());
-		userProfile.setPhone(profile.getPhone());
 		//userProfile.setUserID(profile.getUserID());
+		if(profile!=null)
+		{
+			userProfile.setAddress(profile.getAddress());
+			userProfile.setImageURL(profile.getImageURL());
+			userProfile.setName(profile.getName());
+			userProfile.setPhone(profile.getPhone());			
+		}
 		return userProfile;
 	}
 
@@ -116,6 +122,11 @@ public class CCGUserServiceImpl implements CCGUserService{
 	@Transactional
 	public boolean updateUserProfile(UserProfile profile) {
 		CCGUserProfile ccgProfile = userProfileDAO.findById(profile.getUserID());
+		if(ccgProfile==null)
+		{
+			ccgProfile=new CCGUserProfile();
+			ccgProfile.setUserID(profile.getUserID());
+		}
 		ccgProfile.setAddress(profile.getAddress());
 		ccgProfile.setImageURL(profile.getImageURL());
 		ccgProfile.setPhone(profile.getPhone());
@@ -141,7 +152,7 @@ public class CCGUserServiceImpl implements CCGUserService{
 		List<User> users = new ArrayList<User>();
 		for(CCGUser ccgUser : ccgUsers){
 			User user = new User();
-			user.setId(ccgUser.getUserID());
+			user.setUserID(ccgUser.getUserID());
 			user.setUseremail(ccgUser.getUseremail());
 			users.add(user);
 		}
@@ -152,7 +163,7 @@ public class CCGUserServiceImpl implements CCGUserService{
 	public User getUserById(Integer id) {
 		CCGUser ccgUser = userDAO.findById(id);
 		User user = new User();
-		user.setId(ccgUser.getUserID());
+		user.setUserID(ccgUser.getUserID());
 		user.setUseremail(ccgUser.getUseremail());		
 		return user;
 	}
@@ -184,6 +195,46 @@ public class CCGUserServiceImpl implements CCGUserService{
 			group.setOwnerId(ccgGroup.getOwner().getUserID());
 		
 		return group;
+	}
+
+	@Override
+	@Transactional
+	public List<User> getGroupMembers(Integer groupID) {
+		// TODO Auto-generated method stub
+		CCGUserGroup ccgGroup = userGroupDAO.findById(groupID);
+		List<CCGGroupMembers> members=ccgGroup.getGroupmembers();
+		List<User> res=new ArrayList<User>();
+		if(members!=null)
+		{
+			for(CCGGroupMembers m:members)
+			{
+				User u=new User();
+				u.setUserID(m.getMember().getUserID());
+				u.setUseremail(m.getUseremail());
+				res.add(u);
+			}
+		}
+		return res;
+	}
+
+	@Override
+	@Transactional
+	public List<Article> getGroupArticles(Integer groupID) {
+		// TODO Auto-generated method stub
+		CCGUserGroup ccgGroup = userGroupDAO.findById(groupID);
+		List<CCGGroupArticleAccess> gdl=ccgGroup.getGrouparticles();
+		List<Article> res=new ArrayList<Article>();
+		if(gdl!=null)
+		{
+			for(CCGGroupArticleAccess d:gdl)
+			{
+				Article a=new Article();
+				a.setArticleID(d.getArticle().getArticleID());
+				a.setArticleTitle(d.getArticle().getTitle());
+				res.add(a);
+			}
+		}
+		return res;
 	}
 
 	

@@ -2,6 +2,7 @@ package com.ccg.services.data;
 
 import java.util.List;
 
+import com.ccg.common.data.Article;
 import com.ccg.common.data.user.User;
 import com.ccg.common.data.user.UserGroup;
 import com.ccg.common.data.user.UserProfile;
@@ -20,6 +21,9 @@ public interface CCGUserService {
 	public User getUserById(Integer id);
 	public List<UserGroup> getUserGroupList();
 	public UserGroup getUserGroupByGroupId(Integer groupId);
+	
+	public List<User> getGroupMembers(Integer groupID);
+	public List<Article> getGroupArticles(Integer groupID);
 	
 	
 }

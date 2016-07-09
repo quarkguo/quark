@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ccg.common.data.Article;
 import com.ccg.common.data.user.User;
 import com.ccg.common.data.user.UserGroup;
 import com.ccg.common.data.user.UserProfile;
@@ -145,6 +146,17 @@ public class UserHandler {
 		return userService.getUserGroupByGroupId(id);
 	}
 	
+	@RequestMapping(value="admin/userGroupMembers/{id}", method=RequestMethod.GET)
+	public List<User> getGroupMembers(@PathVariable("id") Integer id){
+		System.out.println(id);
+		return userService.getGroupMembers(id);
+	}
+	
+	@RequestMapping(value="admin/userGroupArticles/{id}", method=RequestMethod.GET)
+	public List<Article> getGroupDocAccess(@PathVariable("id") Integer id){
+		System.out.println(id);
+		return userService.getGroupArticles(id);
+	}
 }
 
 class UpdateProfile{String imageURL, phone, address,userID,username,name;}

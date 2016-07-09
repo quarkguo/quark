@@ -47,7 +47,7 @@ public class ArticleHandler {
 	public String articleList(ModelMap para)
 	{
 		String res=dataservice.getArticleListJson();
-		System.out.println(res);
+	//	System.out.println(res);
 		return res;
 	}
 	

@@ -2,7 +2,9 @@ package com.ccg.dataaccess.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 @NamedQueries({
 	 @NamedQuery(name="CCGUserGroup.findAll", query="select g from CCGUserGroup g"),
@@ -104,5 +107,23 @@ public class CCGUserGroup implements Serializable {
 	
 	private CCGUser owner;
 	
+	private List<CCGGroupMembers> groupmembers;
+	@OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL,mappedBy="group")
+	public List<CCGGroupMembers> getGroupmembers() {
+		return groupmembers;
+	}
 
+	public void setGroupmembers(List<CCGGroupMembers> groupmembers) {
+		this.groupmembers = groupmembers;
+	}
+	
+	private List<CCGGroupArticleAccess> grouparticles;
+	@OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL,mappedBy="group")
+	public List<CCGGroupArticleAccess> getGrouparticles() {
+		return grouparticles;
+	}
+
+	public void setGrouparticles(List<CCGGroupArticleAccess> grouparticles) {
+		this.grouparticles = grouparticles;
+	}
 }

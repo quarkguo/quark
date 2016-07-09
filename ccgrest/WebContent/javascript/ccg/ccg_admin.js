@@ -72,26 +72,13 @@ Ext.onReady(function(){
 ccg.data.userlist={};
 ccg.ui.loadUserAdmin=function()
 {
-	// load userList json
-	Ext.Ajax.request({
-		   url: 'json/userlist.json',
-		   success: function(response, opts) {
-		      var o = Ext.decode(response.responseText);
-		      ccg.data.userlist=o;
-		      //console.log(ccg.data.userlist);
-		   },
-		   failure: function(response, opts) {
-		      console.log('server-side failure with status code ' + response.status);
-		   }
-		});
-	// render user accordion
 	
 };
 
 ccg.data.allGroupStore = Ext.create('Ext.data.TreeStore', {
     proxy: {
         type: 'ajax',
-        url: 'json/grouplist.json'
+        url: 'rest/admin/usergroup/all'
     },
     autoLoad:false,
     root: {
@@ -106,7 +93,7 @@ ccg.data.allGroupStore = Ext.create('Ext.data.TreeStore', {
 ccg.data.groupMemberStore = Ext.create('Ext.data.TreeStore', {
     proxy: {
         type: 'ajax',
-        url: 'json/userlist.json'
+        url: ''
     },
     root: {
         text: 'Group Members:',        
@@ -117,7 +104,7 @@ ccg.data.groupMemberStore = Ext.create('Ext.data.TreeStore', {
 ccg.data.alluserlist = Ext.create('Ext.data.TreeStore', {
     proxy: {
         type: 'ajax',
-        url: 'json/userlist.json'
+        url: 'rest/admin/user/all'
     },
     root: {
         text: 'All Users:',        
@@ -128,7 +115,7 @@ ccg.data.alluserlist = Ext.create('Ext.data.TreeStore', {
 ccg.data.groupAccessStore = Ext.create('Ext.data.TreeStore', {
     proxy: {
         type: 'ajax',
-        url: 'json/docaccesslist.json'
+        url: ''
     },
     root: {
         text: 'Document Access:',        
@@ -142,8 +129,20 @@ ccg.ui.grouplistpanel =Ext.create('Ext.tree.Panel', {
     height: 480,
     title: 'All Groups',
     useArrows: true,
-    frame:true
-    
+    frame:true,
+    listeners:{
+    itemclick: function(s,r) {           
+   	 if(r.data.leaf)
+   	 {
+   		 // load the member panel
+   		 console.log(r.data);
+   		ccg.data.groupMemberStore.load({url:"rest/admin/userGroupMembers/"+r.data.groupId});
+   		 // load the document access panel
+   		ccg.data.groupAccessStore.load({url:"rest/admin/userGroupArticles/"+r.data.groupId});
+   		 
+   	 }
+    }
+    }
 });
 
 ccg.ui.groupmemberpanel =Ext.create('Ext.tree.Panel', {
