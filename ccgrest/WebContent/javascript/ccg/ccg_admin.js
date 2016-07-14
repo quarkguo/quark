@@ -101,6 +101,18 @@ ccg.data.groupMemberStore = Ext.create('Ext.data.TreeStore', {
     }
 });
 
+ccg.data.groupMemberStore1 = Ext.create('Ext.data.TreeStore', {
+	autoLoad: false,
+    proxy: {
+        type: 'ajax',
+        url: ''
+    },
+    root: {
+        text: 'Members:',        
+        expanded: true
+    }
+});
+
 ccg.data.alluserlist = Ext.create('Ext.data.TreeStore', {
     proxy: {
         type: 'ajax',
@@ -124,6 +136,7 @@ ccg.data.groupAccessStore = Ext.create('Ext.data.TreeStore', {
 });
 
 ccg.ui.grouplistpanel =Ext.create('Ext.tree.Panel', {
+	curgroupid:'',
     store: ccg.data.allGroupStore,
     width: 300,
     height: 480,
@@ -136,9 +149,14 @@ ccg.ui.grouplistpanel =Ext.create('Ext.tree.Panel', {
    	 {
    		 // load the member panel
    		 console.log(r.data);
+   		
    		ccg.data.groupMemberStore.load({url:"rest/admin/userGroupMembers/"+r.data.groupId});
+   		//ccg.data.groupMemberStore1.load({url:"rest/admin/userGroupMembers/"+r.data.groupId});
    		 // load the document access panel
    		ccg.data.groupAccessStore.load({url:"rest/admin/userGroupArticles/"+r.data.groupId});
+   		ccg.ui.grouplistpanel.curgroupid=r.data.groupId;
+   		// load user panel
+   		//ccg.data.assignuserstore.load({url:"rest/admin/userGroupNotMembers/"+r.data.groupId});
    		 
    	 }
     }
@@ -157,13 +175,26 @@ ccg.ui.groupmemberpanel =Ext.create('Ext.tree.Panel', {
             type: 'plus', // this doesn't appear to work, probably I need to use a valid class
             tooltip: 'Add Group Member',
             handler: function() {
-                console.log('TODO: Add project');
-                console.log(ccg.ui.contentsearchPanel);
-                ccg.ui.contentsearchPanel.show();
+             //   console.log('TODO: Add project');
+                //console.log(ccg.ui.contentsearchPanel);
+            	ccg.ui.assignuserpanel.getForm().reset();
+                ccg.ui.assignuserpanel.getForm().setValues({groupID:ccg.ui.grouplistpanel.curgroupid});    
+                
+                ccg.data.assignuserstore.load({url:"rest/admin/userGroupNotMembers/"+ccg.ui.grouplistpanel.curgroupid});
+                
+                ccg.ui.assignuserpanel.show();
             }
         },
         {
-        	type: 'minus' // this doesn't appear to work, probably I need to use a valid class
+        	type: 'minus',// this doesn't appear to work, probably I need to use a valid class
+        	handler: function(){
+        		ccg.ui.removeuserpanel.getForm().reset();
+        		ccg.ui.removeuserpanel.getForm().setValues({groupID:ccg.ui.grouplistpanel.curgroupid});
+        		ccg.ui.removeuserpanel.show();
+        		ccg.data.groupMemberStore1.proxy.url="rest/admin/userGroupMembers/"+ccg.ui.grouplistpanel.curgroupid;
+        		ccg.data.groupMemberStore1.load({url:"rest/admin/userGroupMembers/"+ccg.ui.grouplistpanel.curgroupid});
+        		//ccg.data.groupMemberStore1.load({url:"rest/admin/userGroupMembers/"+ccg.ui.grouplistpanel.curgroupid});
+        	}
         }
      ]
 });
@@ -180,12 +211,15 @@ ccg.ui.docaccesspanel =Ext.create('Ext.tree.Panel', {
             tooltip: 'Add Group Member',
             handler: function() {
                 console.log('TODO: Add project');
-                console.log(ccg.ui.contentsearchPanel);
-                ccg.ui.contentsearchPanel.show();
+              //  console.log(ccg.ui.contentsearchPanel);
+                ccg.ui.assignuserpanel.show();
             }
         },
         {
-        	type: 'minus' // this doesn't appear to work, probably I need to use a valid class
+        	type: 'minus' ,// this doesn't appear to work, probably I need to use a valid class
+            handler: function(){
+            	//ccg.ui.removeuserpanel.show();
+            }
         }
         ]
 });
@@ -261,4 +295,127 @@ ccg.ui.newuserpanel=Ext.create('Ext.form.Panel', {
         	ccg.ui.newuserpanel.hide();
         }
     }]
+});
+
+ccg.data.assignuserstore=Ext.create("Ext.data.Store",{
+	fields: [ 'userID', 'text' ],
+	proxy: {
+        type: 'ajax',
+        url: ''
+    }
+});
+ccg.ui.assignuserpanel=Ext.create('Ext.form.Panel', {
+	 title: 'Assign User to the Group', 
+	    width: 320,
+	    height: 240,
+	    bodyPadding: 10,
+	    defaultType: 'textfield',
+	    frame: true,
+	    id:'newuser',
+	    bodyBorder: true, 
+	    floating: true,
+	    closable : true,
+	    draggable: true,
+	    items:[	          
+	           {
+	        	 fieldLabel:'Group ID',
+	        	 name:'groupID',
+	        	 editable:false,
+	           	 fieldStyle:'color:#ccc'
+	           },
+	           {
+	        	   fieldLabel:'Users',
+	        	   xtype: 'tagfield',	        	   
+	        	   name:'usernames',
+	        	   multiselect:true,
+	        	   store: ccg.data.assignuserstore	        	   
+	           }
+	    ],
+	    listeners:{
+	    	beforeclose:function(win) {
+	    		ccg.ui.assignuserpanel.hide();
+	        	 return false; 
+	        }
+	    },
+	    displayField: 'text',
+	    buttons: [{
+	        text: 'Add Users',
+	        handler: function () {
+	        	var form=this.up('form').getForm();
+	        	var url="rest/admin/addUserToGroup";
+	        	Ext.Ajax.request({
+	                   url: url,
+	                   method: 'POST',
+	                   jsonData: form.getValues(),
+	                   success: function(response, opts) {
+	                    console.log(response.responseText);   
+	                	ccg.data.groupMemberStore.load({url:"rest/admin/userGroupMembers/"+ccg.ui.grouplistpanel.curgroupid});
+	                    ccg.ui.assignuserpanel.hide();
+	                   },
+	                   failure: function(response, opts) {
+	                      console.log('server-side failure with status code ' + response.status);
+	                      alert("Update Error!!");
+	                   }
+	                });
+	        }
+	    }]
+	      
+});
+
+ccg.ui.removeuserpanel=Ext.create('Ext.form.Panel', {
+	 title: 'Remove User From the Group', 
+	    width: 320,
+	    height: 240,
+	    bodyPadding: 10,
+	    defaultType: 'textfield',
+	    frame: true,
+	    id:'removeuser',
+	    bodyBorder: true, 
+	    floating: true,
+	    closable : true,
+	    draggable: true,
+	    items:[	          
+	           {
+	        	 fieldLabel:'Group ID',
+	        	 name:'groupID',
+	        	 editable:false,
+	           	 fieldStyle:'color:#ccc'
+	           },
+	           {
+	        	   fieldLabel:'Users',
+	        	   xtype: 'tagfield',	        	   
+	        	   name:'usernames',
+	        	   multiselect:true,
+	        	   store:ccg.data.groupMemberStore1	        	   
+	           }
+	    ],
+	    listeners:{
+	    	beforeclose:function(win) {
+	    		ccg.ui.removeuserpanel.hide();
+	        	 return false; 
+	        }
+	    },
+	    displayField: 'text',
+	    buttons: [{
+	        text: 'Remove Users',
+	        handler: function () {
+	        	var form=this.up('form').getForm();
+	        	var url="rest/admin/removeUserFromGroup";
+	        	Ext.Ajax.request({
+	                   url: url,
+	                   method: 'POST',
+	                   jsonData: form.getValues(),
+	                   success: function(response, opts) {
+	                    console.log(response.responseText);   
+	                	ccg.data.groupMemberStore.load({url:"rest/admin/userGroupMembers/"+ccg.ui.grouplistpanel.curgroupid});
+	                	ccg.ui.removeuserpanel.hide();
+	                   },
+	                   failure: function(response, opts) {
+	                      console.log('server-side failure with status code ' + response.status);
+	                      alert("Update Error!!");
+	                   }
+	                });
+	        }
+	    }]
+	      
 });

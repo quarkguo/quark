@@ -77,15 +77,21 @@ public class CCGUserServiceImpl implements CCGUserService{
 	}
 
 	@Override
-	public boolean addUserToGroup(String useremail, String groupname) {
-		CCGGroupMembers gm = new CCGGroupMembers();
-		CCGUserGroup usergroup = userGroupDAO.findUserGroupByGroupName(groupname);
-		CCGUser user = userDAO.findUserByUseremail(useremail);
-		gm.setGroup(usergroup);
-		gm.setMember(user);
-		gm.setGroupname(groupname);
-		gm.setUseremail(useremail);
-		groupMembersDAO.save(gm);
+	@Transactional
+	public boolean addUserToGroup(String[] useremails, String groupID) {
+		for(String userstr:useremails)
+		{
+			CCGGroupMembers gm = new CCGGroupMembers();
+			CCGUserGroup usergroup = userGroupDAO.findById(Integer.parseInt(groupID));
+			CCGUser user = userDAO.findUserByUseremail(userstr);
+			gm.setGroup(usergroup);
+			gm.setMember(user);
+			gm.setGroupname(usergroup.getGroupname());
+			gm.setUseremail(userstr);
+			System.out.println(userstr);
+			gm.setCreatedTS(new Date());
+			groupMembersDAO.save(gm);
+		}
 		return true;
 	}
 

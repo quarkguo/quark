@@ -107,11 +107,10 @@ public class UserHandler {
 	
 	@RequestMapping(value="admin/addUserToGroup", method=RequestMethod.POST)
 	public String addUserToGroup(@RequestBody AddUserToGroup input, HttpServletRequest request){
-		String name = request.getRemoteUser();
-		if(name == null){
-			name = "name";
-		}
-		userService.addUserToGroup(input.userId, input.groupName);		
+		System.out.println(input.groupID);
+		System.out.println(input.usernames);
+	//	userService.addUserToGroup(input.userId, input.groupName);		
+		userService.addUserToGroup(input.usernames, input.groupID);
 		return "done";
 	}
 	
@@ -146,8 +145,20 @@ public class UserHandler {
 		return userService.getUserGroupByGroupId(id);
 	}
 	
-	@RequestMapping(value="admin/userGroupMembers/{id}", method=RequestMethod.GET)
+	@RequestMapping(value="admin/userGroupNotMembers/{id}", method=RequestMethod.GET)
 	public List<User> getGroupMembers(@PathVariable("id") Integer id){
+		System.out.println(id);
+		List<User> au=userService.getUserList();
+		List<User> ul=userService.getGroupMembers(id);
+		for(User u : ul)
+		{
+			au.remove(u);
+		}
+		return au;
+	}
+	
+	@RequestMapping(value="admin/userGroupMembers/{id}", method=RequestMethod.GET)
+	public List<User> getNotGroupMembers(@PathVariable("id") Integer id){
 		System.out.println(id);
 		return userService.getGroupMembers(id);
 	}
@@ -163,6 +174,6 @@ class UpdateProfile{String imageURL, phone, address,userID,username,name;}
 class UpdatePassword{String oldpass, newpass;}
 class CreateUser{String userId;}
 class CreateGroup{String groupName;}
-class AddUserToGroup{String userId, groupName;}
+class AddUserToGroup{String[] usernames; String groupID;}
 class ResetPassword{String userId;}
 class RemoveUserFromGroup{String userId, groupName;}
