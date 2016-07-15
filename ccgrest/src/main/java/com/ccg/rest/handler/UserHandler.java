@@ -122,7 +122,7 @@ public class UserHandler {
 
 	@RequestMapping(value="admin/removeUserFromGroup", method=RequestMethod.POST)
 	public String removeUserFromGroup(@RequestBody RemoveUserFromGroup input){
-		userService.removeUserFromGroup(input.userId, input.groupName);	
+		userService.removeUserFromGroup(input.usernames, input.groupID);	
 		return "done";
 	}
 	
@@ -176,4 +176,4 @@ class CreateUser{String userId;}
 class CreateGroup{String groupName;}
 class AddUserToGroup{String[] usernames; String groupID;}
 class ResetPassword{String userId;}
-class RemoveUserFromGroup{String userId, groupName;}
+class RemoveUserFromGroup{String[] usernames; String groupID;}

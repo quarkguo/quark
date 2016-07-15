@@ -16,7 +16,7 @@ public interface CCGUserService {
 	public boolean resetPassword(String useremail);
 	public UserProfile getUserProfileByUserName(String useremail);  // user email is the user name
 	public boolean updateUserProfile(UserProfile profile);
-	public boolean removeUserFromGroup(String userId, String groupName);
+	public boolean removeUserFromGroup(String[] userId, String groupName);
 	public List<User> getUserList();
 	public User getUserById(Integer id);
 	public List<UserGroup> getUserGroupList();

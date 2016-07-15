@@ -143,12 +143,15 @@ public class CCGUserServiceImpl implements CCGUserService{
 
 	@Override
 	@Transactional
-	public boolean removeUserFromGroup(String userId, String groupName){
-
-		CCGUser user = userDAO.findUserByUseremail(userId);
-		CCGUserGroup group = userGroupDAO.findUserGroupByGroupName(groupName); 
-		CCGGroupMembers gm = groupMembersDAO.getUserGroup(user, group);
-		groupMembersDAO.delete(gm);
+	public boolean removeUserFromGroup(String[] usernames, String groupID){
+		
+		for(String un:usernames)
+		{
+			CCGUser user = userDAO.findUserByUseremail(un);
+			CCGUserGroup group = userGroupDAO.findById(Integer.parseInt(groupID)); 
+			CCGGroupMembers gm = groupMembersDAO.getUserGroup(user, group);
+			groupMembersDAO.delete(gm);
+		}
 		return true;
 	}
 
