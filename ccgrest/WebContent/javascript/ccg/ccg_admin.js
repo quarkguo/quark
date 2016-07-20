@@ -419,3 +419,71 @@ ccg.ui.removeuserpanel=Ext.create('Ext.form.Panel', {
 	    }]
 	      
 });
+
+ccg.data.groupnewdocStore = Ext.create('Ext.data.TreeStore', {
+    proxy: {
+        type: 'ajax',
+        url: ''
+    },
+    root: {
+        text: 'Documents:',        
+        expanded: true
+    }
+});
+ccg.ui.addDocAccessPanel=Ext.create('Ext.form.Panel', {
+	 title: 'Grant Document Access', 
+	    width: 320,
+	    height: 240,
+	    bodyPadding: 10,
+	    defaultType: 'textfield',
+	    frame: true,
+	    id:'grantdocaccess',
+	    bodyBorder: true, 
+	    floating: true,
+	    closable : true,
+	    draggable: true,
+	    items:[	          
+	           {
+	        	 fieldLabel:'Group ID',
+	        	 name:'groupID',
+	        	 editable:false,
+	           	 fieldStyle:'color:#ccc'
+	           },
+	           {
+	        	   fieldLabel:'documents',
+	        	   xtype: 'tagfield',	        	   
+	        	   name:'documents',
+	        	   multiselect:true,
+	        	   store: ccg.data.groupnewdocStore	        	   
+	           }
+	    ],
+	    listeners:{
+	    	beforeclose:function(win) {
+	    		ccg.ui.addDocAccessPanel.hide();
+	        	 return false; 
+	        }
+	    },
+	    displayField: 'text',
+	    buttons: [{
+	        text: 'Add Users',
+	        handler: function () {
+	        	var form=this.up('form').getForm();
+	        	//var url="rest/admin/addUserToGroup";
+	        	Ext.Ajax.request({
+	                   url: url,
+	                   method: 'POST',
+	                   jsonData: form.getValues(),
+	                   success: function(response, opts) {
+	                    console.log(response.responseText);   
+	                	ccg.data.groupMemberStore.load({url:"rest/admin/userGroupMembers/"+ccg.ui.grouplistpanel.curgroupid});
+	                    ccg.ui.assignuserpanel.hide();
+	                   },
+	                   failure: function(response, opts) {
+	                      console.log('server-side failure with status code ' + response.status);
+	                      alert("Update Error!!");
+	                   }
+	                });
+	        }
+	    }]
+	      
+});
