@@ -208,11 +208,15 @@ ccg.ui.docaccesspanel =Ext.create('Ext.tree.Panel', {
     tools: [
      {
             type: 'plus', // this doesn't appear to work, probably I need to use a valid class
-            tooltip: 'Add Group Member',
+            tooltip: 'Assign Doc Access',
             handler: function() {
                 console.log('TODO: Add project');
               //  console.log(ccg.ui.contentsearchPanel);
-                ccg.ui.assignuserpanel.show();
+                ccg.ui.addDocAccessPanel.getForm().reset();
+                ccg.ui.addDocAccessPanel.getForm().setValues({groupID:ccg.ui.grouplistpanel.curgroupid});
+                ccg.data.groupnewdocStore.proxy.url="rest/admin/userGroupArticleCandidate/"+ccg.ui.grouplistpanel.curgroupid;
+                ccg.data.groupnewdocStore.load({url:"rest/admin/userGroupArticleCandidate/"+ccg.ui.grouplistpanel.curgroupid});
+                ccg.ui.addDocAccessPanel.show();
             }
         },
         {
@@ -311,7 +315,7 @@ ccg.ui.assignuserpanel=Ext.create('Ext.form.Panel', {
 	    bodyPadding: 10,
 	    defaultType: 'textfield',
 	    frame: true,
-	    id:'newuser',
+	    id:'assignuser',
 	    bodyBorder: true, 
 	    floating: true,
 	    closable : true,
@@ -432,7 +436,7 @@ ccg.data.groupnewdocStore = Ext.create('Ext.data.TreeStore', {
 });
 ccg.ui.addDocAccessPanel=Ext.create('Ext.form.Panel', {
 	 title: 'Grant Document Access', 
-	    width: 320,
+	    width: 510,
 	    height: 240,
 	    bodyPadding: 10,
 	    defaultType: 'textfield',
@@ -451,9 +455,11 @@ ccg.ui.addDocAccessPanel=Ext.create('Ext.form.Panel', {
 	           },
 	           {
 	        	   fieldLabel:'documents',
-	        	   xtype: 'tagfield',	        	   
-	        	   name:'documents',
-	        	   multiselect:true,
+	        	   xtype: 'combo',	      
+	        	   width:460,
+	        	   name:'documentID',	 
+	        	   displayField: 'text',
+	        	   valueField: 'articleID',
 	        	   store: ccg.data.groupnewdocStore	        	   
 	           }
 	    ],
@@ -465,24 +471,27 @@ ccg.ui.addDocAccessPanel=Ext.create('Ext.form.Panel', {
 	    },
 	    displayField: 'text',
 	    buttons: [{
-	        text: 'Add Users',
+	        text: 'Assign Docs',
 	        handler: function () {
 	        	var form=this.up('form').getForm();
-	        	//var url="rest/admin/addUserToGroup";
+	        	console.log(form.getValues());
+	        	var url="rest/admin/addDocToGroup";
+	        	
 	        	Ext.Ajax.request({
 	                   url: url,
 	                   method: 'POST',
 	                   jsonData: form.getValues(),
 	                   success: function(response, opts) {
-	                    console.log(response.responseText);   
-	                	ccg.data.groupMemberStore.load({url:"rest/admin/userGroupMembers/"+ccg.ui.grouplistpanel.curgroupid});
-	                    ccg.ui.assignuserpanel.hide();
+	                    console.log(response.responseText);
+	                	ccg.data.groupAccessStore.load({url:"rest/admin/userGroupArticles/"+ccg.ui.grouplistpanel.curgroupid});	                    
+	                	ccg.ui.addDocAccessPanel.hide();
 	                   },
 	                   failure: function(response, opts) {
 	                      console.log('server-side failure with status code ' + response.status);
 	                      alert("Update Error!!");
 	                   }
 	                });
+	                
 	        }
 	    }]
 	      

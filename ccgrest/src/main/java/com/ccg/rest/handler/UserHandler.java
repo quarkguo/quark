@@ -105,6 +105,19 @@ public class UserHandler {
 		
 	}	
 	
+	
+	@RequestMapping(value="admin/addDocToGroup", method=RequestMethod.POST)
+	public String addDocToGroup(@RequestBody addDocToGroup input, HttpServletRequest request){
+		System.out.println(input.groupID);
+		System.out.println(input.documentID);
+	//	userService.addUserToGroup(input.userId, input.groupName);		
+	//	userService.addUserToGroup(input.usernames, input.groupID);
+		int groupID =Integer.parseInt(input.groupID);
+		int docID=Integer.parseInt(input.documentID);
+		userService.addDocToGroup(groupID, docID);
+		return "done";
+	}
+	
 	@RequestMapping(value="admin/addUserToGroup", method=RequestMethod.POST)
 	public String addUserToGroup(@RequestBody AddUserToGroup input, HttpServletRequest request){
 		System.out.println(input.groupID);
@@ -120,6 +133,14 @@ public class UserHandler {
 		return "done";
 	}
 
+	@RequestMapping(value="admin/removeDocFromGroup", method=RequestMethod.POST)
+	public String removeDocFromGroup(@RequestBody addDocToGroup input){
+		int groupID =Integer.parseInt(input.groupID);
+		int docID=Integer.parseInt(input.documentID);
+		userService.removeDocFromGroup(groupID, docID);	
+		return "done";
+	}
+	
 	@RequestMapping(value="admin/removeUserFromGroup", method=RequestMethod.POST)
 	public String removeUserFromGroup(@RequestBody RemoveUserFromGroup input){
 		userService.removeUserFromGroup(input.usernames, input.groupID);	
@@ -168,6 +189,13 @@ public class UserHandler {
 		System.out.println(id);
 		return userService.getGroupArticles(id);
 	}
+	
+	
+	@RequestMapping(value="admin/userGroupArticleCandidate/{id}", method=RequestMethod.GET)
+	public List<Article> getGroupAccessCandidate(@PathVariable("id") Integer id){
+		System.out.println(id);
+		return userService.getGroupArticlesCandidate(id);
+	}
 }
 
 class UpdateProfile{String imageURL, phone, address,userID,username,name;}
@@ -177,3 +205,4 @@ class CreateGroup{String groupName;}
 class AddUserToGroup{String[] usernames; String groupID;}
 class ResetPassword{String userId;}
 class RemoveUserFromGroup{String[] usernames; String groupID;}
+class addDocToGroup{String groupID, documentID ;}

@@ -7,7 +7,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.ccg.dataaccess.dao.api.CCGGroupArticleAccessDAO;
 import com.ccg.dataaccess.dao.api.CCGUserGroupDAO;
+import com.ccg.dataaccess.entity.CCGGroupArticleAccess;
 import com.ccg.dataaccess.entity.CCGUserGroup;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -18,10 +20,19 @@ public class CCGUserGroupTestCase {
 	@Autowired
 	private CCGUserGroupDAO usergroupDAO;
 	
-	@Test
+	@Autowired CCGGroupArticleAccessDAO docgroupDAO;
+	
+	//@Test
 	public void testUserGroupMembers()
 	{
 		CCGUserGroup ug=usergroupDAO.findById(1);
 		System.out.println(ug.getGroupmembers());
+	}
+	
+	@Test
+	public void testDocGroupAccess()
+	{
+		CCGGroupArticleAccess gaa=docgroupDAO.findRecord(1, 21);
+		System.out.println(gaa);
 	}
 }

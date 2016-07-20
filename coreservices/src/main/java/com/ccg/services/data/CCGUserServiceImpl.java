@@ -12,10 +12,13 @@ import com.ccg.common.data.Article;
 import com.ccg.common.data.user.User;
 import com.ccg.common.data.user.UserGroup;
 import com.ccg.common.data.user.UserProfile;
+import com.ccg.dataaccess.dao.api.CCGArticleDAO;
+import com.ccg.dataaccess.dao.api.CCGGroupArticleAccessDAO;
 import com.ccg.dataaccess.dao.api.CCGGroupMembersDAO;
 import com.ccg.dataaccess.dao.api.CCGUserDAO;
 import com.ccg.dataaccess.dao.api.CCGUserGroupDAO;
 import com.ccg.dataaccess.dao.api.CCGUserProfileDAO;
+import com.ccg.dataaccess.entity.CCGArticle;
 import com.ccg.dataaccess.entity.CCGGroupArticleAccess;
 import com.ccg.dataaccess.entity.CCGGroupMembers;
 import com.ccg.dataaccess.entity.CCGUser;
@@ -37,7 +40,11 @@ public class CCGUserServiceImpl implements CCGUserService{
 	@Autowired	
 	private CCGUserProfileDAO userProfileDAO;
 	
+	@Autowired
+	private CCGArticleDAO articleDAO;
 	
+	@Autowired
+	private CCGGroupArticleAccessDAO groupArticleAccessDAO;
 
 	@Override
 	@Transactional
@@ -244,6 +251,49 @@ public class CCGUserServiceImpl implements CCGUserService{
 			}
 		}
 		return res;
+	}
+
+	@Override
+	@Transactional
+	public List<Article> getGroupArticlesCandidate(Integer groupID) {
+		// TODO Auto-generated method stub
+		List<CCGArticle> l_all=articleDAO.findAll();
+		List<Article> l=this.getGroupArticles(groupID);
+		List<Article> res=new ArrayList<Article>();
+		for(CCGArticle a:l_all )
+		{
+			Article ar=new Article();
+			ar.setArticleID(a.getArticleID());
+			ar.setArticleTitle(a.getTitle());
+			if(!l.contains(ar))
+			{
+				res.add(ar);
+			}
+		}
+		return res;
+	}
+
+	@Override
+	@Transactional
+	public boolean addDocToGroup(int groupID, int docID) {
+		// TODO Auto-generated method stub
+		CCGGroupArticleAccess gaa=new CCGGroupArticleAccess();
+		CCGUserGroup ccgGroup = userGroupDAO.findById(groupID);
+		CCGArticle a=articleDAO.findById(docID);
+		gaa.setArticle(a);
+		gaa.setCreatedTS(new Date());
+		gaa.setGroup(ccgGroup);
+		groupArticleAccessDAO.save(gaa);
+		return true;
+	}
+
+	@Override
+	@Transactional
+	public void removeDocFromGroup(int groupID, int docID) {
+		// TODO Auto-generated method stub
+
+		CCGGroupArticleAccess gaa=groupArticleAccessDAO.findRecord(groupID, docID);
+		groupArticleAccessDAO.delete(gaa);		
 	}
 
 	
