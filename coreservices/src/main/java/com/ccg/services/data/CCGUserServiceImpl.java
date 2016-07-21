@@ -296,6 +296,15 @@ public class CCGUserServiceImpl implements CCGUserService{
 		groupArticleAccessDAO.delete(gaa);		
 	}
 
+	@Override
+	@Transactional
+	public void deleteUser(int userID) {
+		// TODO Auto-generated method stub
+		CCGUser user=userDAO.findById(userID);
+		groupMembersDAO.deleteUserFromMemberGroup(user.getUseremail());
+		userDAO.delete(user);
+	}
+
 	
 
 }

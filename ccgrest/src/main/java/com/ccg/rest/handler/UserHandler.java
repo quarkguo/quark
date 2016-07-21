@@ -73,11 +73,10 @@ public class UserHandler {
 	public String createUser(@RequestBody CreateUser input)
 	{	
 		try{
-			if(userService.createUser(input.userId)){
+			System.out.println(input.useremail);			
+			userService.createUser(input.useremail);
 				return "done";
-			}else{
-				return "you oldPassword is not currect";
-			}
+			
 		}catch(Throwable t){
 			t.printStackTrace();
 			return ("==" + t.getMessage());
@@ -152,6 +151,12 @@ public class UserHandler {
 		return userService.getUserList();
 	}
 
+	@RequestMapping(value="admin/removeUser/{id}", method=RequestMethod.POST)
+	public String deleteUser(@PathVariable("id") Integer id)
+	{
+		userService.deleteUser(id);
+		return "success";
+	}
 	@RequestMapping(value="admin/user/{id}", method=RequestMethod.GET)
 	public User getUserById (@PathVariable("id") Integer id){
 		return userService.getUserById(id);
@@ -200,7 +205,7 @@ public class UserHandler {
 
 class UpdateProfile{String imageURL, phone, address,userID,username,name;}
 class UpdatePassword{String oldpass, newpass;}
-class CreateUser{String userId;}
+class CreateUser{String useremail;}
 class CreateGroup{String groupName;}
 class AddUserToGroup{String[] usernames; String groupID;}
 class ResetPassword{String userId;}

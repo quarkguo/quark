@@ -6,4 +6,5 @@ import com.ccg.dataaccess.entity.CCGUserGroup;
 
 public interface CCGGroupMembersDAO extends CCGGenericDAO<CCGGroupMembers, Integer> {
 	public CCGGroupMembers getUserGroup(CCGUser user, CCGUserGroup group);
+	public void deleteUserFromMemberGroup(String un);
 }

@@ -27,7 +27,7 @@ public interface CCGUserService {
 	public List<Article> getGroupArticlesCandidate(Integer id);
 	public boolean addDocToGroup(int groupID,int docID);
 	public void removeDocFromGroup(int groupID, int docID);
-
+	public void deleteUser(int userID);
 	
 	
 }

@@ -44,7 +44,7 @@ public class CCGGroupMembers implements Serializable {
 	}
 	
 	 @ManyToOne(fetch=FetchType.LAZY )
-	 @JoinColumn(name="userID",referencedColumnName="userID")
+	 @JoinColumn(name="userID")
 	public CCGUser getMember() {
 		return member;
 	}

@@ -66,14 +66,8 @@ Ext.onReady(function(){
 		}
 		]
 	});
-	ccg.ui.loadUserAdmin();
 });
 
-ccg.data.userlist={};
-ccg.ui.loadUserAdmin=function()
-{
-	
-};
 
 ccg.data.allGroupStore = Ext.create('Ext.data.TreeStore', {
     proxy: {
@@ -223,6 +217,11 @@ ccg.ui.docaccesspanel =Ext.create('Ext.tree.Panel', {
         	type: 'minus' ,// this doesn't appear to work, probably I need to use a valid class
             handler: function(){
             	//ccg.ui.removeuserpanel.show();
+            	ccg.ui.removeDocAccessPanel.getForm().reset();
+            	ccg.ui.removeDocAccessPanel.getForm().setValues({groupID:ccg.ui.grouplistpanel.curgroupid});
+            	ccg.data.removeDocStore.proxy.url="rest/admin/userGroupArticles/"+ccg.ui.grouplistpanel.curgroupid;
+            	ccg.data.removeDocStore.load({url:"rest/admin/userGroupArticles/"+ccg.ui.grouplistpanel.curgroupid});
+            	ccg.ui.removeDocAccessPanel.show();
             }
         }
         ]
@@ -233,8 +232,32 @@ ccg.ui.alluserlistpanel =Ext.create('Ext.tree.Panel', {
     title: 'All Users',
     height: 480,
     useArrows: true,
-    frame:true
-    
+    frame:true,
+    tools: [
+            {
+        	type: 'minus' ,// this doesn't appear to work, probably I need to use a valid class
+            handler: function(){
+            	var nodeary=ccg.ui.alluserlistpanel.getSelectionModel().getSelection();
+            	if(nodeary.length>0)
+            	{
+            	  var ele=nodeary[0];
+            	  if(ele.data.userID)
+            	  {
+            		  Ext.Ajax.request({
+   	                   url: "rest/admin/removeUser/"+ele.data.userID,
+   	                   method: 'POST',   	                  
+   	                   success: function(response, opts) {
+   	                	ccg.data.alluserlist.load();
+   	                   },
+   	                   failure: function(response, opts) {
+   	                      console.log('server-side failure with status code ' + response.status);   	                    
+   	                   }
+   	                });
+            	  }
+            	}            		
+            }
+           }
+    ]
 });
 
 ccg.ui.newuserpanel=Ext.create('Ext.form.Panel', {  
@@ -255,11 +278,8 @@ ccg.ui.newuserpanel=Ext.create('Ext.form.Panel', {
             },
             {
             fieldLabel: 'User name (Email)',
-            name: 'useremail'
-        },
-        {
-            fieldLabel: 'Name:',
-            name: 'name'
+            name: 'useremail',
+            required:true
         }
         
     ],
@@ -272,21 +292,22 @@ ccg.ui.newuserpanel=Ext.create('Ext.form.Panel', {
     buttons: [{
         text: 'Create User',
         handler: function () {
-        	/*
+        	
             var form = this.up('form').getForm();
             if (form.isValid()) {
                // making ajax calls
-               var urlstr="rest/article/metadata";
-               console.log(urlstr);
+               var urlstr="rest/admin/createUser";
+               console.log(form.getValues());
                Ext.Ajax.request({
                    url: urlstr,
                    method: 'POST',
                    jsonData: form.getValues(),
                    success: function(response, opts) {
-                      var obj = Ext.decode(response.responseText);
-                      console.log(obj);
+                	   	ccg.data.alluserlist.load();
+                		ccg.ui.newuserpanel.hide();
                    },
                    failure: function(response, opts) {
+                	   alert("Could not completed your request. Please check data.")
                       console.log('server-side failure with status code ' + response.status);
                    }
                 });
@@ -294,9 +315,8 @@ ccg.ui.newuserpanel=Ext.create('Ext.form.Panel', {
             else
             {
             	alert("invalid data!");
-            }
-            */
-        	ccg.ui.newuserpanel.hide();
+            }            
+        	//ccg.ui.newuserpanel.hide();
         }
     }]
 });
@@ -434,6 +454,7 @@ ccg.data.groupnewdocStore = Ext.create('Ext.data.TreeStore', {
         expanded: true
     }
 });
+
 ccg.ui.addDocAccessPanel=Ext.create('Ext.form.Panel', {
 	 title: 'Grant Document Access', 
 	    width: 510,
@@ -485,6 +506,80 @@ ccg.ui.addDocAccessPanel=Ext.create('Ext.form.Panel', {
 	                    console.log(response.responseText);
 	                	ccg.data.groupAccessStore.load({url:"rest/admin/userGroupArticles/"+ccg.ui.grouplistpanel.curgroupid});	                    
 	                	ccg.ui.addDocAccessPanel.hide();
+	                   },
+	                   failure: function(response, opts) {
+	                      console.log('server-side failure with status code ' + response.status);
+	                      alert("Update Error!!");
+	                   }
+	                });
+	                
+	        }
+	    }]
+	      
+});
+
+ccg.data.removeDocStore = Ext.create('Ext.data.TreeStore', {
+    proxy: {
+        type: 'ajax',
+        url: ''
+    },
+    root: {
+        text: 'Documents:',        
+        expanded: true
+    }
+});
+
+ccg.ui.removeDocAccessPanel=Ext.create('Ext.form.Panel', {
+	 title: 'Remove Document Access', 
+	    width: 510,
+	    height: 240,
+	    bodyPadding: 10,
+	    defaultType: 'textfield',
+	    frame: true,
+	    id:'removedocaccess',
+	    bodyBorder: true, 
+	    floating: true,
+	    closable : true,
+	    draggable: true,
+	    items:[	          
+	           {
+	        	 fieldLabel:'Group ID',
+	        	 name:'groupID',
+	        	 editable:false,
+	           	 fieldStyle:'color:#ccc'
+	           },
+	           {
+	        	   fieldLabel:'documents',
+	        	   xtype: 'combo',	      
+	        	   width:460,
+	        	   name:'documentID',	 
+	        	   displayField: 'text',
+	        	   valueField: 'articleID',
+	        	   store: ccg.data.removeDocStore	        	   
+	           }
+	    ],
+	    listeners:{
+	    	beforeclose:function(win) {
+	    		ccg.ui.removeDocAccessPanel.hide();
+	        	 return false; 
+	        }
+	    },
+	    displayField: 'text',
+	    buttons: [{
+	        text: 'Romove Docs',
+	        handler: function () {
+	        	var form=this.up('form').getForm();
+	        	console.log(form.getValues());
+	        	var url="rest/admin/removeDocFromGroup";
+	        	
+	        	Ext.Ajax.request({
+	                   url: url,
+	                   method: 'POST',
+	                   jsonData: form.getValues(),
+	                   success: function(response, opts) {
+	                    console.log(response.responseText);
+	                	ccg.data.groupAccessStore.load({url:"rest/admin/userGroupArticles/"+ccg.ui.grouplistpanel.curgroupid});	                    
+	                	ccg.ui.removeDocAccessPanel.hide();
 	                   },
 	                   failure: function(response, opts) {
 	                      console.log('server-side failure with status code ' + response.status);

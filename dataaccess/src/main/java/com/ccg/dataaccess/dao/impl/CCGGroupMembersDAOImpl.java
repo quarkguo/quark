@@ -1,5 +1,7 @@
 package com.ccg.dataaccess.dao.impl;
 
+import java.util.List;
+
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
@@ -18,5 +20,18 @@ public class CCGGroupMembersDAOImpl extends CCGBaseDAOImpl<CCGGroupMembers, Inte
 		q.setParameter("member", user.getUseremail());
 		CCGGroupMembers gm = (CCGGroupMembers)q.getSingleResult();
 		return gm;
+	}
+
+	@Override
+	public void deleteUserFromMemberGroup(String useremail) {
+		System.out.println("...."+useremail);
+		// TODO Auto-generated method stub
+		Query q = entityManager.createQuery("from CCGGroupMembers where  useremail =:member");
+		q.setParameter("member", useremail);
+		List<CCGGroupMembers> res=q.getResultList();
+		for(CCGGroupMembers mem:res)
+		{
+			delete(mem);
+		}
 	}
 }
