@@ -236,7 +236,10 @@ Ext.define('com.ccg.admintoolbar',{
 	    },
 	    {
 	    	text:'New Group',
-	    	iconCls:'file'	
+	    	iconCls:'file',
+	        handler: function(){
+	        	ccg.ui.createNewGroupPanel.show();
+	        }
 	    }
 	    
 	  ]

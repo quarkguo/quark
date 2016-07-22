@@ -68,9 +68,9 @@ public class CCGUserServiceImpl implements CCGUserService{
 
 	@Override
 	@Transactional
-	public boolean createGroup(String groupname, String userId) {
+	public boolean createGroup(String groupname, int userId) {
 		
-		CCGUser user = userDAO.findUserByUseremail(userId);
+		CCGUser user = userDAO.findById(userId);
 		
 		CCGUserGroup group = new CCGUserGroup();
 		group.setGroupname(groupname);
@@ -303,6 +303,14 @@ public class CCGUserServiceImpl implements CCGUserService{
 		CCGUser user=userDAO.findById(userID);
 		groupMembersDAO.deleteUserFromMemberGroup(user.getUseremail());
 		userDAO.delete(user);
+	}
+
+	@Override
+	@Transactional
+	public void deleteGroup(int groupID) {
+		// TODO Auto-generated method stub
+		CCGUserGroup g=userGroupDAO.findById(groupID);
+		userGroupDAO.delete(g);
 	}
 
 	

@@ -11,7 +11,7 @@ public interface CCGUserService {
 	
 	public boolean updatePassword(String userid, String oldPassword, String newPassword);
 	public boolean createUser(String useremail);
-	public boolean createGroup(String groupname, String userID);
+	public boolean createGroup(String groupname, int userID);
 	public boolean addUserToGroup(String[] useremail, String groupID);
 	public boolean resetPassword(String useremail);
 	public UserProfile getUserProfileByUserName(String useremail);  // user email is the user name
@@ -28,6 +28,7 @@ public interface CCGUserService {
 	public boolean addDocToGroup(int groupID,int docID);
 	public void removeDocFromGroup(int groupID, int docID);
 	public void deleteUser(int userID);
+	public void deleteGroup(int groupID);
 	
 	
 }
