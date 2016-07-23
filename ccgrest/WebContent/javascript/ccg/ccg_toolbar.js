@@ -119,7 +119,13 @@ Ext.define('com.ccg.toolbar',{
 		    {
                     text: 'Content Ingestion',
                     iconCls: 'edit',                    
-                    displayText: 'Content Ingestion'                  	 
+                    displayText: 'Content Ingestion',
+                    handler: function(){
+                    	console.log('upload file....');
+                    	console.log(ccg.ui.uploadfilepanel);
+                    	ccg.ui.uploadfilepanel.show();
+                    	
+                    }
 		    },
 		    {
                     text: 'Content Management',

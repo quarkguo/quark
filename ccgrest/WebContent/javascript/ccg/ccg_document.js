@@ -482,3 +482,150 @@ ccg.ui.passwordresetpanel=Ext.create('Ext.form.Panel', {
         }
     }]
 });
+ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', { 
+	id : 'uploadfileform',
+	//renderTo : 'formId',
+	border : true,
+	title: 'Upload file',
+	width : 600,
+	bodyPadding: 10,
+    bodyBorder: true, 
+    floating: true,
+    closable : true,
+    draggable: true,
+    hasUpload:true,
+	items : [ 
+	    {
+	        xtype: 'filefield',
+	        name: 'file',
+	        fieldLabel: 'File to be uploaded',
+	        labelAlign: 'right',
+	       // labelWidth: 50,
+	        msgTarget: 'side',
+	        allowBlank: false,
+	        anchor: '100%',
+	        buttonText: 'Select Photo...',
+			listeners: {
+				change: function(fld, value) {
+					var newValue = value.replace(/C:\\fakepath\\/g, '');
+					fld.setRawValue(newValue);
+				}
+			}
+	    },		
+		
+		{
+			xtype : 'textarea',
+			fieldLabel : 'Description',
+			name: 'description',
+			labelAlign: 'right',
+			anchor : '100%',
+		},
+		{
+			xtype : 'textfield',
+			fieldLabel : 'Type',
+			name: 'type',
+			labelAlign: 'right',
+			anchor : '100%',
+		},
+		{
+			xtype : 'fieldcontainer',
+			fieldLabel : 'Category Pattern',
+			defaultType : 'radiofield',
+			labelAlign: 'right',
+			defaults : {
+				flex : 1
+			},
+			//layout : 'hbox',
+			items : [ {
+				boxLabel : '1.  2. | 1.1.  2.1. ',
+				inputValue : 'proposal_1',
+				name: 'pattern',
+				id : 'radio1'
+			}, {
+				boxLabel : '1.0  2.0  | 1.1  2.1 ',
+				inputValue : 'proposal_2',
+				name: 'pattern',
+				id : 'radio2'
+			}, {
+				boxLabel : '1  2  | 1.1  2.1 ',
+				inputValue : 'proposal_3',
+				name: 'pattern',
+				id : 'radio3'
+			} ]
+		},
+		{
+			xtype : 'textfield',
+			fieldLabel : 'Status',
+			name: 'status',
+			labelAlign: 'right',
+			anchor : '100%',
+		},
+		{
+			xtype : 'textfield',
+			fieldLabel : 'Company',
+			name: 'company',
+			labelAlign: 'right',
+			anchor : '100%',
+		},		
+	],
+    listeners:{
+    	
+    	beforeclose:function(win) {
+    		ccg.ui.uploadfilepanel.hide();
+        	 return false; 
+        }
+    },
+    buttons: [{
+        text: 'Upload',
+        handler: function() {
+            var form = this.up('form').getForm();
+            if(form.isValid()){
+                form.submit({
+                    url: 'upload',
+                    waitMsg: 'Uploading your file...',
+                    success: function(form, action) {
+                    	console.log('=== success');
+                    	Ext.MessageBox.confirm('Upload Confirmation', action.result.category, function(btn){
+                    		if(btn === 'yes'){
+                    		       //some code
+                    			console.log("yes");
+                    			var waitbox = Ext.MessageBox.wait("Processing....", "Please wait....");
+                    			
+                    			Ext.Ajax.request({
+                    				url: 'upload',
+                    				method:'POST',
+                    				params: {
+                    					action: 'confirmed',
+                    					requestData:action.result.base64Request
+                    				},
+                    				success: function(responseMsg){
+                    					waitbox.hide();
+                    					Ext.MessageBox.confirm("Success", "Do you want load another one?", function(btn){
+                    						if(btn === 'no'){
+                    							ccg.ui.uploadfilepanel.hide();
+                    						}
+                    					});
+                    				},
+                    				failure: function(responseMsg){
+                    					waitbox.hide();
+                    					Ext.MessageBox.alert("Failure", responseMsg);
+                    				}
+                    			});      			
+                    			
+                    		}
+                    		else{
+                    			console.log("No");
+                    			// do nothiing;
+                    		}
+                    	});
+                    },
+                    failure: function(form, action){
+                    	console.log('==== fail====');
+                    	Ext.Msg.alert('Failure', action.response.responseText);
+                    }
+                });
+            } 
+            
+        }
+    }]
+});	
