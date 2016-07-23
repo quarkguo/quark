@@ -1,0 +1,23 @@
+<articleCategoryPatternConfig>
+    <patternConfig>
+        <description>description</description>
+        <display>1.  2.  |  1.1.  2.1. </display>
+        <name>proposal_1</name>
+        <value>(\nExecutive\s+Summary)|(\r?\n\d+\.\D)</value>
+        <value>(\r?\n\d+\.\d+\.\D)</value>
+    </patternConfig>
+    <patternConfig>
+        <description>description</description>
+        <display>1.0  2.0  |  1.1  2.1 </display>
+        <name>proposal_2</name>
+        <value>(\nExecutive\s+Summary)|(\n\d+\.0\D)</value>
+        <value>(\n\d+\.\d+\s+\D)</value>
+    </patternConfig>
+    <patternConfig>
+        <description>description</description>
+        <display>1  2  |  1.1  2.1 </display>
+        <name>proposal_3</name>
+        <value>(\nExecutive\s+Summary)|(\n\d+\s+\D)</value>
+        <value>(\n\d+\.\d+\s+\D)</value>
+    </patternConfig>
+</articleCategoryPatternConfig>
