@@ -87,12 +87,10 @@ public class UserHandler {
 	@RequestMapping(value="admin/createGroup",method=RequestMethod.POST)
 	public String createGroup(@RequestBody CreateGroup input, HttpServletRequest request)
 	{	
-		String name = request.getRemoteUser();
-		if(name == null){
-			name = "name";
-		}
+		//String name = request.getRemoteUser();
+	
 		try{
-			if(userService.createGroup(input.groupName, name)){
+			if(userService.createGroup(input.groupName, Integer.parseInt(input.ownerID))){
 				return "done";
 			}else{
 				return "fail";
@@ -157,6 +155,14 @@ public class UserHandler {
 		userService.deleteUser(id);
 		return "success";
 	}
+	
+	@RequestMapping(value="admin/removeGroup/{id}", method=RequestMethod.POST)
+	public String deleteGroup(@PathVariable("id") Integer id)
+	{
+		userService.deleteGroup(id);
+		return "success";
+	}
+	
 	@RequestMapping(value="admin/user/{id}", method=RequestMethod.GET)
 	public User getUserById (@PathVariable("id") Integer id){
 		return userService.getUserById(id);
@@ -206,7 +212,7 @@ public class UserHandler {
 class UpdateProfile{String imageURL, phone, address,userID,username,name;}
 class UpdatePassword{String oldpass, newpass;}
 class CreateUser{String useremail;}
-class CreateGroup{String groupName;}
+class CreateGroup{String groupName;String ownerID;}
 class AddUserToGroup{String[] usernames; String groupID;}
 class ResetPassword{String userId;}
 class RemoveUserFromGroup{String[] usernames; String groupID;}

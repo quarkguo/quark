@@ -118,6 +118,14 @@ ccg.data.alluserlist = Ext.create('Ext.data.TreeStore', {
     }
 });
 
+ccg.data.alluserlist2=Ext.create('Ext.data.Store',{
+	proxy: {
+        type: 'ajax',
+        url: 'rest/admin/user/all'
+    },
+	fields: [ 'userID', 'text' ]
+});
+
 ccg.data.groupAccessStore = Ext.create('Ext.data.TreeStore', {
     proxy: {
         type: 'ajax',
@@ -137,6 +145,36 @@ ccg.ui.grouplistpanel =Ext.create('Ext.tree.Panel', {
     title: 'All Groups',
     useArrows: true,
     frame:true,
+    tools:[
+           {
+        	   type: 'minus' ,// this doesn't appear to work, probably I need to use a valid class
+        	   handler: function(){
+        		   var nodeary=ccg.ui.grouplistpanel.getSelectionModel().getSelection();
+        		   //console.log(nodeary);
+        		   if(nodeary.length>0)
+        		   {
+        			   var ele=nodeary[0];   
+        			   console.log(ele);
+        			   if(ele.data.groupId)
+        			   {
+        				   
+        				   Ext.Ajax.request({
+        					   url: "rest/admin/removeGroup/"+ele.data.groupId,
+        					   method: 'POST',   	                  
+        					   success: function(response, opts) {
+        						   ccg.data.allGroupStore.load();
+        						   ccg.data.groupMemberStore.removeAll();
+        						   ccg.data.groupAccessStore.removeAll();
+        					   },
+        					   failure: function(response, opts) {
+        						   console.log('server-side failure with status code ' + response.status);   	                    
+        					   }
+        				   });
+        			   }
+        		   }
+        	   
+        	   }
+           }],
     listeners:{
     itemclick: function(s,r) {           
    	 if(r.data.leaf)
@@ -590,4 +628,71 @@ ccg.ui.removeDocAccessPanel=Ext.create('Ext.form.Panel', {
 	        }
 	    }]
 	      
+});
+
+ccg.ui.createNewGroupPanel=Ext.create('Ext.form.Panel', {  
+    title: 'Create New Group', 
+    width: 300,
+    bodyPadding: 10,
+    defaultType: 'textfield',
+    frame: true,
+    id:'newgroup',
+    bodyBorder: true, 
+    floating: true,
+    closable : true,
+    draggable: true,
+    items: [
+            {
+            	fieldLabel: 'Group Name',
+            	name: 'groupName',
+            	required:true
+            },
+            {
+            	fieldLabel:'Users',
+	        	xtype: 'combo',	        	   
+	        	name:'ownerID',
+	        	displayField: 'text',
+	        	valueField: 'userID',
+	        	store: ccg.data.alluserlist2
+            }
+    ],
+    listeners:{
+    	beforeclose:function(win) {
+    		  ccg.ui.createNewGroupPanel.hide();
+        	 return false; 
+        }
+    },
+    buttons: [{
+        text: 'Create New Group',
+        handler: function () {
+        	
+            var form = this.up('form').getForm();
+            if (form.isValid()) {
+            	  console.log(form.getValues());
+               // making ajax calls
+            	
+               var urlstr="rest/admin/createGroup";
+               console.log(form.getValues());
+               Ext.Ajax.request({
+                   url: urlstr,
+                   method: 'POST',
+                   jsonData: form.getValues(),
+                   success: function(response, opts) {
+                	   ccg.data.allGroupStore.load();
+                		ccg.ui.createNewGroupPanel.hide();
+                   },
+                   failure: function(response, opts) {
+                	   alert("Could not completed your request. Please check data.")
+                      console.log('server-side failure with status code ' + response.status);
+                   }
+                });
+                
+            }
+            else
+            {
+            	alert("invalid data!");
+            }            
+        	//ccg.ui.newuserpanel.hide();
+        }
+    }]
 });
