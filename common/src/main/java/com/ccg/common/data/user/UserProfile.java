@@ -3,6 +3,7 @@ package com.ccg.common.data.user;
 public class UserProfile {
 	private Integer userID;
 	private String username;
+	
 	public String getUsername() {
 		return username;
 	}

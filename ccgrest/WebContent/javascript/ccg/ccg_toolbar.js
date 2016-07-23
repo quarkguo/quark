@@ -2,6 +2,8 @@
 var ccg={};
 ccg.ui={};
 ccg.data={};
+ccg.data.currentArticle={};
+
 
 ccg.data.docliststore = Ext.create('Ext.data.TreeStore', {
         proxy: {
@@ -56,6 +58,9 @@ ccg.ui.loadDocCategory=function(arcID)
         	 {
         		 // here load category panel
         		 var arcID=r.data.articleID;
+        		 // set artileID for loading PDF
+        		 ccg.data.currentArticle.id=arcID;
+        		 ccg.data.currentArticle.title=r.data.text;
         		 ccg.ui.loadDocCategory(arcID);
         	 }
         	 
@@ -116,6 +121,34 @@ Ext.define('com.ccg.toolbar',{
 		        	 cls:'.ccg-header-title',
 		        	 flex:1
 		         },
+		         
+		         {
+			        	text: 'PDF',
+			        	iconCls: 'edit',
+			        	handler: function(){
+	                    	Ext.create('Ext.window.Window', {
+	                    		title: ccg.data.currentArticle.title,
+	                    		width: 800,
+	                    		height: 400,
+	                    	    listeners:{
+	                    	    	beforeclose:function(win) {
+	                    	    		this.hide();
+	                    	        	 return false; 
+	                    	        }
+	                    	    },
+	                    		items: {
+	                    			xtype: 'component',
+	                    			autoEl: {
+	                    				tag: 'iframe',
+	                    				style: 'height: 100%; width: 100%; border: none',
+	                    				//src: 'downloadArticle?articleId=' + ccg.data.currentArticle.id
+	                    				src: 'rest/article/' + ccg.data.currentArticle.id + '/download'
+	                    			}
+	                    		},
+	                    	}).show();
+			        	}
+			         },     
+		             
 		    {
                     text: 'Content Ingestion',
                     iconCls: 'edit',                    

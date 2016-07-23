@@ -7,6 +7,7 @@ public class RequestData {
 	String company;
 	String acceptStatus;
 	String pattern;
+	
 	public String getFilename() {
 		return filename;
 	}

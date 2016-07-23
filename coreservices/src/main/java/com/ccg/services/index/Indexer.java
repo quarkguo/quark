@@ -87,7 +87,7 @@ public class Indexer {
 //    	return indexWriter;
 //    }
     
-    public IndexWriter getIndexWriter(boolean create) throws IOException {
+    public IndexWriter getIndexWriter(boolean create) {
     	
     	if(create){
     		File indexDirectory = new File(INDEX.DIRECTORY);
@@ -95,26 +95,81 @@ public class Indexer {
     	}
     	//indexWriter.deleteDocuments(arg0);
         if (indexWriter == null) {
-            Directory indexDir = FSDirectory.open(new File(INDEX.DIRECTORY));
+            Directory indexDir = null;
+			try {
+				indexDir = FSDirectory.open(new File(INDEX.DIRECTORY));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
-            indexWriter = new IndexWriter(indexDir, config);
+            try {
+				indexWriter = new IndexWriter(indexDir, config);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				if(indexWriter != null){
+					try {
+						indexWriter.close();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
         }
         return indexWriter;
    }    
    
-    public void closeIndexWriter() throws IOException {
+    public void closeIndexWriter() {
         if (indexWriter != null) {
-            indexWriter.close();
+            try {
+				indexWriter.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
    }
- 
-    public void indexArticle(CCGArticle article) throws IOException {
+    
+ @Transactional
+    public void indexArticle(CCGArticle article) {
     	IndexWriter writer  = getIndexWriter(false);
-    	this._indexArticle(article, writer);
-    	this.closeIndexWriter();
+    	try {
+			this._indexArticle(article, writer);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			this.closeIndexWriter();
+		}
     }
     
-    
+ 	public void indexingCategory(String catId, String catTitle, String catContent,
+ 			String articleId, String articleTitle, IndexWriter writer){
+    	
+ 		//IndexWriter writer  = getIndexWriter(false);
+    	
+ 		try {
+ 	       Document doc = new Document();
+	        doc.add(new StringField("cId", "" + catId, Field.Store.YES));
+	        doc.add(new StringField("cTitle", catTitle, Field.Store.YES));
+	        doc.add(new StringField("aId", "" + articleId, Field.Store.YES));    	        
+	        doc.add(new StringField("aTitle", articleTitle, Field.Store.YES));
+	        
+	        String fullSearchableText = catTitle + " " +  catContent;
+	        doc.add(new TextField(INDEX.CONTENT, fullSearchableText, Field.Store.NO));
+	        writer.addDocument(doc);
+	        
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			;//this.closeIndexWriter();
+		} 		
+ 	}
+ 
+ 
     public void _indexArticle(CCGArticle article, IndexWriter writer) throws IOException {
        	List<CCGCategory> catList = article.getCategorylist();
     	for(CCGCategory cat : catList){
@@ -130,14 +185,19 @@ public class Indexer {
     	}
     }   
     
-    public void rebuildIndexes(List<CCGArticle> ccgArticleList) throws IOException {
+    public void rebuildIndexes(List<CCGArticle> ccgArticleList) {
           //
           // Erase existing index
           //
     	IndexWriter writer = getIndexWriter(true);
        
           for(CCGArticle article : ccgArticleList){
-        	  this._indexArticle(article, writer);
+        	  try {
+				this._indexArticle(article, writer);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
           }
           //
           // Don't forget to close the index writer when done

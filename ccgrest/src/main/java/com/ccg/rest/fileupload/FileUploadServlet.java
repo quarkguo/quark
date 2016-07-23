@@ -51,7 +51,7 @@ public class FileUploadServlet extends HttpServlet {
 		String action = request.getParameter("action");
 		ArticleHelper helper = new ArticleHelper();
 
-		if("confirmed".equals(action)){
+		if("confirmed".equals(action)){			
 			String base64data = request.getParameter("requestData");
 			String json = new String(Base64.getDecoder().decode(base64data));
 			System.out.println("============>>" + json + "<<=====");
@@ -77,7 +77,7 @@ public class FileUploadServlet extends HttpServlet {
 			String pattern = request.getParameter("pattern");
 			String type = request.getParameter("type");
 			String company = request.getParameter("company");
-			String acceptStatus = request.getParameter("acceptstatus");
+			String acceptStatus = request.getParameter("status");
 			
 			RequestData data = new RequestData();
 			data.setAcceptStatus(acceptStatus);
@@ -89,15 +89,33 @@ public class FileUploadServlet extends HttpServlet {
 			
 
 			String categoryString = helper.getCategoryForVerify(data);
+			categoryString = "<pre>" + categoryString + "</pre>";//.replaceAll("\n", "<br />");
 			
-			request.setAttribute("category", categoryString);
+			//request.setAttribute("category", categoryString);
 			String json = JsonHelper.toJson(data);
+			System.out.println(json);
 			String base64data = Base64.getEncoder().encodeToString(json.getBytes());
-			request.setAttribute("requestData", base64data);
-			this.getServletContext().getRequestDispatcher("/verify.jsp").forward(request, response);
-			
+			//request.setAttribute("requestData", base64data);
+			//this.getServletContext().getRequestDispatcher("/verify.jsp").forward(request, response);
+			//String responseJson = "{'success':true, 'category':'" + categoryString + "', requestBase64:'" + base64data + "'}";
+			ExtjsResponse er = new ExtjsResponse();
+			er.success = true;
+			er.category = categoryString;
+			er.base64Request = base64data;
+			String responseJson = JsonHelper.toJson(er);
+			System.out.println(responseJson);
+			response.setContentType("application/json");
+			response.getWriter().println(responseJson);
 		}
 	
 	}
 
 }
+
+class ExtjsResponse{
+	boolean success;
+	String category;
+	String base64Request;
+}
+
+

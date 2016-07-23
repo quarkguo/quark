@@ -30,5 +30,7 @@ public interface CCGDBService {
 	public CCGArticle getCCGArticleById(Integer articleId);
 	public List<CCGArticle> getAllCCGArticle();
 	public void deleteArticle(int articleID);
+	public void indexingArticle(Integer articleId);
+	public void indexingAll();
 
 }

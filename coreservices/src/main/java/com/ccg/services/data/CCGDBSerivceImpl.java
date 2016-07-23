@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.lucene.index.IndexWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ import com.ccg.dataaccess.entity.CCGArticleMetadata;
 import com.ccg.dataaccess.entity.CCGCategory;
 import com.ccg.dataaccess.entity.CCGContent;
 import com.ccg.dataaccess.entity.CCGSubcategory;
+import com.ccg.services.index.Indexer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -266,7 +268,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	}
 	
 	@Override
-	@Transactional(readOnly=false)
+	//@Transactional(readOnly=false)
 	public CCGArticle getCCGArticleById(Integer articleId){
 		return articleDAO.findById(articleId);
 	}
@@ -278,9 +280,47 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteArticle(int articleID) {
 		// TODO Auto-generated method stub
 		articleDAO.delete(articleDAO.findById(articleID));
 	}
 	
+	@Override
+	@Transactional(readOnly=true)
+	public void indexingArticle(Integer articleId){
+		CCGArticle article = articleDAO.findById(articleId);
+		List<CCGCategory> list = article.getCategorylist();	
+		Indexer indexer = new Indexer();
+		IndexWriter writer = indexer.getIndexWriter(false);
+		for(CCGCategory cat : list){
+			indexer.indexingCategory("" + cat.getCategoryID(), cat.getCategorytitle(),
+					cat.getCategorycontent(), "" + article.getArticleID(), article.getTitle(), writer);
+		}
+		
+		indexer.closeIndexWriter();
+	}
+	
+	@Override
+	@Transactional(readOnly=true)
+	public void indexingAll(){
+		List<ArticleBasicInfo> articleList = this.getArticleBasicInfo();
+		
+		Indexer indexer = new Indexer();
+		IndexWriter writer = indexer.getIndexWriter(true);
+
+		for(ArticleBasicInfo info : articleList){
+			Integer articleId = info.getArticleID();
+			
+			CCGArticle article = articleDAO.findById(articleId);
+			List<CCGCategory> list = article.getCategorylist();	
+						
+			for(CCGCategory cat : list){
+				indexer.indexingCategory("" + cat.getCategoryID(), cat.getCategorytitle(),
+						cat.getCategorycontent(), "" + article.getArticleID(), article.getTitle(), writer);
+			}
+		}
+		
+		indexer.closeIndexWriter();
+	}
 }

@@ -162,6 +162,9 @@ ccg.ui.relateddoclist =Ext.create('Ext.tree.Panel', {
            	 	{
            	 		// pull content of categoryID
            	 	   var urlstr="rest/category/"+r.data.categoryID+"/content";
+           	 	   // set gloabl variable for PDF
+           	 	   ccg.data.currentArticle.id=r.data.articleId;
+           	 	   ccg.data.currentArticle.title=r.data.articleTitle;
            	 	   console.log(urlstr);      	 	   
            	 	   // ajax call
            	 	Ext.Ajax.request({

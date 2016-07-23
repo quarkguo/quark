@@ -14,15 +14,18 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.ccg.common.data.ArticleMetaData;
+//import com.ccg.common.data.Category;
+import com.ccg.ingestion.extract.Category;
 import com.ccg.dataaccess.entity.CCGArticle;
 import com.ccg.dataaccess.entity.CCGCategory;
 import com.ccg.dataaccess.entity.CCGContent;
 import com.ccg.dataaccess.entity.CCGSubcategory;
+import com.ccg.ingestion.extract.ArticleCategoryPattern;
+import com.ccg.ingestion.extract.ArticleCategoryPatternConfig;
 import com.ccg.ingestion.extract.ArticleInfo;
-import com.ccg.ingestion.extract.ArticleTypePattern;
-import com.ccg.ingestion.extract.Category;
 import com.ccg.ingestion.extract.ExtractArticleInfo;
 import com.ccg.services.data.CCGDBService;
+import com.ccg.util.ConfigurationManager;
 
 public class ArticleHelper {
 	
@@ -50,11 +53,16 @@ public class ArticleHelper {
 		ArticleInfo info = extract.fromPDF(is, getMatchPattern(requestData.getPattern()));
 		
 		article.setArticleType(info.getType());
-		String title = info.getTitle();
-		if(title == null || title.trim().length() == 0){
-			title = requestData.getFilename();
-		}
-		article.setTitle(requestData.getFilename());
+
+//		String title = info.getTitle();
+//
+//		if(title == null || title.trim().length() == 0){
+//			title = requestData.getFilename();
+//		}
+		
+		String title = requestData.getFilename();
+		
+		article.setTitle(title);
 		
 		CCGContent content = new CCGContent();
 		content.setContent(info.getContent());
@@ -107,6 +115,7 @@ public class ArticleHelper {
 		meta.setLastUpdateDate(new Date());
 		meta.setTitle(title);
 		meta.setType(requestData.getArticleType());
+		meta.setAcceptStatus(requestData.getAcceptStatus());
 		
 		dataservice.saveOrUpdateArticleMetaData(meta);
 		
@@ -170,16 +179,20 @@ public class ArticleHelper {
 		return path;
 	}
 	
-	private String[] getMatchPattern(String patternCode){
+	private String[] getMatchPattern(String patternName){
+		ConfigurationManager cm = new ConfigurationManager();
 		String[] patterns = null;
-		if("1".equals(patternCode)){
-			patterns = ArticleTypePattern.PROPOSALS_1;
-		}else if("2".equals(patternCode)){
-			patterns = ArticleTypePattern.PROPOSALS_2;
-		}else if("3".equals(patternCode)){
-			patterns = ArticleTypePattern.PROPOSALS_3;
-		}else{
-			patterns = new String[]{};
+		try{
+			ArticleCategoryPatternConfig config = cm.load(ArticleCategoryPatternConfig.class);
+			List<ArticleCategoryPattern> list = config.getPatternConfig();
+			for(ArticleCategoryPattern pattern : list){
+				if(pattern.getName().equals(patternName)){
+					patterns = pattern.getValue();
+					break;
+				}
+			}				
+		}catch(Exception e){
+			e.printStackTrace();
 		}
 		return patterns;
 	}

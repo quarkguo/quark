@@ -1,6 +1,13 @@
 package com.ccg.rest.handler;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -22,9 +29,7 @@ import com.ccg.common.data.Category;
 import com.ccg.common.data.CategoryContent;
 import com.ccg.common.data.SearchResult;
 import com.ccg.common.data.SubCategoryContent;
-import com.ccg.dataaccess.entity.CCGArticle;
 import com.ccg.services.data.CCGDBService;
-import com.ccg.services.index.Indexer;
 import com.ccg.services.index.SearchEngine;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -162,10 +167,13 @@ public class TestHandler {
 	public ResponseEntity<String> indexingArticle(@PathVariable("articleId") Integer articleId) {
 		String json = "";
 		GenericResponseMessage response = new GenericResponseMessage();
-		CCGArticle article = dataservice.getCCGArticleById(articleId);
-		Indexer indexer = new Indexer();
+		//CCGArticle article = dataservice.getCCGArticleById(articleId);
+		//Indexer indexer = new Indexer();
 		try{
-			indexer.indexArticle(article);
+			//indexer.indexArticle(article);
+			
+			dataservice.indexingArticle(articleId);
+			
 			response.code = 0;
 			response.status = "success";
 		}catch(Exception e){
@@ -184,10 +192,11 @@ public class TestHandler {
 	public ResponseEntity<String> indexingAllArticle() {
 		String json = "";
 		GenericResponseMessage response = new GenericResponseMessage();
-		List<CCGArticle> articleList = dataservice.getAllCCGArticle();
-		Indexer indexer = new Indexer();
+		//List<CCGArticle> articleList = dataservice.getAllCCGArticle();
+		//Indexer indexer = new Indexer();
 		try{
-			indexer.rebuildIndexes(articleList);;
+			//indexer.rebuildIndexes(articleList);;
+			dataservice.indexingAll();
 			response.code = 0;
 			response.status = "success";
 		}catch(Exception e){
@@ -254,8 +263,32 @@ public class TestHandler {
 		dataservice.deleteArticle(articleId);
 		return "done";
 	}		
-	
-	
+
+	@RequestMapping(value="/article/{articleId}/download",method=RequestMethod.GET)
+	public void downloadArticle(@PathVariable("articleId") Integer articleId, HttpServletResponse response) throws Exception
+	{
+		ArticleContent content = dataservice.getArticleContent(articleId);
+		String filename = content.getUrl();
+		//try {
+			File file = new File(filename);
+			byte[] buffer = new byte[1024];
+			InputStream is = new FileInputStream(file);
+			OutputStream os = response.getOutputStream();
+			response.setHeader("content-disposition", "inline; filename=" + file.getName());
+			if(file.getName().endsWith("pdf") || file.getName().endsWith("PDF")){
+				response.setContentType("application/pdf");
+			}
+			int readBytes = -1;
+			while((readBytes = is.read(buffer)) != -1) {
+				os.write(buffer, 0, readBytes);
+			}
+			os.flush();
+			is.close();			
+		//} catch (Exception e) {
+			// TODO Auto-generated catch block
+		//	e.printStackTrace();
+		//}		
+	}		
 	private String toJson(Object obj){
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		return gson.toJson(obj);
