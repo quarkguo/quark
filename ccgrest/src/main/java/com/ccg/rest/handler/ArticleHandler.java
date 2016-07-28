@@ -154,52 +154,7 @@ public class ArticleHandler {
 	    HttpHeaders responseHeaders = new HttpHeaders();
 	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 	    return new ResponseEntity<String>(input, responseHeaders, HttpStatus.CREATED);
-	}
-	
-	// indexing rest service
-	@RequestMapping(method=RequestMethod.GET, value="/indexing/article/{articleId}")
-	public ResponseEntity<String> indexingArticle(@PathVariable("articleId") Integer articleId) {
-		String json = "";
-		GenericResponseMessage response = new GenericResponseMessage();
-		CCGArticle article = dataservice.getCCGArticleById(articleId);
-		Indexer indexer = new Indexer();
-		try{
-			indexer.indexArticle(article);
-			response.code = 0;
-			response.status = "success";
-		}catch(Exception e){
-			response.code = 1;
-			response.status = "fail";
-			response.message = e.getMessage();
-			e.printStackTrace();
-		}
-		json = toJson(response);
-	    HttpHeaders responseHeaders = new HttpHeaders();
-	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-		return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
-	}		
-	
-	@RequestMapping(method=RequestMethod.GET, value="/indexing/article/all")
-	public ResponseEntity<String> indexingAllArticle() {
-		String json = "";
-		GenericResponseMessage response = new GenericResponseMessage();
-		List<CCGArticle> articleList = dataservice.getAllCCGArticle();
-		Indexer indexer = new Indexer();
-		try{
-			indexer.rebuildIndexes(articleList);;
-			response.code = 0;
-			response.status = "Success";
-		}catch(Exception e){
-			response.code = 1;
-			response.status = "fail";
-			response.message = e.getMessage();
-			e.printStackTrace();
-		}
-		json = toJson(response);
-	    HttpHeaders responseHeaders = new HttpHeaders();
-	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-		return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
-	}		
+	}	
 	
 	@RequestMapping(method=RequestMethod.GET, value="/search")
 	public ResponseEntity<String> search(

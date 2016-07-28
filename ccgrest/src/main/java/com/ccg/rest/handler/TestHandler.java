@@ -2,10 +2,10 @@ package com.ccg.rest.handler;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,6 +31,7 @@ import com.ccg.common.data.SearchResult;
 import com.ccg.common.data.SubCategoryContent;
 import com.ccg.services.data.CCGDBService;
 import com.ccg.services.index.SearchEngine;
+import com.ccg.util.ConfigurationManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -298,6 +299,15 @@ public class TestHandler {
 		Gson gson = new GsonBuilder().create();
 		return gson.fromJson(json, type);
 	}
+	
+	@RequestMapping(value="/config",method=RequestMethod.GET)
+	public String getConfig()
+	{
+		Properties prop = ConfigurationManager.getConfig("ccg.properties");
+		return prop.getProperty("index.repository");
+	}		
+
+	
 }
 
 //class RestResponseMessage{

@@ -6,16 +6,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.ccg.common.data.ArticleMetaData;
-//import com.ccg.common.data.Category;
-import com.ccg.ingestion.extract.Category;
 import com.ccg.dataaccess.entity.CCGArticle;
 import com.ccg.dataaccess.entity.CCGCategory;
 import com.ccg.dataaccess.entity.CCGContent;
@@ -23,6 +23,8 @@ import com.ccg.dataaccess.entity.CCGSubcategory;
 import com.ccg.ingestion.extract.ArticleCategoryPattern;
 import com.ccg.ingestion.extract.ArticleCategoryPatternConfig;
 import com.ccg.ingestion.extract.ArticleInfo;
+//import com.ccg.common.data.Category;
+import com.ccg.ingestion.extract.Category;
 import com.ccg.ingestion.extract.ExtractArticleInfo;
 import com.ccg.services.data.CCGDBService;
 import com.ccg.util.ConfigurationManager;
@@ -41,6 +43,14 @@ public class ArticleHelper {
 		      			  "com/ccg/config/ccgrest-servlet.xml"
 		      	  });
 		dataservice = context.getBean(CCGDBService.class);		
+	}
+	
+	private String repositoryDirectory;
+	
+	public ArticleHelper(){
+		ConfigurationManager cm = new ConfigurationManager();		
+		Properties prop = ConfigurationManager.getConfig("/ccg.properties");
+		repositoryDirectory = prop.getProperty("article.repository", "."); // default to current directory;
 	}
 	
 	public void saveArticle(RequestData requestData) throws IOException {
@@ -118,6 +128,7 @@ public class ArticleHelper {
 		meta.setAcceptStatus(requestData.getAcceptStatus());
 		
 		dataservice.saveOrUpdateArticleMetaData(meta);
+		dataservice.indexingArticle(articleId);
 		
 	}
 	
@@ -157,11 +168,11 @@ public class ArticleHelper {
 	
 	public String saveFileInRepository(InputStream is, String filename) throws IOException{
 
-		File repository = new File("article_repository");
+		File repository = new File(this.repositoryDirectory + File.separator + "article_repository");
 		if(!repository.exists()){
 			repository.mkdirs();
 		}
-		File file = new File("article_repository/" + filename);
+		File file = new File(this.repositoryDirectory + File.separator + "article_repository/" + filename);
 		String path = file.getAbsolutePath();
 		System.out.println("===== file path:" + path);
 		
@@ -180,10 +191,9 @@ public class ArticleHelper {
 	}
 	
 	private String[] getMatchPattern(String patternName){
-		ConfigurationManager cm = new ConfigurationManager();
 		String[] patterns = null;
 		try{
-			ArticleCategoryPatternConfig config = cm.load(ArticleCategoryPatternConfig.class);
+			ArticleCategoryPatternConfig config = ConfigurationManager.getConfig(ArticleCategoryPatternConfig.class);
 			List<ArticleCategoryPattern> list = config.getPatternConfig();
 			for(ArticleCategoryPattern pattern : list){
 				if(pattern.getName().equals(patternName)){

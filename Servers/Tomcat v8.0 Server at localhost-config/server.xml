@@ -6,7 +6,9 @@
   The ASF licenses this file to You under the Apache License, Version 2.0
   (the "License"); you may not use this file except in compliance with
   the License.  You may obtain a copy of the License at
+
       http://www.apache.org/licenses/LICENSE-2.0
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,7 +37,7 @@
          UserDatabaseRealm to authenticate users
     -->
     <Resource auth="Container" description="User database that can be updated and saved" factory="org.apache.catalina.users.MemoryUserDatabaseFactory" name="UserDatabase" pathname="conf/tomcat-users.xml" type="org.apache.catalina.UserDatabase"/>
-    <Resource auth="Container" driverClassName="com.mysql.jdbc.Driver" maxIdle="30" maxTotal="100" maxWaitMillis="10000" name="jdbc/TestDB" password="ccg" type="javax.sql.DataSource" url="jdbc:mysql://72.177.234.240:3306/ccgcontent" username="ccg"/>          
+    <Resource auth="Container" driverClassName="com.mysql.jdbc.Driver" maxIdle="30" maxTotal="100" maxWaitMillis="10000" name="jdbc/DatabaseName" password="ccg" type="javax.sql.DataSource" url="jdbc:mysql://72.177.234.240:3306/ccgcontent2" username="ccg"/>          
   </GlobalNamingResources>
 
   <!-- A "Service" is a collection of one or more "Connectors" that share
@@ -119,7 +121,7 @@
    			digest="MD5" />
       </Realm>
 	-->
-      <Realm className="org.apache.catalina.realm.DataSourceRealm" dataSourceName="jdbc/TestDB" roleNameCol="groupname" userCredCol="password" userNameCol="useremail" userRoleTable="ccggroupmembers" userTable="ccguser"/>
+      <Realm className="org.apache.catalina.realm.DataSourceRealm" dataSourceName="jdbc/DatabaseName" roleNameCol="groupname" userCredCol="password" userNameCol="useremail" userRoleTable="ccggroupmembers" userTable="ccguser"/>
       </Realm>
       <Host appBase="webapps" autoDeploy="true" name="localhost" unpackWARs="true">
 

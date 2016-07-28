@@ -31,4 +31,6 @@
     <!--
     <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" />
     -->
+
+<Resource auth="Container" driverClassName="com.mysql.jdbc.Driver" maxIdle="30" maxTotal="100" maxWaitMillis="10000" name="jdbc/DatabaseName" password="ccg" type="javax.sql.DataSource" url="jdbc:mysql://72.177.234.240:3306/ccgcontent2" username="ccg"/>
 </Context>

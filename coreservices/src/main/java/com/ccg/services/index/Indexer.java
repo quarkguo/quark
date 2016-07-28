@@ -11,7 +11,7 @@ package com.ccg.services.index;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.Properties;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -25,39 +25,17 @@ import org.apache.lucene.store.FSDirectory;
 //import org.apache.lucene.store.jdbc.JdbcDirectory;
 //import org.apache.lucene.store.jdbc.dialect.MySQLDialect;
 import org.apache.lucene.util.Version;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.ccg.dataaccess.entity.CCGArticle;
-import com.ccg.dataaccess.entity.CCGCategory;
+import com.ccg.util.ConfigurationManager;
 
-//import lucene.demo.business.Hotel;
-//import lucene.demo.business.HotelDatabase;  
-
-
-/**
- *
- * @author John
- */
 public class Indexer {
 	
-//	@Autowired
-//	CCGDBService dataservice;
+	private String indexLocation = ".";
 	
-//	{
-//	   	@SuppressWarnings("resource")
-//		ApplicationContext context = 
-//		      	  new ClassPathXmlApplicationContext(new String[]{
-//		      			  "com/ccg/config/ccg_coreservices_beans.xml",
-//		      			  "com/ccg/config/ccg_dataacess_beans_test.xml",
-//		      			  "com/ccg/config/ccgrest-servlet.xml"
-//		      	  });
-//		dataservice = context.getBean(CCGDBService.class);		
-//	}
-	
-	
-    
     /** Creates a new instance of Indexer */
     public Indexer() {
+    	Properties prop = ConfigurationManager.getConfig("ccg.properties");
+    	indexLocation = prop.getProperty("index.repository");
     }
  
     private IndexWriter indexWriter = null;
@@ -90,29 +68,26 @@ public class Indexer {
     public IndexWriter getIndexWriter(boolean create) {
     	
     	if(create){
-    		File indexDirectory = new File(INDEX.DIRECTORY);
+    		File indexDirectory = new File(indexLocation);
     		deleteDirectory(indexDirectory);
     	}
     	//indexWriter.deleteDocuments(arg0);
         if (indexWriter == null) {
             Directory indexDir = null;
 			try {
-				indexDir = FSDirectory.open(new File(INDEX.DIRECTORY));
+				indexDir = FSDirectory.open(new File(indexLocation));
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
             try {
 				indexWriter = new IndexWriter(indexDir, config);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				if(indexWriter != null){
 					try {
 						indexWriter.close();
 					} catch (IOException e1) {
-						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
 				}
@@ -131,20 +106,7 @@ public class Indexer {
 			}
         }
    }
-    
- @Transactional
-    public void indexArticle(CCGArticle article) {
-    	IndexWriter writer  = getIndexWriter(false);
-    	try {
-			this._indexArticle(article, writer);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}finally{
-			this.closeIndexWriter();
-		}
-    }
-    
+        
  	public void indexingCategory(String catId, String catTitle, String catContent,
  			String articleId, String articleTitle, IndexWriter writer){
     	
@@ -162,49 +124,10 @@ public class Indexer {
 	        writer.addDocument(doc);
 	        
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}finally{
-			;//this.closeIndexWriter();
 		} 		
  	}
- 
- 
-    public void _indexArticle(CCGArticle article, IndexWriter writer) throws IOException {
-       	List<CCGCategory> catList = article.getCategorylist();
-    	for(CCGCategory cat : catList){
-    	       Document doc = new Document();
-    	        doc.add(new StringField("cId", "" + cat.getCategoryID(), Field.Store.YES));
-    	        doc.add(new StringField("cTitle", cat.getCategorytitle(), Field.Store.YES));
-    	        doc.add(new StringField("aId", "" + article.getArticleID(), Field.Store.YES));    	        
-    	        doc.add(new StringField("aTitle", article.getTitle(), Field.Store.YES));
-    	        
-    	        String fullSearchableText = cat.getCategorytitle() + " " +  cat.getCategorycontent();
-    	        doc.add(new TextField(INDEX.CONTENT, fullSearchableText, Field.Store.NO));
-    	        writer.addDocument(doc);   		
-    	}
-    }   
-    
-    public void rebuildIndexes(List<CCGArticle> ccgArticleList) {
-          //
-          // Erase existing index
-          //
-    	IndexWriter writer = getIndexWriter(true);
-       
-          for(CCGArticle article : ccgArticleList){
-        	  try {
-				this._indexArticle(article, writer);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-          }
-          //
-          // Don't forget to close the index writer when done
-          //
-          closeIndexWriter();
-     } 
-    
+     
     private boolean deleteDirectory(File directory) {
 	    if(directory.exists()){
 	        File[] files = directory.listFiles();
