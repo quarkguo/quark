@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -26,6 +27,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 
 import com.ccg.common.data.SearchResult;
+import com.ccg.util.ConfigurationManager;
 import com.ccg.util.JSON;
 
 
@@ -36,10 +38,13 @@ import com.ccg.util.JSON;
 public class SearchEngine {
 	private IndexSearcher searcher = null;
 	private QueryParser parser = null;
+	private String indexLocation = ".";
 
 	/** Creates a new instance of SearchEngine */
 	public SearchEngine() throws IOException {
-		searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(INDEX.DIRECTORY))));
+		Properties prop = ConfigurationManager.getConfig("ccg.properties");
+		indexLocation = prop.getProperty("index.repository");
+		searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(indexLocation))));
 		parser = new QueryParser(INDEX.CONTENT, new StandardAnalyzer());
 	}
 
