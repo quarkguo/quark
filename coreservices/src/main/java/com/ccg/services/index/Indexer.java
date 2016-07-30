@@ -69,6 +69,7 @@ public class Indexer {
     	
     	if(create){
     		File indexDirectory = new File(indexLocation);
+    		System.out.println("++++++ delete: " + indexDirectory.getAbsolutePath());
     		deleteDirectory(indexDirectory);
     	}
     	//indexWriter.deleteDocuments(arg0);
@@ -76,6 +77,7 @@ public class Indexer {
             Directory indexDir = null;
 			try {
 				indexDir = FSDirectory.open(new File(indexLocation));
+				System.out.println("====>>> " + indexDir.toString());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

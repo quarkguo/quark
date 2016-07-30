@@ -48,7 +48,8 @@
 			<http-method>POST</http-method>
 		</web-resource-collection>
 		<auth-constraint>
-			<role-name>ccg</role-name>
+			<role-name>user</role-name>
+			<role-name>admin</role-name>
 		</auth-constraint>
 	</security-constraint>
 
@@ -79,7 +80,7 @@
 		<role-name>admin</role-name>
 	</security-role>
 	<security-role>
-		<role-name>ccg</role-name>
+		<role-name>user</role-name>
 	</security-role>
 	
 	<resource-ref>

@@ -71,7 +71,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		for(CCGArticle art:res)
 		{
 			HashMap<String,Object> map=new HashMap<String,Object>();
-			map.put("text","Doc"+art.getTitle());
+			map.put("text","" + art.getTitle());
 			map.put("cls","file");
 			map.put("leaf",new Boolean(true));
 			map.put("articleID",art.getArticleID()+"");
