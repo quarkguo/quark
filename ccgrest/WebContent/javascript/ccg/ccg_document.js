@@ -485,6 +485,37 @@ ccg.ui.passwordresetpanel=Ext.create('Ext.form.Panel', {
         }
     }]
 });
+
+
+ccg.data.patterns=[];
+ccg.article.pattern.loader=function(){
+	var pattern;
+	Ext.Ajax.request({
+		url: 'rest/config/pattern',
+		method: 'GET',
+		success: function(response, opts){
+			pattern = Ext.decode(response.responseText);
+			console.log(pattern);
+			pattern = pattern.patternConfigs;
+			var index;
+			for(index = 0; index < pattern.length; ++index){
+				ccg.data.patterns.push({
+					boxLabel: pattern[index].display,
+					inputValue: pattern[index].name,
+					name: 'pattern'					
+				});
+			}
+			//ccg.data.pattern = pattern;
+			console.log(ccg.data.patterns);
+			ccg.initUploadFilePanel();
+		},
+		failure: function(response, opts){
+			alert("patter load error");
+		}
+	});
+}();
+
+ccg.initUploadFilePanel = function(){
 ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', { 
 	id : 'uploadfileform',
 	//renderTo : 'formId',
@@ -539,22 +570,7 @@ ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', {
 				flex : 1
 			},
 			//layout : 'hbox',
-			items : [ {
-				boxLabel : '1.  2. | 1.1.  2.1. ',
-				inputValue : 'proposal_1',
-				name: 'pattern',
-				id : 'radio1'
-			}, {
-				boxLabel : '1.0  2.0  | 1.1  2.1 ',
-				inputValue : 'proposal_2',
-				name: 'pattern',
-				id : 'radio2'
-			}, {
-				boxLabel : '1  2  | 1.1  2.1 ',
-				inputValue : 'proposal_3',
-				name: 'pattern',
-				id : 'radio3'
-			} ]
+			items : ccg.data.patterns
 		},
 		{
 			xtype : 'textfield',
@@ -632,3 +648,4 @@ ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', {
         }
     }]
 });	
+}

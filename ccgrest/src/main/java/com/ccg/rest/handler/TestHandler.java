@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Properties;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import com.ccg.common.data.Category;
 import com.ccg.common.data.CategoryContent;
 import com.ccg.common.data.SearchResult;
 import com.ccg.common.data.SubCategoryContent;
+import com.ccg.ingestion.extract.ArticleCategoryPatternConfig;
 import com.ccg.services.data.CCGDBService;
 import com.ccg.services.index.SearchEngine;
 import com.ccg.util.ConfigurationManager;
@@ -82,6 +84,11 @@ public class TestHandler {
 	
 	@RequestMapping(method=RequestMethod.GET, value="/article/{articleId}/content")
 	public ResponseEntity<String> getContent(@PathVariable("articleId") Integer articleId) {
+		
+		// security check firt
+		// TODO
+		
+		
 		ArticleContent content = dataservice.getArticleContent(articleId);
 		String json = toJson(content);
 	    HttpHeaders responseHeaders = new HttpHeaders();
@@ -108,7 +115,11 @@ public class TestHandler {
 	}
 
 	@RequestMapping(method=RequestMethod.GET, value="/category/{categoryId}/content")
-	public ResponseEntity<String> getCategoryContentById(@PathVariable("categoryId") Integer categoryId) {
+	public ResponseEntity<String> getCategoryContentById(@PathVariable("categoryId") Integer categoryId, HttpServletRequest request) {
+		// TODO security check
+		String user = request.getRemoteUser();
+		
+		
 		CategoryContent content = dataservice.getCategoryContentById(categoryId);
 		String json = toJson(content);
 	    HttpHeaders responseHeaders = new HttpHeaders();
@@ -233,7 +244,6 @@ public class TestHandler {
 			json = toJson(srList);
 			
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			json = e.getMessage();
 		}
@@ -300,13 +310,24 @@ public class TestHandler {
 		return gson.fromJson(json, type);
 	}
 	
-	@RequestMapping(value="/config",method=RequestMethod.GET)
+	@RequestMapping(value="/config/pattern",method=RequestMethod.GET)
 	public String getConfig()
 	{
-		Properties prop = ConfigurationManager.getConfig("ccg.properties");
-		return prop.getProperty("index.repository");
+		ArticleCategoryPatternConfig patternConfig = ConfigurationManager.getConfig(ArticleCategoryPatternConfig.class);
+		String patternString = toJson(patternConfig);
+		return patternString;
 	}		
 
+	
+	
+	
+	private boolean isAllowed(HttpServletRequest request, Integer articleId, Integer categoryId){
+		
+		
+		return false;
+	}
+	
+	
 	
 }
 

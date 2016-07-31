@@ -3,7 +3,9 @@ var ccg={};
 ccg.ui={};
 ccg.data={};
 ccg.data.currentArticle={};
-
+ccg.article={};
+ccg.article.pattern={};
+ccg.data.pattern=[];
 
 ccg.data.docliststore = Ext.create('Ext.data.TreeStore', {
         proxy: {
@@ -43,9 +45,8 @@ ccg.ui.loadDocCategory=function(arcID)
     		 alert("load data error!!");
     	 }
      });
-    
-
 };
+
  ccg.ui.doclist =Ext.create('Ext.tree.Panel', {
      store: ccg.data.docliststore,
      height: 360,

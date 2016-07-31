@@ -103,6 +103,9 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	@Override
 	@Transactional(readOnly=true)
 	public ArticleContent getArticleContent(Integer articleId) {
+		
+		
+		
 		ArticleContent articleContent = new ArticleContent();
 		CCGArticle article = articleDAO.findById(articleId);
 		if(article != null){

@@ -1,12 +1,3 @@
-/*
- * SearchEngine.java
- *
- * Created on 6 March 2006, 14:52
- *
- * To change this template, choose Tools | Template Manager
- * and open the template in the editor.
- */
-
 package com.ccg.services.index;
 
 import java.io.File;
@@ -31,10 +22,7 @@ import com.ccg.util.ConfigurationManager;
 import com.ccg.util.JSON;
 
 
-/**
- *
- * @author John
- */
+
 public class SearchEngine {
 	private IndexSearcher searcher = null;
 	private QueryParser parser = null;
