@@ -65,11 +65,12 @@ public class FileUploadServlet extends HttpServlet {
 			String description = request.getParameter("description");
 
 			Part filePart = request.getPart("file");
-			String filename = filePart.getSubmittedFileName();
+			String filename = System.currentTimeMillis() + "_" +filePart.getSubmittedFileName();
 			InputStream is = filePart.getInputStream();
 			
 			// save file to repository
-			String path = helper.saveFileInRepository(is, filename);
+			String path = helper.saveTempFile(is, filename);
+			//helper.saveTempFile(is, filename);
 			
 			System.out.println("description: " + description);
 			System.out.println("filename: " + filename);

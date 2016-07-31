@@ -6,7 +6,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.sql.SQLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -28,6 +31,7 @@ import com.ccg.ingestion.extract.Category;
 import com.ccg.ingestion.extract.ExtractArticleInfo;
 import com.ccg.services.data.CCGDBService;
 import com.ccg.util.ConfigurationManager;
+import com.ccg.util.JSON;
 
 public class ArticleHelper {
 	
@@ -45,10 +49,13 @@ public class ArticleHelper {
 		dataservice = context.getBean(CCGDBService.class);		
 	}
 	
+	private static final String TEMP_REPOSITORY = "temp";
+	private static final String ARTICLE_REPOSITORY = "article";
+	private static final String PATTERN_REPOSITORY = "pattern";
+	
 	private String repositoryDirectory;
 	
-	public ArticleHelper(){
-		ConfigurationManager cm = new ConfigurationManager();		
+	public ArticleHelper(){	
 		Properties prop = ConfigurationManager.getConfig("/ccg.properties");
 		repositoryDirectory = prop.getProperty("article.repository", "."); // default to current directory;
 	}
@@ -60,18 +67,49 @@ public class ArticleHelper {
 		InputStream is = new FileInputStream(file);
 
 		ExtractArticleInfo extract = new ExtractArticleInfo();
-		ArticleInfo info = extract.fromPDF(is, getMatchPattern(requestData.getPattern()));
-		
+		ArticleInfo info = extract.fromPDF(is, getMatchPattern(requestData.getPattern()));		
 		article.setArticleType(info.getType());
-
+		is.close();
+		
+		/////////////
+		// move file from temp to repository
+		/////////////
+		File articleRepository = new File(this.repositoryDirectory + File.separator + ARTICLE_REPOSITORY);
+		if(!articleRepository.exists()){
+			articleRepository.mkdirs();
+		}
+		String filename = requestData.getFilename();
+		Path source = Paths.get(requestData.getFilepath());
+		Path destination = Paths.get(this.repositoryDirectory + File.separator + ARTICLE_REPOSITORY + File.separator + filename);
+		Files.move(source, destination, StandardCopyOption.ATOMIC_MOVE);
+		
+		//////////
+		// save pattern for future use(?)
+		//////////
+		File patternRepository = new File(this.repositoryDirectory + File.separator + PATTERN_REPOSITORY);
+		if(!patternRepository.exists()){
+			patternRepository.mkdirs();
+		}
+		File patternFile = new File(this.repositoryDirectory + File.separator + PATTERN_REPOSITORY + File.separator + filename);
+		FileOutputStream fos = new FileOutputStream(patternFile);
+		String jsonString = JSON.toJson(getMatchPattern(requestData.getPattern()));
+		fos.write(jsonString.getBytes("UTF-8"));
+		fos.close();
+		
+		////////////
+		// use file as title, filename start with timestamp, remove it
+		////////////
+		String title = requestData.getFilename();
+		int position = filename.indexOf("_");
+		if(position != -1){
+			title = filename.substring(position+1);
+		}
+		
 //		String title = info.getTitle();
 //
 //		if(title == null || title.trim().length() == 0){
 //			title = requestData.getFilename();
 //		}
-		
-		String title = requestData.getFilename();
-		
 		article.setTitle(title);
 		
 		CCGContent content = new CCGContent();
@@ -164,6 +202,30 @@ public class ArticleHelper {
 			}			
 		}
 		return sb.toString();	
+	}
+
+	public String saveTempFile(InputStream is, String filename) throws IOException{
+		File tempRepository = new File(this.repositoryDirectory + File.separator + TEMP_REPOSITORY);
+		if(!tempRepository.exists()){
+			tempRepository.mkdirs();
+		}
+		File file = new File(this.repositoryDirectory + File.separator + TEMP_REPOSITORY + File.separator + filename);
+		
+		String path = file.getAbsolutePath();
+		//System.out.println("===== file path:" + path);
+		
+		byte[] buffer = new byte[1024];
+		boolean b = file.createNewFile();
+		if(b){
+			OutputStream os = new FileOutputStream(file);
+			int readInBytes = -1;
+			while((readInBytes = is.read(buffer)) != -1){
+				os.write(buffer, 0, readInBytes);
+			}
+			os.close();
+		}
+		is.close();
+		return path;
 	}
 	
 	public String saveFileInRepository(InputStream is, String filename) throws IOException{

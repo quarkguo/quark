@@ -538,7 +538,7 @@ ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', {
 	        msgTarget: 'side',
 	        allowBlank: false,
 	        anchor: '100%',
-	        buttonText: 'Select Photo...',
+	        buttonText: 'Select File...',
 			listeners: {
 				change: function(fld, value) {
 					var newValue = value.replace(/C:\\fakepath\\/g, '');
@@ -551,6 +551,8 @@ ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', {
 			xtype : 'textarea',
 			fieldLabel : 'Description',
 			name: 'description',
+			value: 'items: \nitem2\n\n\nitem3:\n',
+			height: 200,
 			labelAlign: 'right',
 			anchor : '100%',
 		},
