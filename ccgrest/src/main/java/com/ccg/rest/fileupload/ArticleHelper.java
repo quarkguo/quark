@@ -82,7 +82,8 @@ public class ArticleHelper {
 		Path source = Paths.get(requestData.getFilepath());
 		Path destination = Paths.get(this.repositoryDirectory + File.separator + ARTICLE_REPOSITORY + File.separator + filename);
 		Files.move(source, destination, StandardCopyOption.ATOMIC_MOVE);
-		
+		String articleURL = destination.toString();
+				
 		//////////
 		// save pattern for future use(?)
 		//////////
@@ -117,7 +118,7 @@ public class ArticleHelper {
 		content.setContentTitle(title);
 		content.setLength(info.getContent().length());
 		content.setFilename(requestData.getFilename());
-		content.setUrl(requestData.getFilepath());
+		content.setUrl(articleURL);
 		
 		article.setContent(content);
 		article.setRfpReference(0);

@@ -551,7 +551,7 @@ ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', {
 			xtype : 'textarea',
 			fieldLabel : 'Description',
 			name: 'description',
-			value: 'items: \nitem2\n\n\nitem3:\n',
+			//value: 'items: \nitem2\n\n\nitem3:\n',
 			height: 200,
 			labelAlign: 'right',
 			anchor : '100%',
@@ -624,8 +624,10 @@ ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', {
                     					Ext.MessageBox.confirm("Success", "Do you want load another one?", function(btn){
                     						if(btn === 'no'){
                     							ccg.ui.uploadfilepanel.hide();
+                    							
                     						}
                     					});
+                    					window.location.reload();
                     				},
                     				failure: function(responseMsg){
                     					waitbox.hide();
