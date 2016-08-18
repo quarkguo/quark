@@ -1,5 +1,6 @@
 package com.ccg.ingestion.extract;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ public class Category {
 	int startPosition;
 	int endPosition;
 	int startPage;
-	int endPage;
+	int endPage;	
 	List<Category> subCategory;
 
 	public String getTitle() {
@@ -56,4 +57,63 @@ public class Category {
 	public void setSubCategory(List<Category> subCategory) {
 		this.subCategory = subCategory;
 	}
+	
+	// if category has less than ten character, we consider it is empty
+	static final int _content_len_=7;
+	public boolean doesCategoryHasContent()
+	{
+		if(this.getTitle().indexOf(".......")>0) return false;
+		if(this.subCategory!=null&&this.subCategory.size()>0)
+		{
+			for(Category sub :this.subCategory)
+			{
+				if(sub.doesCategoryHasContent())
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		else
+		{
+			int diff=this.getEndPosition()-this.getStartPosition();
+			int l_c= this.getTitle().length()+_content_len_;
+			if(diff>l_c) {
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+		
+	public int getNodeCount()
+	{
+		int res=1;
+		if(this.subCategory!=null && this.subCategory.size()>0)
+		{
+			for(Category sub:subCategory)
+			{
+				res+=sub.getNodeCount();
+			}
+		}
+		return res;
+	}
+	public void printMe(PrintStream ps)
+	{
+		ps.println("title: "+this.getTitle()+ " "+this.getStartPosition()+"," +this.getEndPosition()+".."+this.doesCategoryHasContent());
+		if(subCategory!=null&&subCategory.size()>0)
+		{
+			ps.println(".... children....");
+			for(Category sub:subCategory)
+			{
+				sub.printMe(ps);
+				ps.println("------");
+			}
+		}
+		
+	}
+	
+	 
 }

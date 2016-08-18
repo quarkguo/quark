@@ -16,11 +16,11 @@ import com.itextpdf.text.pdf.parser.TextExtractionStrategy;
 
 public class ExtractArticleInfo {
 	
-	private List<PageInfo> pageList = new ArrayList<PageInfo>();
-	private ArticleInfo aInfo = new ArticleInfo();
-	private List<Integer> pageEndIndex = new ArrayList<Integer>();
-	private List<PossiblePageHeaderOrFooter> possibleHeaderList = new ArrayList<PossiblePageHeaderOrFooter>();
-	private List<PossiblePageHeaderOrFooter> possibleFooterList = new ArrayList<PossiblePageHeaderOrFooter>();
+	 List<PageInfo> pageList = new ArrayList<PageInfo>();
+	 ArticleInfo aInfo = new ArticleInfo();
+	 List<Integer> pageEndIndex = new ArrayList<Integer>();
+	 List<PossiblePageHeaderOrFooter> possibleHeaderList = new ArrayList<PossiblePageHeaderOrFooter>();
+	 List<PossiblePageHeaderOrFooter> possibleFooterList = new ArrayList<PossiblePageHeaderOrFooter>();
 
 	public ArticleInfo fromPDF(InputStream is, String[] pattern) throws IOException {
 		aInfo.setType("PDF");
@@ -74,21 +74,22 @@ public class ExtractArticleInfo {
 				patternString += s + ", ";
 			}
 			throw new RuntimeException("Category size is 0, a wrong pattern may used:  )" + patternString);
-		}		
-		catList = this.removeDuplicateCategory(catList);
+		}
+		// for trying purpose
+		//catList = this.removeDuplicateCategory(catList);
 		aInfo.setCategoryList(catList);
 		
 		return aInfo;
 	}
 	
-	private void setTitle(List<String> pageHeader){
+	protected void setTitle(List<String> pageHeader){
 		StringBuffer sb = new StringBuffer();
 		for(String line : pageHeader){
 			sb.append(line).append("\n");
 		}
 		aInfo.setTitle(sb.toString());
 	}
-	private void setContent(){
+	protected void setContent(){
 		StringBuffer sb = new StringBuffer();
 		for(PageInfo pageInfo : pageList){
 			sb.append(pageInfo.content);
@@ -96,7 +97,7 @@ public class ExtractArticleInfo {
 		aInfo.setContent(sb.toString());
 	}
 	
-	private void removePageHeaderAndFooter(List<String> pageHeader, List<String> pageFooter){
+	protected void removePageHeaderAndFooter(List<String> pageHeader, List<String> pageFooter){
 		int numOfHeaderLine = pageHeader.size();
 		int numOfFooterLine = pageFooter.size();
 		
@@ -137,7 +138,7 @@ public class ExtractArticleInfo {
 	
 	
 	
-	private void setPageEndIndex(){
+	protected void setPageEndIndex(){
 		int counter = 0;
 		for(int i = 0; i < pageList.size(); i++){
 			counter = counter + pageList.get(i).content.length();
@@ -147,7 +148,7 @@ public class ExtractArticleInfo {
 //			System.out.println(i + 1 + ", " + pageEndIndex.get(i));
 //		}
 	}
-	private List<String> findPageHeader(){
+	protected List<String> findPageHeader(){
 		List<String> headerList = new ArrayList<String>();
 		if(this.possibleHeaderList.size() / 2 > 5){
 			// more than 10 pages
@@ -176,7 +177,7 @@ public class ExtractArticleInfo {
 		}
 		return headerList;
 	}
-	private List<String> findPageFooter(){
+	protected List<String> findPageFooter(){
 		List<String> footerList = new ArrayList<String>();
 		if(this.possibleFooterList.size() / 2 > 5){
 			// more than 10 pages
@@ -206,7 +207,7 @@ public class ExtractArticleInfo {
 		return footerList;
 	}	
 	
-	private void setPossiblePageHeaderAndFooter(String pageContent, int pageNumber){
+	protected void setPossiblePageHeaderAndFooter(String pageContent, int pageNumber){
 		String[] ss = pageContent.trim().split("\n");
 		PossiblePageHeaderOrFooter header = new PossiblePageHeaderOrFooter();
 		header.setPageNumber(pageNumber);
@@ -239,21 +240,21 @@ public class ExtractArticleInfo {
 		this.possibleFooterList.add(footer);
 	}
 	
-	private void printPageInfo(){
+	protected void printPageInfo(){
 		for(PageInfo pageInfo : pageList){
 			System.out.println("=============================");
 			System.out.println(pageInfo.pageNumber + ", " + pageInfo.numOfChars);
 			//System.out.println(pageInfo.content);
 		}
 	}
-	private void setPageNumberInfoToCategory(List<Category> catList){
+	protected void setPageNumberInfoToCategory(List<Category> catList){
 		for(Category cat : catList){
 			cat.setStartPage(this.indexToPageNumber(cat.getStartPosition()));
 			cat.setEndPage(this.indexToPageNumber(cat.getEndPosition()));
 		}
 	}
 	
-	private int indexToPageNumber(int index){
+	protected int indexToPageNumber(int index){
 		int count = 0;
 		int page = -1;
 		for(int i = 0; i < this.pageList.size(); i++){
@@ -266,7 +267,7 @@ public class ExtractArticleInfo {
 		return page;
 	}
 	
-	private List<Category> extractCategory(String content, String regex, int offset){
+	protected List<Category> extractCategory(String content, String regex, int offset){
 		
 		List<Category> cList = new ArrayList<Category>();
 		
@@ -277,7 +278,11 @@ public class ExtractArticleInfo {
 			Category sub = new Category();
 			int p0 = matcher.start();
 			int p1 = content.indexOf("\n", p0+1);
-			if(p1 > p0 && p0 > 0){
+			if(p1==-1)
+			{
+				p1=content.length();
+			}
+			if(p1 > p0 && p0 >=0){
 				String temp = content.substring(p0, p1);
 				sub.setTitle(temp.trim());
 				sub.setStartPosition(matcher.start() + offset);
@@ -310,7 +315,7 @@ public class ExtractArticleInfo {
 	}
 
 	// only remove level one duplicates
-	private List<Category> removeDuplicateCategory(List<Category> catList){
+	protected List<Category> removeDuplicateCategory(List<Category> catList){
 		List<Category> newCatList = new ArrayList<Category>();
 		int n = 0;
 		//boolean foundDuplicate = false;
