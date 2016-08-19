@@ -49,6 +49,188 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		this.iscontentPrepared=true;
 	}
 	
+	public void fillEndPosition(List<Category>list,int endposi)
+	{
+		int previous_start=endposi+1;
+		for(int j=list.size()-1;j>=0;j--)
+		{
+			Category c=list.get(j);
+			c.setEndPosition(previous_start-1);
+			previous_start=c.getStartPosition();
+		}
+	}
+
+	public List<Category> buildMainCategory(List<Category> tobs) throws Exception
+	{
+		List<Category> main=findCategoryLevel1FromTableOfContent(tobs);
+		addCoverpageAndTableofContent(main, tobs);
+		fillEndPosition(main, aInfo.content.length());
+		for(Category ele:main)
+		{
+			parsingSubCategoryRecursive(ele);
+		}
+		return main;
+	}
+	// assume all end position is set. 
+	public void parsingSubCategoryRecursive(Category data)
+	{
+		Category tob=data.getTobCategory();
+		if(tob==null) return; // not table of content no further parsing
+		List<Category> tobsubs=tob.getSubCategory();
+		if(tobsubs!=null&&tobsubs.size()>0)
+		{
+			List<Category> datasub=new ArrayList<Category>();			
+				for(Category tobsub:tobsubs)
+				{
+					Category tmp=searchByTitleMatch(tobsub,data.startPosition,data.endPosition);
+					if(tmp!=null)
+					{
+						datasub.add(tmp);
+						tmp.setTobCategory(tobsub);
+						tmp.setLevel(tobsub.getLevel());
+					}
+				}
+				// now do end postions
+				if(datasub.size()>0)
+				{
+					this.fillEndPosition(datasub, data.endPosition);
+					data.setSubCategory(datasub);
+				
+					// now do recurisve search
+					for(Category dataele:datasub)
+					{
+						parsingSubCategoryRecursive(dataele);
+					}
+				}
+		}
+		return;
+	}
+	
+	public List<Category> addCoverpageAndTableofContent(List<Category>main, List<Category> tblist)
+	{
+		Category first=tblist.get(0);
+		Category last=tblist.get(tblist.size()-1);
+		Category tb=new Category();
+		tb.setTitle("Table Of Content");
+		tb.setStartPosition(first.startPosition);
+		tb.setEndPosition(last.endPosition);
+		tb.setTOC(true);
+		// now
+		int index=-1;
+		for(int i=0;i<main.size();i++)
+		{
+			index=i;
+			Category c=main.get(i);
+			if(c.getStartPosition()>tb.startPosition)
+			{
+				break;
+			}
+		}
+		main.add(index,tb);
+		
+		Category mainfirst=main.get(0);
+		if(mainfirst.getStartPosition()>2)
+		{
+			Category cover=new Category();
+			cover.setTitle("CoverPages");
+			cover.setStartPosition(0);
+			cover.setEndPosition(mainfirst.startPosition-1);
+			cover.setCOVER(true);
+			main.add(0,cover);
+		}		
+		return main;
+	}
+	
+	public List<Category> findCategoryLevel1FromTableOfContent(List<Category> tableOfContent) throws Exception
+	{
+		int exclu_start=tableOfContent.get(0).startPosition;
+		int exclu_end=tableOfContent.get(tableOfContent.size()-1).getEndPosition();
+		int end=this.aInfo.content.length();
+		int start=0;
+		List<Category> res=new ArrayList<Category>(); 
+		for(Category tc:tableOfContent)
+		{
+			// search first half
+			if(tc.isTableOrFigure()) continue;
+			Category tmp=searchByTitleMatch(tc,exclu_end,end);
+			if(tmp==null)
+			{				 
+				 tmp=searchByTitleMatch(tc,0,exclu_start);
+			}
+			if(tmp!=null)
+			{
+				tmp.setTobCategory(tc);
+				res.add(tmp);
+			}
+			else
+			{
+				System.out.println(" XXXXXXXXXX Cound not find "+tc.getTitle());
+			}
+		}
+		return res;
+	}
+	
+	// this method will recursivly search for the category
+	// if could not find it will try to reduce the matching requirements
+	// it will exclude the the current 
+	public Category searchByTitleMatch(Category tb_item, int  start, int end)
+	{
+		String searchToken=tb_item.getTitle();
+		int posi=searchToken.indexOf("....");
+		// preprocess remove tailing token
+		if(posi>0)
+		{
+			searchToken=searchToken.substring(0,posi);
+		}
+		 else
+		{
+		   posi=searchToken.lastIndexOf(" ");
+		   searchToken=searchToken.substring(0,posi).trim();
+		}
+
+		// trying to find match
+		// always try to find first match
+		String content=aInfo.content.substring(start, end);
+		boolean found=false;
+		
+		int matchPosi=content.indexOf(searchToken);
+		if(matchPosi>-1)
+		{
+			found=true;
+		}
+		while(matchPosi==-1)
+		{
+			posi=searchToken.lastIndexOf(" ");
+			if(posi>-1)
+			{
+				searchToken=searchToken.substring(0,posi);
+			}
+			else
+			{
+				break;
+			}
+			matchPosi=content.indexOf(searchToken);
+			if(matchPosi>0)
+			{
+				found=true;
+				break;
+			}
+		}
+		if(found)
+		{
+			Category c=new Category();
+			c.setStartPosition(matchPosi+start);
+			String title=tb_item.getTrimTitle();			
+			c.setTitle(title);
+			c.setLevel(tb_item.getLevel());
+			return c;
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
 	public CategoryRegexPattern identifyArticleCategoryPattern() throws Exception
 	{
 		if(!this.iscontentPrepared)
@@ -112,10 +294,15 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		List<Category> subs=extractCategory(aInfo.getContent().substring(c.getStartPosition(), c.getEndPosition()), pattern, c.getStartPosition());
 		if(subs.size()>0)
 		{
+			for(Category sub:subs)
+			{
+				sub.setLevel(recursiveLevel);
+			}
 			c.setSubCategory(subs);
 			// now parse the recursive level
 			for(Category sub: subs)
 			{			
+				
 				parseCategoryRecursively(sub,regex,recursiveLevel+1);
 			}
 		}		
@@ -215,8 +402,6 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		{
 			if(c.indexOf(title)==0)
 			{
-				System.out.println("^^^^"+c);
-				System.out.println(title);
 				return true;
 			}
 		}

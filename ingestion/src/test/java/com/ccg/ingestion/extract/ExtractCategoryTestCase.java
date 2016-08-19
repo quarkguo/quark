@@ -18,7 +18,7 @@ public class ExtractCategoryTestCase {
 	{
 		InputStream is = new FileInputStream(
 				//new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
-				new File("C:\\ccgworkspace\\testfiles\\test1.pdf"));
+				new File("C:\\ccgworkspace\\testfiles\\test13.pdf"));
 		ExtractArticleInfoAuto extract = new ExtractArticleInfoAuto();
 		extract.prepareDocument(is);		
 		ArticleInfo info=extract.aInfo;
@@ -30,7 +30,6 @@ public class ExtractCategoryTestCase {
 		System.out.println("--->");
 		for(Category c:list)
 		{
-		
 			c.printMe(System.out);
 		}
 		*/
@@ -40,6 +39,15 @@ public class ExtractCategoryTestCase {
 		{
 				c.printMe(System.out);
 		}
+		
+		List<Category> main=extract.buildMainCategory(tableofcontent);
+		System.out.println("---> Real Category");
+		for(Category c:main)
+		{
+				c.printMe(System.out);
+		}
+		
+		
 	}
 	
 	//@Test

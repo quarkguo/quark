@@ -11,6 +11,36 @@ public class Category {
 	int endPosition;
 	int startPage;
 	int endPage;	
+	int level=0;  // default level and upmost level
+	Category tobCategory=null;
+	public Category getTobCategory() {
+		return tobCategory;
+	}
+	public void setTobCategory(Category tobCategory) {
+		this.tobCategory = tobCategory;
+	}
+
+	boolean isTOC=false;
+	boolean isCOVER=false;
+	public boolean isTOC() {
+		return isTOC;
+	}
+	public void setTOC(boolean isTOC) {
+		this.isTOC = isTOC;
+	}
+	public boolean isCOVER() {
+		return isCOVER;
+	}
+	public void setCOVER(boolean isCOVER) {
+		this.isCOVER = isCOVER;
+	}
+	public int getLevel() {
+		return level;
+	}
+	public void setLevel(int level) {
+		this.level = level;
+	}
+
 	List<Category> subCategory;
 
 	public String getTitle() {
@@ -19,6 +49,30 @@ public class Category {
 	public void setTitle(String title) {
 		this.title = title;
 	}
+	
+	public boolean isTableOrFigure()
+	{
+		if(title.toLowerCase().indexOf("table ")>-1) return true;
+		if(title.toLowerCase().indexOf("figure ")>-1) return true;
+		return false;
+	}
+	public String getTrimTitle()
+	{
+		String res=title;
+		int posi=title.indexOf("....");
+		// preprocess remove tailing token
+		if(posi>0)
+		{
+			res=title.substring(0,posi);
+		}
+		 else
+		{
+		   posi=title.lastIndexOf(" ");
+		   res=res.substring(0,posi).trim();
+		}
+		return res;
+	}
+	
 	public String getContent() {
 		return content;
 	}
