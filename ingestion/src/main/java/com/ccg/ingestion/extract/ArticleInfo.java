@@ -7,6 +7,14 @@ public class ArticleInfo {
 	String title;
 	String type; // PDF, ...
 	String content;
+	String upperCaseContent=null;
+	public String getUpperCaseContent() {
+		if(upperCaseContent==null&&content!=null)
+		{
+			upperCaseContent=content.toUpperCase();
+		}
+		return upperCaseContent;
+	}
 	int pages;
 	List<Category> categoryList ;
 	

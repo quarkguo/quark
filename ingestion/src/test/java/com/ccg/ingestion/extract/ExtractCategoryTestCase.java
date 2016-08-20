@@ -26,13 +26,13 @@ public class ExtractCategoryTestCase {
 		List<Category> list=extract.parseAll();		
 		extract.mergeCategorys(list);
 		info.setCategoryList(list);
-	/*	
-		System.out.println("--->");
+	
+		System.out.println("---> raw");
 		for(Category c:list)
 		{
 			c.printMe(System.out);
 		}
-		*/
+		
 		List<Category> tableofcontent=extract.findTableOfContent(list);
 		System.out.println("---> table of content");
 		for(Category c:tableofcontent)

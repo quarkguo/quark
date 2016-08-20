@@ -3,6 +3,7 @@ package com.ccg.ingestion.extract;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 public class Category {
 	String title;
@@ -12,6 +13,14 @@ public class Category {
 	int startPage;
 	int endPage;	
 	int level=0;  // default level and upmost level
+	String matchedToken;
+	public String getMatchedToken() {
+		return matchedToken;
+	}
+	public void setMatchedToken(String matchedToken) {
+		this.matchedToken = matchedToken;
+	}
+
 	Category tobCategory=null;
 	public Category getTobCategory() {
 		return tobCategory;
@@ -156,7 +165,7 @@ public class Category {
 	}
 	public void printMe(PrintStream ps)
 	{
-		ps.println("title: "+this.getTitle()+ " "+this.getStartPosition()+"," +this.getEndPosition()+".."+this.doesCategoryHasContent());
+		ps.println("title: "+this.getTitle()+ " "+this.getStartPosition()+"," +this.getEndPosition()+".."+this.doesCategoryHasContent()+".."+this.getMatchedToken());
 		if(subCategory!=null&&subCategory.size()>0)
 		{
 			ps.println(".... children....");
@@ -169,5 +178,64 @@ public class Category {
 		
 	}
 	
-	 
+	public String[] getCategoryRef()
+	{
+		if(title!=null)
+		{
+			StringTokenizer tk1=new StringTokenizer(title);
+			String refstr=tk1.nextToken();
+			System.out.println("^^^"+refstr+"^^"+title);
+			String[] ary=refstr.split("\\.");
+			return ary;
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
+	public boolean comparePierRef(Category c)
+	{
+		String[] me_ref=getCategoryRef();
+		String[] c_ref=c.getCategoryRef();
+		if(c_ref==null||me_ref==null||c_ref.length!=me_ref.length)
+		{
+			return false;
+		}
+		else
+		{
+			for(int i=0;i<me_ref.length-2;i++)
+			{
+				if(me_ref[i]!=c_ref[i])
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	public boolean compareParentRef(Category p)
+	{
+		String[] me_ref=getCategoryRef();
+		String[] c_ref=p.getCategoryRef();
+		if(c_ref==null||me_ref==null||(c_ref.length+1)!=me_ref.length)
+		{
+			return false;
+		}
+		else
+		{
+			for(int i=0;i<c_ref.length-1;i++)
+			{
+				if(me_ref[i]!=c_ref[i])
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	
+	
 }

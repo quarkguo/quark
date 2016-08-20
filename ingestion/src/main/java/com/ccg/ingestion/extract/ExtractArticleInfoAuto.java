@@ -63,10 +63,11 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 	public List<Category> buildMainCategory(List<Category> tobs) throws Exception
 	{
 		List<Category> main=findCategoryLevel1FromTableOfContent(tobs);
-		addCoverpageAndTableofContent(main, tobs);
+	//	addCoverpageAndTableofContent(main, tobs);
 		fillEndPosition(main, aInfo.content.length());
 		for(Category ele:main)
 		{
+			ele.printMe(System.out);
 			parsingSubCategoryRecursive(ele);
 		}
 		return main;
@@ -190,9 +191,10 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 
 		// trying to find match
 		// always try to find first match
-		String content=aInfo.content.substring(start, end);
+		String content=aInfo.getUpperCaseContent().substring(start, end);
+		searchToken=searchToken.toUpperCase();
 		boolean found=false;
-		
+		int original_len=searchToken.length();
 		int matchPosi=content.indexOf(searchToken);
 		if(matchPosi>-1)
 		{
@@ -216,9 +218,14 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 				break;
 			}
 		}
+		if(searchToken.length()*2<original_len)
+		{
+			found=false;
+		}
 		if(found)
 		{
 			Category c=new Category();
+			c.setMatchedToken(searchToken);
 			c.setStartPosition(matchPosi+start);
 			String title=tb_item.getTrimTitle();			
 			c.setTitle(title);
@@ -379,21 +386,71 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 
 		
 		// find matching title
+		boolean found=false;
 		for(int j=last_index;j<raw_list.size();j++)
 		{
 			Category l=raw_list.get(j);
-			if(searchTitle(l.getTitle(),titles))
+			if(searchTitle(l.getTitle().trim(),titles))
 			{
-				last_index=j;				
+				last_index=j;
+				found=true;
+				System.out.println("find end of table of index:"+l.getTitle());
 				break;
 			}
 		}
 		List<Category> tableofcontent=new ArrayList<Category>();
-		for(int i=start_index;i<last_index;i++)
+		if(found)
 		{
-			tableofcontent.add(raw_list.get(i));
+			for(int i=start_index;i<last_index;i++)
+			{
+				tableofcontent.add(raw_list.get(i));
+			}
+		}
+		else
+		{
+			// only look for ... and also using ... as sub folder boundary
+			for(int i=start_index;i<last_index;i++)
+			{
+				Category rawele=raw_list.get(i);
+				if(rawele.getTitle().indexOf(".....")>0)
+				{
+					this.filterSubCategoryRecursive(rawele, "....");
+					tableofcontent.add(rawele);
+				}
+			}
 		}
 		return tableofcontent;
+	}
+	
+	public void filterSubCategoryRecursive(Category root,String filter)
+	{
+		List<Category> subs=root.getSubCategory();
+		if(subs!=null&&subs.size()>0)
+		{			
+			int size=subs.size();
+			for(int i=size-1;i>=0;i--)
+			{
+				Category c=subs.get(i);
+				if(c.getTitle().indexOf(filter)==-1&&c.doesCategoryHasContent()) // dont have filter
+				{
+					
+						subs.remove(c);						
+				}
+				// reset the last position of category
+				if(subs.size()>0)
+				{
+					root.setEndPosition(subs.get(subs.size()-1).getEndPosition());
+				}
+				else
+				{
+					root.setEndPosition(root.getStartPosition()+root.getTitle().length());
+				}
+			}
+			for(Category sub:subs)
+			{
+				filterSubCategoryRecursive(sub,filter);
+			}
+		}
 	}
 	
 	public boolean searchTitle(String title, List<String> l)
