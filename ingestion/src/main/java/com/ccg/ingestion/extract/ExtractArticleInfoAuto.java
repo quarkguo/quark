@@ -65,15 +65,44 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		List<Category> main=findCategoryLevel1FromTableOfContent(tobs);
 	//	addCoverpageAndTableofContent(main, tobs);
 		fillEndPosition(main, aInfo.content.length());
+		int exclu_start=tobs.get(0).startPosition;
+		int exclu_end=tobs.get(tobs.size()-1).getEndPosition();
 		for(Category ele:main)
 		{
 			ele.printMe(System.out);
-			parsingSubCategoryRecursive(ele);
+			
+			parsingSubCategoryRecursive(ele,exclu_start,exclu_end);
 		}
 		return main;
 	}
+	
+	public List<int[]> getIntersetArea(int start, int end, int exclude_start, int exclude_end)
+	{
+		List<int[]> res=new ArrayList<int[]>();
+		if(end<=exclude_end&&start>=exclude_start)
+		{
+			// none
+			
+		}
+		else if(start<exclude_start&&end>exclude_end)
+		{
+			// two area
+			res.add(new int[]{start,exclude_start});
+			res.add(new int[]{exclude_end,end});
+		} 
+		else if(exclude_end<=end)
+		{
+			// here we only have one situation
+			res.add(new int[]{Math.max(start, exclude_end),end});
+		}
+		else if(exclude_start>=start)
+		{
+			res.add(new int[]{start,Math.min(end, exclude_end)});
+		}		
+		return res;
+	}
 	// assume all end position is set. 
-	public void parsingSubCategoryRecursive(Category data)
+	public void parsingSubCategoryRecursive(Category data, int ex_start, int ex_end)
 	{
 		Category tob=data.getTobCategory();
 		if(tob==null) return; // not table of content no further parsing
@@ -83,12 +112,16 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 			List<Category> datasub=new ArrayList<Category>();			
 				for(Category tobsub:tobsubs)
 				{
-					Category tmp=searchByTitleMatch(tobsub,data.startPosition,data.endPosition);
-					if(tmp!=null)
+					List<int[]> searchareas=this.getIntersetArea(data.startPosition, data.endPosition, ex_start, ex_end);
+					for(int[] areas:searchareas)
 					{
-						datasub.add(tmp);
-						tmp.setTobCategory(tobsub);
-						tmp.setLevel(tobsub.getLevel());
+						Category tmp=searchByTitleMatch(tobsub,areas[0],areas[1]);
+						if(tmp!=null)
+						{
+							datasub.add(tmp);
+							tmp.setTobCategory(tobsub);
+							tmp.setLevel(tobsub.getLevel());
+						}
 					}
 				}
 				// now do end postions
@@ -100,7 +133,7 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 					// now do recurisve search
 					for(Category dataele:datasub)
 					{
-						parsingSubCategoryRecursive(dataele);
+						parsingSubCategoryRecursive(dataele,ex_start,ex_end);
 					}
 				}
 		}
