@@ -2,10 +2,11 @@ package com.ccg.rest.handler;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,7 @@ import com.ccg.common.data.Category;
 import com.ccg.common.data.CategoryContent;
 import com.ccg.common.data.SearchResult;
 import com.ccg.common.data.SubCategoryContent;
+import com.ccg.common.pdf.util.PdfUtil;
 import com.ccg.ingestion.extract.ArticleCategoryPatternConfig;
 import com.ccg.services.data.CCGDBService;
 import com.ccg.services.index.SearchEngine;
@@ -299,7 +301,135 @@ public class TestHandler {
 			// TODO Auto-generated catch block
 		//	e.printStackTrace();
 		//}		
-	}		
+	}	
+	
+	@RequestMapping(value="/article/{articleId}/{selectedPages}/download",method=RequestMethod.GET)
+	public void downloadParticalArticle(
+			@PathVariable("articleId") Integer articleId, 
+			@PathVariable("selectedPages") String selectedPages,  
+			HttpServletResponse response) throws Exception
+	{
+		ArticleContent content = dataservice.getArticleContent(articleId);
+		String filename = content.getUrl();
+		
+		System.out.println("=========>>>>" + selectedPages);
+		
+		List<Integer> pages = new ArrayList<Integer>();
+		
+		int startPage = 0;
+		int endPage = 0;
+		
+		// page range 1-5 (from page 1 to page 5)
+		if(selectedPages.indexOf("-") != -1){
+			String[] pageRanges = selectedPages.split("-");
+			startPage = Integer.parseInt(pageRanges[0]);
+			endPage = Integer.parseInt(pageRanges[1]);
+			
+			for(int i = startPage; i < endPage + 1; i++ ){
+				pages.add(i);
+			}
+		//	selected pages: 1,4,5,9 (page 1, page 4, page 5 and page 9)
+		}else if(selectedPages.indexOf(",") != -1){			
+			String[] pageRanges = selectedPages.split(",");
+			for(String string : pageRanges){
+				pages.add(Integer.parseInt(string));
+			}
+		// single page: 5 (page 5)	
+		}else{
+			pages.add(Integer.parseInt(selectedPages));
+		}	
+		
+		// extract selected pages
+		InputStream is = new FileInputStream(new File(filename));
+		OutputStream os = response.getOutputStream();
+		PdfUtil.extractSelectPage(is, os, pages);
+		is.close();
+		os.close();
+	}	
+	
+	@RequestMapping(value="/article/{articleId}/{selectedPages}/{highlightRegEx}/download",method=RequestMethod.GET)
+	public void downloadParticalArticleAndHighlightText(
+			@PathVariable("articleId") Integer articleId, 
+			@PathVariable("selectedPages") String selectedPages,
+			@PathVariable("highlightRegEx") String highlightRegEx,
+			HttpServletResponse response) throws Exception
+	{
+		ArticleContent content = dataservice.getArticleContent(articleId);
+		String filename = content.getUrl();
+		File originalFile = new File(filename);
+		
+		System.out.println("=========>>>>" + selectedPages);
+		System.out.println("=========>>>>" + highlightRegEx);
+		
+		List<Integer> pages = new ArrayList<Integer>();
+		
+		int startPage = 0;
+		int endPage = 0;
+		
+		// page range 1-5 (from page 1 to page 5)
+		if(selectedPages.indexOf("-") != -1){
+			String[] pageRanges = selectedPages.split("-");
+			startPage = Integer.parseInt(pageRanges[0]);
+			endPage = Integer.parseInt(pageRanges[1]);
+			
+			for(int i = startPage; i < endPage + 1; i++ ){
+				pages.add(i);
+			}
+		//	selected pages: 1,4,5,9 (page 1, page 4, page 5 and page 9)
+		}else if(selectedPages.indexOf(",") != -1){			
+			String[] pageRanges = selectedPages.split(",");
+			for(String string : pageRanges){
+				pages.add(Integer.parseInt(string));
+			}
+		// single page: 5 (page 5)	
+		}else{
+			pages.add(Integer.parseInt(selectedPages));
+		}	
+		
+		// extract selected pages, and save in temp file
+		InputStream is = new FileInputStream(new File(filename));	
+		File partialFile = new File("partical_temp_" + System.currentTimeMillis() + ".pdf");
+		
+		System.out.println("===location:====" + partialFile.getAbsolutePath());
+		
+		OutputStream os = new FileOutputStream(partialFile);
+		PdfUtil.extractSelectPage(is, os, pages);
+		os.flush();
+		os.close();
+		is.close();
+		
+		// add highlight to temp file
+		File particalHighlightFile = new File("hightlight_" + partialFile.getName());
+		
+		PdfUtil.textHighlight(partialFile.getAbsolutePath(), particalHighlightFile.getAbsolutePath(), highlightRegEx);
+		
+		// output highlighted file
+		byte[] buffer = new byte[1024];
+		InputStream highlightInputStream = new FileInputStream(particalHighlightFile);
+		OutputStream highlightOutputStream = response.getOutputStream();
+		response.setHeader("content-disposition", "inline; filename=" + originalFile.getName() + "_Highlight");
+		response.setContentType("application/pdf");
+		int readBytes = -1;
+
+		while((readBytes = highlightInputStream.read(buffer)) != -1) {
+			highlightOutputStream.write(buffer, 0, readBytes);
+		}
+		highlightOutputStream.flush();
+		highlightOutputStream.close();		
+		
+		System.out.println("=== before delte");
+		
+		
+		
+		boolean hi = particalHighlightFile.delete();
+		boolean pa = partialFile.delete();
+		
+		System.out.println("=== after delete" + hi + ", " + pa);
+	
+	}	
+	
+	
+	
 	private String toJson(Object obj){
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		return gson.toJson(obj);
