@@ -1,8 +1,11 @@
 package com.ccg.rest.handler;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -38,6 +41,7 @@ import com.ccg.services.index.SearchEngine;
 import com.ccg.util.ConfigurationManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.itextpdf.text.DocumentException;
 
 
 @RestController
@@ -311,8 +315,13 @@ public class TestHandler {
 	{
 		ArticleContent content = dataservice.getArticleContent(articleId);
 		String filename = content.getUrl();
-		
-		System.out.println("=========>>>>" + selectedPages);
+		File pdfFile = new File(filename);
+		response.setHeader("content-disposition", "inline; filename=" + pdfFile.getName());
+		response.setContentType("application/pdf");		
+		getParticalPdf(pdfFile, selectedPages, response.getOutputStream());
+	}	
+
+	private void getParticalPdf(File pdfFile, String selectedPages, OutputStream outputStream) throws IOException, DocumentException{
 		
 		List<Integer> pages = new ArrayList<Integer>();
 		
@@ -340,12 +349,10 @@ public class TestHandler {
 		}	
 		
 		// extract selected pages
-		InputStream is = new FileInputStream(new File(filename));
-		OutputStream os = response.getOutputStream();
-		PdfUtil.extractSelectPage(is, os, pages);
+		InputStream is = new FileInputStream(pdfFile);
+		PdfUtil.extractSelectPage(is, outputStream, pages);
 		is.close();
-		os.close();
-	}	
+	}
 	
 	@RequestMapping(value="/article/{articleId}/{selectedPages}/{highlightRegEx}/download",method=RequestMethod.GET)
 	public void downloadParticalArticleAndHighlightText(
@@ -360,71 +367,17 @@ public class TestHandler {
 		
 		System.out.println("=========>>>>" + selectedPages);
 		System.out.println("=========>>>>" + highlightRegEx);
-		
-		List<Integer> pages = new ArrayList<Integer>();
-		
-		int startPage = 0;
-		int endPage = 0;
-		
-		// page range 1-5 (from page 1 to page 5)
-		if(selectedPages.indexOf("-") != -1){
-			String[] pageRanges = selectedPages.split("-");
-			startPage = Integer.parseInt(pageRanges[0]);
-			endPage = Integer.parseInt(pageRanges[1]);
-			
-			for(int i = startPage; i < endPage + 1; i++ ){
-				pages.add(i);
-			}
-		//	selected pages: 1,4,5,9 (page 1, page 4, page 5 and page 9)
-		}else if(selectedPages.indexOf(",") != -1){			
-			String[] pageRanges = selectedPages.split(",");
-			for(String string : pageRanges){
-				pages.add(Integer.parseInt(string));
-			}
-		// single page: 5 (page 5)	
-		}else{
-			pages.add(Integer.parseInt(selectedPages));
-		}	
-		
-		// extract selected pages, and save in temp file
-		InputStream is = new FileInputStream(new File(filename));	
-		File partialFile = new File("partical_temp_" + System.currentTimeMillis() + ".pdf");
-		
-		System.out.println("===location:====" + partialFile.getAbsolutePath());
-		
-		OutputStream os = new FileOutputStream(partialFile);
-		PdfUtil.extractSelectPage(is, os, pages);
-		os.flush();
-		os.close();
-		is.close();
-		
-		// add highlight to temp file
-		File particalHighlightFile = new File("hightlight_" + partialFile.getName());
-		
-		PdfUtil.textHighlight(partialFile.getAbsolutePath(), particalHighlightFile.getAbsolutePath(), highlightRegEx);
-		
-		// output highlighted file
-		byte[] buffer = new byte[1024];
-		InputStream highlightInputStream = new FileInputStream(particalHighlightFile);
-		OutputStream highlightOutputStream = response.getOutputStream();
-		response.setHeader("content-disposition", "inline; filename=" + originalFile.getName() + "_Highlight");
-		response.setContentType("application/pdf");
-		int readBytes = -1;
 
-		while((readBytes = highlightInputStream.read(buffer)) != -1) {
-			highlightOutputStream.write(buffer, 0, readBytes);
-		}
-		highlightOutputStream.flush();
-		highlightOutputStream.close();		
+		ByteArrayOutputStream particalPdfOutStream = new ByteArrayOutputStream();
+		getParticalPdf(originalFile, selectedPages, particalPdfOutStream);
 		
-		System.out.println("=== before delte");
+		byte[] particalPdfBytes = particalPdfOutStream.toByteArray();		
+		InputStream is = new ByteArrayInputStream(particalPdfBytes);	
 		
+		response.setHeader("content-disposition", "inline; filename=" + originalFile.getName());
+		response.setContentType("application/pdf");
 		
-		
-		boolean hi = particalHighlightFile.delete();
-		boolean pa = partialFile.delete();
-		
-		System.out.println("=== after delete" + hi + ", " + pa);
+		PdfUtil.textHighlight(is, response.getOutputStream(), highlightRegEx);
 	
 	}	
 	

@@ -1,11 +1,8 @@
 package com.ccg.common.pdf.util;
 
 import java.awt.geom.Rectangle2D;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,6 +13,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.pdfclown.bytes.Buffer;
 import org.pdfclown.documents.Page;
 import org.pdfclown.documents.contents.ITextString;
 import org.pdfclown.documents.contents.TextChar;
@@ -38,10 +36,11 @@ public class PdfUtil {
 		PdfStamper stamper = new PdfStamper(reader, os);
 		stamper.close();
 	}
-	
-	public static void textHighlight(String originalFilePath, String highlightedFilePath, String textRegEx) throws IOException{
+
+	public static void textHighlight(InputStream inputStream, OutputStream outputStream, String textRegEx) throws IOException{
+			
+		org.pdfclown.files.File file = new org.pdfclown.files.File(new Buffer(inputStream));
 		
-		org.pdfclown.files.File file = new org.pdfclown.files.File(originalFilePath);
 		Pattern pattern = Pattern.compile(textRegEx, Pattern.CASE_INSENSITIVE);
 		TextExtractor textExtractor = new TextExtractor(true, true);
 		
@@ -97,57 +96,32 @@ public class PdfUtil {
 				}
 			});
 			
-			
-			file.save(highlightedFilePath, SerializationModeEnum.Standard);
+			file.save(new org.pdfclown.bytes.OutputStream(outputStream), SerializationModeEnum.Standard);
 			file.close();
+			//file.save(outputStream, SerializationModeEnum.Standard);
+			//file.sa
+			//IOutputStream output = new org.pdfclown.bytes.OutputStream(outputStream);
+			//file.close();
 		}
 
 	}
 	
 	
 	
-	
 	public static void main(String[] args) throws DocumentException, IOException {
-
-		InputStream is = new FileInputStream(new File("/Users/zchen323/codebase/test_doc/FEDITC_DECC_Mechanicsburg_Technical_Management_Quote.pdf"));	
-		OutputStream os = new FileOutputStream(new File("/Users/zchen323/codebase/test_doc/partical.pdf"));
-		List<Integer> pages = new ArrayList<Integer>();
-		pages.add(3);
-		pages.add(1);
-		extractSelectPage(is, os, pages);
-		is.close();
-		os.close();
-		
-		
-		
-//		ByteArrayOutputStream out = new ByteArrayOutputStream();
-//		try{
-//			List<Integer> pages = new ArrayList<Integer>();
-//			pages.add(3);
-//			pages.add(1);
-//			extractSelectPage(is, out, pages);
-//			
-//			byte[] bytes = out.toByteArray();
-//			
-//			//String string = new String(buffer);
-//			//System.out.println(string);
-//			InputStream bin = new ByteArrayInputStream(bytes);
-//			
-//			byte[] buffer = new byte[1024];
-//			int n = -1;
-//			while((n = bin.read(buffer, 0, 1024)) != -1){
-//				os.write(buffer, 0, n);
-//			}
-//			os.close();
-//			bin.close();
-			
 			
 		///// test pdf text highlight //////
 		String originalFilePath = "/Users/zchen323/codebase/test_doc/partical.pdf";
-		String highlightedFilePath = "/Users/zchen323/codebase/test_doc/partical_highlighted.pdf";
+		String highlightedFilePath = "/Users/zchen323/codebase/test_doc/partical_highlighted3.pdf";
 		String textRegEx = "Troubleshooting|specialization|alleviate the potential";
 		
-		PdfUtil.textHighlight(originalFilePath, highlightedFilePath, textRegEx);
+		OutputStream os = new FileOutputStream(highlightedFilePath);
+		InputStream is = new FileInputStream(new File(originalFilePath));
+		
+		PdfUtil.textHighlight(is, os, textRegEx);
+		is.close();
+		os.flush();
+		os.close();
 			
 			
 			
