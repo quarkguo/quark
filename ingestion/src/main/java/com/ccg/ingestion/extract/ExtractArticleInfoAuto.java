@@ -14,8 +14,84 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 
 	CategoryRegexPattern articleCategoryPattern;
 	boolean iscontentPrepared=false;
+	public static int _PAGESPERCATEGORY_=5;
 	// this method prepare the document and prepare the text content 
 	// it also remove the header and footer
+	// here we assuming the prepareDocument is done
+	
+	public ArticleInfo processArticle(InputStream is) throws IOException
+	{
+		prepareDocument(is);
+		try{
+			this.processDocument();
+		}
+		catch(Exception e)
+		{
+			System.out.println("processing normal category fail, adopt default processing");
+			this.processDocumentDefault(_PAGESPERCATEGORY_);
+		}
+		return aInfo;
+	}
+	
+	public ArticleInfo processDocument() throws Exception
+	{
+		
+	  //  prepareDocument(is);		
+		identifyArticleCategoryPattern();
+		List<Category> list=parseAll();		
+		mergeCategorys(list);
+		aInfo.setCategoryList(list);
+	/*
+		System.out.println("---> raw");
+		for(Category c:list)
+		{
+			c.printMe(System.out);
+		}
+		*/
+		List<Category> tableofcontent=findTableOfContent(list);
+		
+		List<Category> main=buildMainCategory(tableofcontent);
+	//	System.out.println("---> Real Category");
+		for(Category c:main)
+		{
+				buildPageNumber(c);
+   //				c.printMe(System.out);
+		}
+		// set category to the info
+		aInfo.setCategoryList(main);
+		
+		return aInfo;
+	}
+	
+	// please notice if reusing the input stream the process has to be reset
+	public ArticleInfo processDocumentDefault(int nPage) throws IOException
+	{
+		  // document has been pre processed
+		// step 1 build category
+		List<Category> main=new ArrayList<Category>();
+		Category curCategory=null;
+		int count=0;
+		int lastPageEnding=-1;
+		for(PageInfo p:pageList)
+		{
+			if((count % nPage)==0)
+			{
+				curCategory=new Category();
+				main.add(curCategory);
+				curCategory.setLevel(0);
+				curCategory.setStartPosition(lastPageEnding+1);
+				
+				curCategory.setStartPage(count);
+			}
+			lastPageEnding=pageEndIndex.get(count);
+			curCategory.setEndPage(count);
+			curCategory.setEndPosition(lastPageEnding);
+			curCategory.setTitle(main.size()+" Category "+main.size()+" ( Page "+curCategory.startPage+"--"+count+" )");
+			count=count+1;
+		}
+		aInfo.setCategoryList(main);
+		return aInfo;
+	}
 	public void prepareDocument(InputStream is) throws IOException {
 		aInfo.setType("PDF");
 		PdfReader reader = new PdfReader(is);
@@ -69,9 +145,10 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		int exclu_end=tobs.get(tobs.size()-1).getEndPosition();
 		for(Category ele:main)
 		{
-			ele.printMe(System.out);
+			//ele.printMe(System.out);
 			
 			parsingSubCategoryRecursive(ele,exclu_start,exclu_end);
+			
 		}
 		return main;
 	}
@@ -310,11 +387,18 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		}
 	}
 	
-	public List<Category> prepareTableContent()
+	public void buildPageNumber(Category c)
 	{
-		return null;
+		c.setStartPage(indexToPageNumber(c.getStartPosition()));
+		c.setEndPage(indexToPageNumber(c.getEndPosition()));
+		if(c.subCategory!=null&&c.subCategory.size()>0)
+		{
+			for(Category sub:c.getSubCategory())
+			{
+				buildPageNumber(sub);
+			}
+		}
 	}
-	
 	// this method will parse out all category recursively
 	public List<Category> parseAll()
 	{

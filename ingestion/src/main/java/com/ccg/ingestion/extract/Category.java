@@ -7,7 +7,8 @@ import java.util.StringTokenizer;
 
 public class Category {
 	String title;
-	String content;
+	//String content;
+	int articleID;
 	int startPosition;
 	int endPosition;
 	int startPage;
@@ -16,6 +17,12 @@ public class Category {
 	String matchedToken;
 	public String getMatchedToken() {
 		return matchedToken;
+	}
+	public int getArticleID() {
+		return articleID;
+	}
+	public void setArticleID(int articleID) {
+		this.articleID = articleID;
 	}
 	public void setMatchedToken(String matchedToken) {
 		this.matchedToken = matchedToken;
@@ -81,13 +88,14 @@ public class Category {
 		}
 		return res;
 	}
-	
+	/*
 	public String getContent() {
 		return content;
 	}
 	public void setContent(String content) {
 		this.content = content;
 	}
+	*/
 	public int getStartPosition() {
 		return startPosition;
 	}
@@ -165,7 +173,7 @@ public class Category {
 	}
 	public void printMe(PrintStream ps)
 	{
-		ps.println("title: "+this.getTitle()+ " "+this.getStartPosition()+"," +this.getEndPosition()+".."+this.doesCategoryHasContent()+".."+this.getMatchedToken());
+		ps.println("title: "+this.getTitle()+" "+this.startPage+","+this.endPage+ " "+this.getStartPosition()+"," +this.getEndPosition()+".."+this.doesCategoryHasContent()+".."+this.getMatchedToken());
 		if(subCategory!=null&&subCategory.size()>0)
 		{
 			ps.println(".... children....");
