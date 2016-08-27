@@ -8,9 +8,9 @@ public class CategoryRegexPattern {
 	private String ext="\\.[0-9A-H]+";
 
 	final public static String[] _ROOT_LIST_={
-			"(\\nExecutive+\\sSummary)|(\\n\\d{1,3}+\\s+\\D)|(\\nAppendix)|(\\nFigure\\s\\d+\\:)|(\\nTable\\s\\d+\\:)",
-			"(\\nExecutive+\\sSummary)|(\\n\\d{1,3}+\\.0\\s+\\D)|(\\nAppendix)|(\\nFigure\\s\\d+\\:)|(\\nTable\\s\\d+\\:)",
-			"(\\nExecutive+\\sSummary)|(\\r?\\n\\d{1,3}+\\.\\s+\\D)|(\\nAppendix)|(\\nFigure\\s\\d+\\:)|(\\nTable\\s\\d+\\:)"
+			"(\\nExecutive+\\sSummary)|(\\n\\d{1,3}+\\s+[\\D\\d])|(\\nAppendix)|(\\nFigure\\s\\d+\\:)|(\\nTable\\s\\d+\\:)",
+			"(\\nExecutive+\\sSummary)|(\\n\\d{1,3}+\\.0\\s+[\\D\\d])|(\\nAppendix)|(\\nFigure\\s\\d+\\:)|(\\nTable\\s\\d+\\:)",
+			"(\\nExecutive+\\sSummary)|(\\r?\\n\\d{1,3}+\\.\\s+[\\D\\d])|(\\nAppendix)|(\\nFigure\\s\\d+\\:)|(\\nTable\\s\\d+\\:)"
 	};
 
 	public String getRoot() {

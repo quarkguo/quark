@@ -563,7 +563,7 @@ ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', {
 			labelAlign: 'right',
 			anchor : '100%',
 		},
-		{
+	/*	{
 			xtype : 'fieldcontainer',
 			fieldLabel : 'Category Pattern',
 			defaultType : 'radiofield',
@@ -574,6 +574,7 @@ ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', {
 			//layout : 'hbox',
 			items : ccg.data.patterns
 		},
+		*/
 		{
 			xtype : 'textfield',
 			fieldLabel : 'Status',

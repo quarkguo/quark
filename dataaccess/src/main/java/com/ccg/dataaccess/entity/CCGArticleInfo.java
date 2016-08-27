@@ -21,7 +21,7 @@ public class CCGArticleInfo implements Serializable {
 		this.articleID = articleID;
 	}
 	
-	@Column(name = "metadata")
+	@Column(name = "metadata" ,columnDefinition="mediumtext")
 	public String getMetaData() {
 		return metaData;
 	}
@@ -35,7 +35,7 @@ public class CCGArticleInfo implements Serializable {
 	public void setCreatedTS(Date createdTS) {
 		this.createdTS = createdTS;
 	}
-	@Column(name = "toc")
+	@Column(name = "toc",columnDefinition="mediumtext")
 	public String getToc() {
 		return toc;
 	}

@@ -42,6 +42,7 @@
 			<url-pattern>/rest/indexing/*</url-pattern>
 			<url-pattern>/rest/articleList/*</url-pattern>
 			<url-pattern>/ccgportal.html</url-pattern>
+			<url-pattern>/document/*</url-pattern>			
 			<http-method>PUT</http-method>
 			<http-method>DELETE</http-method>
 			<http-method>GET</http-method>
@@ -57,7 +58,6 @@
 		<web-resource-collection>
 			<web-resource-name>Protected Area</web-resource-name>
 			<url-pattern>/rest/admin/*</url-pattern>
-			<url-pattern>/document/*</url-pattern>
 			<url-pattern>/upload/*</url-pattern>
 			<http-method>PUT</http-method>
 			<http-method>DELETE</http-method>

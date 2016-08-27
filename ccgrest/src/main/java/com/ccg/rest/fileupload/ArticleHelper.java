@@ -29,6 +29,7 @@ import com.ccg.ingestion.extract.ArticleInfo;
 //import com.ccg.common.data.Category;
 import com.ccg.ingestion.extract.Category;
 import com.ccg.ingestion.extract.ExtractArticleInfo;
+import com.ccg.ingestion.extract.ExtractArticleInfoAuto;
 import com.ccg.services.data.CCGDBService;
 import com.ccg.util.ConfigurationManager;
 import com.ccg.util.JSON;
@@ -65,9 +66,8 @@ public class ArticleHelper {
 		CCGArticle article = new CCGArticle();
 		File file = new File(requestData.getFilepath());		
 		InputStream is = new FileInputStream(file);
-
-		ExtractArticleInfo extract = new ExtractArticleInfo();
-		ArticleInfo info = extract.fromPDF(is, getMatchPattern(requestData.getPattern()));		
+		ExtractArticleInfoAuto extract = new ExtractArticleInfoAuto();		
+		ArticleInfo info = extract.processArticle(is);
 		article.setArticleType(info.getType());
 		is.close();
 		
@@ -177,8 +177,9 @@ public class ArticleHelper {
 		File file = new File(requestData.getFilepath());
 		
 		InputStream myinputstream = new FileInputStream(file);
-		ExtractArticleInfo extract = new ExtractArticleInfo();
-		ArticleInfo info = extract.fromPDF(myinputstream, getMatchPattern(requestData.getPattern()));
+		ExtractArticleInfoAuto extract = new ExtractArticleInfoAuto();
+		
+		ArticleInfo info = extract.processArticle(myinputstream);
 		
 		List<Category> categoryList = info.getCategoryList();
 

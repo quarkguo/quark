@@ -18,7 +18,7 @@ public class ExtractCategoryTestCase {
 	{
 		InputStream is = new FileInputStream(
 				//new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
-				new File("C:\\ccgworkspace\\testfiles\\test8.pdf"));
+				new File("C:\\ccgworkspace\\testfiles\\test13.pdf"));
 		ExtractArticleInfoAuto extract = new ExtractArticleInfoAuto();
 		ArticleInfo ainfo=extract.processArticle(is);
 		for(Category c:ainfo.categoryList)
@@ -31,7 +31,7 @@ public class ExtractCategoryTestCase {
 	{
 		InputStream is = new FileInputStream(
 				//new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
-				new File("C:\\ccgworkspace\\testfiles\\test3.pdf"));
+				new File("C:\\ccgworkspace\\testfiles\\test5.pdf"));
 		ExtractArticleInfoAuto extract = new ExtractArticleInfoAuto();
 		extract.prepareDocument(is);		
 		ArticleInfo info=extract.aInfo;
@@ -39,13 +39,13 @@ public class ExtractCategoryTestCase {
 		List<Category> list=extract.parseAll();		
 		extract.mergeCategorys(list);
 		info.setCategoryList(list);
-	/*
+	
 		System.out.println("---> raw");
 		for(Category c:list)
 		{
 			c.printMe(System.out);
 		}
-		*/
+	
 		List<Category> tableofcontent=extract.findTableOfContent(list);
 		
 		List<Category> main=extract.buildMainCategory(tableofcontent);

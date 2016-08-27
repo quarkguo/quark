@@ -50,7 +50,7 @@ public class FileUploadServlet extends HttpServlet {
 		//doGet(request, response);
 		String action = request.getParameter("action");
 		ArticleHelper helper = new ArticleHelper();
-
+		System.out.println(action+"<-----");
 		if("confirmed".equals(action)){			
 			String base64data = request.getParameter("requestData");
 			String json = new String(Base64.getDecoder().decode(base64data));
