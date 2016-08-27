@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Category{
+public class WCategory{
 	
 	public boolean isLeaf() {
 		return leaf;
@@ -32,7 +32,7 @@ public class Category{
 	Integer endPage;
 	
 	@SerializedName("children")
-	List<SubCategory> subCategories;
+	List<WCategory> subCategories;
 	
 	boolean leaf;
 	
@@ -72,12 +72,12 @@ public class Category{
 	public void setType(String type) {
 		this.type = type;
 	}
-	public List<SubCategory> getSubCategories() {
+	public List<WCategory> getSubCategories() {
 		if(subCategories == null)
-			subCategories = new ArrayList<SubCategory>();
+			subCategories = new ArrayList<WCategory>();
 		return subCategories;
 	}
-	public void setSubCategories(List<SubCategory> subCategories) {
+	public void setSubCategories(List<WCategory> subCategories) {
 		this.subCategories = subCategories;
 	}
 	public Integer getStartPage() {

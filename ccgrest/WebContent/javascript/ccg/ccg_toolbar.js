@@ -26,7 +26,14 @@ ccg.ui.loadDocCategory=function(arcID)
      var urlstr="rest/article/"+arcID+"/category";
      console.log(urlstr);         
    //  ccg.data.doccategorystore.removeAll();
+     ccg.data.doccategorystore.on("load",
+    		 function (eopts)
+    		 {
+    	 		ccg.ui.doccategory.expandAll();
+    		 }
+     );
      ccg.data.doccategorystore.load({url:urlstr});
+     
      // here load meta data panel
      var metaurl="rest/article/"+arcID+"/metadata";
      console.log(metaurl);

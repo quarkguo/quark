@@ -23,39 +23,35 @@ Ext.onReady(function(){
 		{
 			title:'Main',
 			region:'center',
-			layout:'hbox',
+			layout:'border',
 			 frame: true,
 			defaults: {		        
 		        bodyPadding: 10
 		    },
-			items:[
+			items:[{			
+				region:'north',
+				   split:true,
+				     collapsible:true,
+				items:[
+				       ccg.ui.doccategory			       		       			        
+				]
+					
+			},
 			       	{			
 			       		xtype:'panel',
+			       		region:'north',
 			       		title:'Content Panel',
-			       		id:'contentpanel',
-			       		height:500,
+			       		id:'contentpanel',			       	
 			       		style: {
 			             color: '#66b3ff'			             
 			       		},
-			       		flex:1,
+			       	//	flex:1,
+			       		height:"98%",
 			       		autoScroll: true
-			       	},
-			       	{
-			       		width:'10px'
 			       	}
 			       	]
 				
-		},
-		{
-			title:'category',
-			region:'east',
-			   split:true,
-			     collapsible:true,
-			items:[
-			       ccg.ui.doccategory			       		       			        
-			]
-				
-		}
+		}		
 		]
 	});
 });

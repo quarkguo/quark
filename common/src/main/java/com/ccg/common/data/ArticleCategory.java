@@ -6,7 +6,7 @@ import java.util.List;
 public class ArticleCategory {
 	
 	private Integer articleID;
-	private List<Category> categories;
+	private List<WCategory> categories;
 	
 	public Integer getArticleID() {
 		return articleID;
@@ -14,13 +14,13 @@ public class ArticleCategory {
 	public void setArticleID(Integer articleID) {
 		this.articleID = articleID;
 	}
-	public List<Category> getCategories() {
+	public List<WCategory> getCategories() {
 		if(categories == null)
-			categories = new ArrayList<Category>();
+			categories = new ArrayList<WCategory>();
 		
 		return categories;
 	}
-	public void setCategories(List<Category> categories) {
+	public void setCategories(List<WCategory> categories) {
 		this.categories = categories;
 	}
 }

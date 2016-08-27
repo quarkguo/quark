@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ccg.common.data.ArticleBasicInfo;
 import com.ccg.common.data.ArticleContent;
 import com.ccg.common.data.ArticleMetaData;
-import com.ccg.common.data.Category;
+import com.ccg.common.data.WCategory;
 import com.ccg.common.data.CategoryContent;
 import com.ccg.common.data.SubCategory;
 import com.ccg.common.data.SubCategoryContent;
@@ -30,7 +30,9 @@ import com.ccg.dataaccess.entity.CCGArticleMetadata;
 import com.ccg.dataaccess.entity.CCGCategory;
 import com.ccg.dataaccess.entity.CCGContent;
 import com.ccg.dataaccess.entity.CCGSubcategory;
+import com.ccg.ingestion.extract.Category;
 import com.ccg.services.index.Indexer;
+import com.ccg.util.JsonHelper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -126,13 +128,60 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	}
 	@Override
 	@Transactional(readOnly=true)
-	public List<Category> getCategoryByArticleId(Integer articleId) {
-		List<Category> catList = new ArrayList<Category>();
+	public List<WCategory> getCategoryByArticleId(Integer articleId)
+	{
+		// first we check if there is articleinfo object
+		CCGArticleInfo info=articleInfoDAO.findById(articleId);
+		if(info==null)
+		{
+			// here we are pulling the old TOC from category table
+			return getCategoryByArticleIdOld(articleId);
+		}
+		else
+		{
+			Category[] toc=JsonHelper.fromJson(info.getToc(), Category[].class);
+			List<WCategory> res=new ArrayList<WCategory>();
+			for(Category sub:toc)
+			{
+				res.add(convertCategory(sub));
+			}
+			return res;
+		}
+	}
+	
+	public  WCategory convertCategory(Category c)
+	{
+		WCategory wc=new WCategory();
+		wc.setArticleID(c.getArticleID()+"");
+		wc.setCategoryID(-1);
+		wc.setCategoryseq(0);
+		wc.setCategorytitle(c.getTitle());
+		wc.setEndPage(c.getEndPage());
+		wc.setEndposi(c.getEndPosition());
+		wc.setStartPage(c.getStartPage());
+		wc.setStartposi(c.getStartPosition());
+		if(c.getSubCategory()!=null&&c.getSubCategory().size()>0)
+		{
+			wc.setLeaf(false);
+			for(Category sub:c.getSubCategory())
+			{
+				wc.getSubCategories().add(convertCategory(sub));
+			}
+		}
+		else
+		{
+			wc.setLeaf(true);
+		}
+		return wc;
+
+	}
+	public List<WCategory> getCategoryByArticleIdOld(Integer articleId) {
+		List<WCategory> catList = new ArrayList<WCategory>();
 		CCGArticle article = articleDAO.findById(articleId);
 		if(article != null){
 			List<CCGCategory> ccgCatList = articleDAO.findById(articleId).getCategorylist();
 			for(CCGCategory ccgCat : ccgCatList){
-				Category cat = new Category();
+				WCategory cat = new WCategory();
 				cat.setArticleID(articleId.toString());
 				cat.setCategoryID(ccgCat.getCategoryID());
 				cat.setCategorytitle(ccgCat.getCategorytitle());
@@ -147,9 +196,9 @@ public class CCGDBSerivceImpl implements CCGDBService {
 					//List<SubCategory> subCatList = new ArrayList<SubCategory>();
 					List<CCGSubcategory> ccgSubList = ccgCat.getSubcategorylist();
 					for(CCGSubcategory ccgSub : ccgSubList){
-						SubCategory subCat = new SubCategory();
-						subCat.setSubcategoryID(ccgSub.getSubcategoryID());
-						subCat.setSubcategorytitle(ccgSub.getSubcategorytitle());
+						WCategory subCat = new WCategory();
+						subCat.setCategoryID(ccgSub.getSubcategoryID());
+						subCat.setCategorytitle(ccgSub.getSubcategorytitle());
 						subCat.setStartposi(ccgSub.getStartposi());
 						subCat.setEndposi(ccgSub.getEndposi());
 						subCat.setStartPage(ccgSub.getStartpage());

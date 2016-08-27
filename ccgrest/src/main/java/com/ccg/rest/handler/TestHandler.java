@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ccg.common.data.ArticleBasicInfo;
 import com.ccg.common.data.ArticleContent;
 import com.ccg.common.data.ArticleMetaData;
-import com.ccg.common.data.Category;
+import com.ccg.common.data.WCategory;
 import com.ccg.common.data.CategoryContent;
 import com.ccg.common.data.SearchResult;
 import com.ccg.common.data.SubCategoryContent;
@@ -113,7 +113,7 @@ public class TestHandler {
 	
 	@RequestMapping(method=RequestMethod.GET, value="/article/{articleId}/category")
 	public ResponseEntity<String> getCategoryByArticleId(@PathVariable("articleId") Integer articleId) {
-		List<Category> catList = dataservice.getCategoryByArticleId(articleId);
+		List<WCategory> catList = dataservice.getCategoryByArticleId(articleId);
 		String json = toJson(catList);
 	    HttpHeaders responseHeaders = new HttpHeaders();
 	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);

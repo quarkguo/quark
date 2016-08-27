@@ -26,8 +26,8 @@ ccg.data.relateddocstore = Ext.create('Ext.data.TreeStore', {
 
 ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
     store: ccg.data.doccategorystore,
- //   height: 360,
-    width: 300,
+    height: 240,
+//    width: 300,
     title: 'Document Cateogry',
     useArrows: true,
     autoload:false,

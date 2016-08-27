@@ -43,12 +43,12 @@
 	<classpathentry kind="lib" path="C:/ccgworkspace/lib/spring-webmvc-portlet-4.2.4.RELEASE.jar"/>
 	<classpathentry kind="lib" path="C:/ccgworkspace/lib/spring-websocket-4.2.4.RELEASE.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
-	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v8.0">
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/appache ace">
 		<attributes>
-			<attribute name="owner.project.facets" value="jst.utility"/>
+			<attribute name="owner.project.facets" value="jst.utility;#system#"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.8.0_72">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.8.0_102">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
