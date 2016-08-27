@@ -19,11 +19,13 @@ import com.ccg.common.data.CategoryContent;
 import com.ccg.common.data.SubCategory;
 import com.ccg.common.data.SubCategoryContent;
 import com.ccg.dataaccess.dao.api.CCGArticleDAO;
+import com.ccg.dataaccess.dao.api.CCGArticleInfoDAO;
 import com.ccg.dataaccess.dao.api.CCGArticleMetadataDAO;
 import com.ccg.dataaccess.dao.api.CCGCategoryDAO;
 import com.ccg.dataaccess.dao.api.CCGContentDAO;
 import com.ccg.dataaccess.dao.api.CCGSubcategoryDAO;
 import com.ccg.dataaccess.entity.CCGArticle;
+import com.ccg.dataaccess.entity.CCGArticleInfo;
 import com.ccg.dataaccess.entity.CCGArticleMetadata;
 import com.ccg.dataaccess.entity.CCGCategory;
 import com.ccg.dataaccess.entity.CCGContent;
@@ -35,6 +37,9 @@ import com.google.gson.GsonBuilder;
 @Service("CCGDBService")
 public class CCGDBSerivceImpl implements CCGDBService {
 
+	@Autowired
+	private CCGArticleInfoDAO articleInfoDAO;
+	
 	@Autowired	
 	private CCGArticleDAO articleDAO;
 	
@@ -325,5 +330,12 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		}
 		
 		indexer.closeIndexWriter();
+	}
+
+	@Override
+	@Transactional
+	public CCGArticleInfo saveArticleInfo(CCGArticleInfo info) {
+		// TODO Auto-generated method stub
+		return articleInfoDAO.save(info);
 	}
 }

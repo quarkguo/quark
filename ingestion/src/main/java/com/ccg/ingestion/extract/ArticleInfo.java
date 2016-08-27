@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ArticleInfo {
 	String title;
-	String type; // PDF, ...
+	String type="PDF"; // PDF, ...
 	String content;
 	String upperCaseContent=null;
 	public String getUpperCaseContent() {

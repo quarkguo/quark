@@ -3,13 +3,13 @@ package com.ccg.ingestion.extract;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-
-
 import org.junit.Test;
 
-import java.util.*;
+import com.ccg.util.JsonHelper;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.List;
 
 public class ExtractCategoryTestCase {
 	
@@ -18,13 +18,22 @@ public class ExtractCategoryTestCase {
 	{
 		InputStream is = new FileInputStream(
 				//new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
-				new File("C:\\ccgworkspace\\testfiles\\test13.pdf"));
+				new File("C:\\ccgworkspace\\testfiles\\test1.pdf"));
 		ExtractArticleInfoAuto extract = new ExtractArticleInfoAuto();
 		ArticleInfo ainfo=extract.processArticle(is);
-		for(Category c:ainfo.categoryList)
+/*		for(Category c:ainfo.categoryList)
 		{
 			c.printMe(System.out);
 		}
+		*/
+		String json=JsonHelper.toJson(ainfo.categoryList.toArray());
+		System.out.println(json);
+		Category[] res=JsonHelper.fromJson(json,Category[].class);
+		for(Category c:res)
+		{
+			c.printMe(System.out);
+		}
+		
 	}
 	//@Test
 	public void testpullCategory() throws Exception

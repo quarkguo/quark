@@ -9,6 +9,7 @@ import com.ccg.common.data.Category;
 import com.ccg.common.data.CategoryContent;
 import com.ccg.common.data.SubCategoryContent;
 import com.ccg.dataaccess.entity.CCGArticle;
+import com.ccg.dataaccess.entity.CCGArticleInfo;
 import com.ccg.dataaccess.entity.CCGCategory;
 
 public interface CCGDBService {
@@ -32,5 +33,7 @@ public interface CCGDBService {
 	public void deleteArticle(int articleID);
 	public void indexingArticle(Integer articleId);
 	public void indexingAll();
+	
+	public CCGArticleInfo saveArticleInfo(CCGArticleInfo info);
 
 }

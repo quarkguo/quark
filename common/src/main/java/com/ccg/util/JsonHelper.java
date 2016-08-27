@@ -1,4 +1,4 @@
-package com.ccg.rest.fileupload;
+package com.ccg.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

@@ -20,6 +20,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.ccg.common.data.ArticleMetaData;
 import com.ccg.dataaccess.entity.CCGArticle;
+import com.ccg.dataaccess.entity.CCGArticleInfo;
 import com.ccg.dataaccess.entity.CCGCategory;
 import com.ccg.dataaccess.entity.CCGContent;
 import com.ccg.dataaccess.entity.CCGSubcategory;
@@ -33,6 +34,7 @@ import com.ccg.ingestion.extract.ExtractArticleInfoAuto;
 import com.ccg.services.data.CCGDBService;
 import com.ccg.util.ConfigurationManager;
 import com.ccg.util.JSON;
+import com.ccg.util.JsonHelper;
 
 public class ArticleHelper {
 	
@@ -100,7 +102,8 @@ public class ArticleHelper {
 		////////////
 		// use file as title, filename start with timestamp, remove it
 		////////////
-		String title = requestData.getFilename();
+		String title=requestData.getFilename();
+		
 		int position = filename.indexOf("_");
 		if(position != -1){
 			title = filename.substring(position+1);
@@ -111,6 +114,10 @@ public class ArticleHelper {
 //		if(title == null || title.trim().length() == 0){
 //			title = requestData.getFilename();
 //		}
+		if(requestData.getTitle()!=null)
+		{
+			title=requestData.getTitle();
+		}
 		article.setTitle(title);
 		
 		CCGContent content = new CCGContent();
@@ -126,7 +133,7 @@ public class ArticleHelper {
 		article.setSubdomain("subdomain");
 		
 		//List<CCGCategory> categoryList = new ArrayList<CCGCategory>();
-		
+		// this is old category implementations
 		for(Category c : info.getCategoryList()){
 			CCGCategory cat = new CCGCategory();
 			cat.setArticle(article);
@@ -152,10 +159,26 @@ public class ArticleHelper {
 				
 			}
 		}
-		dataservice.saveArticle(article);		
-		Integer articleId = article.getArticleID();
+		dataservice.saveArticle(article);
 
+
+		Integer articleId = article.getArticleID();
 		System.out.println("==== articleId: " + articleId);
+		// now set articleID to the category obj
+		for(Category c:info.getCategoryList())
+		{
+			this.setCategoryArticleID(c, articleId);
+		}
+		// create and save artcile Info
+		CCGArticleInfo info_ccg=new CCGArticleInfo();
+		info_ccg.setArticleID(articleId);
+		info_ccg.setCreatedTS(new Date());
+		if(info.getCategoryList()!=null)
+		{
+			info_ccg.setToc(JsonHelper.toJson(info.getCategoryList()));
+		}
+		dataservice.saveArticleInfo(info_ccg);
+		
 		
 		ArticleMetaData meta = new ArticleMetaData();
 		meta.setArticleId(articleId);
@@ -170,7 +193,31 @@ public class ArticleHelper {
 		dataservice.indexingArticle(articleId);
 		
 	}
-	
+	public void setCategoryArticleID(Category c,int articleID)
+	{
+		c.setArticleID(articleID);
+		if(c.getSubCategory()!=null)
+		{
+			for(Category sub:c.getSubCategory())
+			{
+				setCategoryArticleID(sub,articleID);
+			}
+		}
+	}
+	public void printCategory(Category c, StringBuffer buf)
+	{
+		int start = c.getStartPosition();
+		int end = c.getEndPosition();
+		String catTitle = c.getTitle();
+		System.out.println(catTitle + " " + start + ", " + end);
+		buf.append(catTitle + " " + start + ", " + end).append("\n");
+		if(c.getSubCategory()!=null){
+			for(Category sub : c.getSubCategory()){
+				printCategory(sub,buf);
+			}
+		}
+		
+	}
 	
 	public String getCategoryForVerify(RequestData requestData) throws IOException{
 		
@@ -189,19 +236,7 @@ public class ArticleHelper {
 		StringBuffer sb = new StringBuffer();
 		
 		for(Category cat : categoryList){
-
-			int start = cat.getStartPosition();
-			int end = cat.getEndPosition();
-			String catTitle = cat.getTitle();
-			System.out.println(catTitle + " " + start + ", " + end);
-			sb.append(catTitle + " " + start + ", " + end).append("\n");
-			for(Category sub : cat.getSubCategory()){
-				String subTitle = sub.getTitle();
-				int sbstart = sub.getStartPosition();
-				int sbend = sub.getEndPosition();
-				System.out.println("\t" + subTitle + " " + sbstart + ", " + sbend);
-				sb.append("\t" + subTitle + " " + sbstart + ", " + sbend).append("\n");
-			}			
+			printCategory(cat,sb);
 		}
 		return sb.toString();	
 	}

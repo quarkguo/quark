@@ -7,6 +7,7 @@ public class RequestData {
 	String company;
 	String acceptStatus;
 	String pattern;
+	String title;
 	
 	public String getFilename() {
 		return filename;
@@ -16,6 +17,12 @@ public class RequestData {
 	}
 	public String getFilepath() {
 		return filepath;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
 	}
 	public void setFilepath(String filepath) {
 		this.filepath = filepath;

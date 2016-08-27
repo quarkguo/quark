@@ -546,7 +546,13 @@ ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', {
 				}
 			}
 	    },		
-		
+	    {
+			xtype : 'textfield',
+			fieldLabel : 'Title',
+			name: 'title',
+			labelAlign: 'right',
+			anchor : '100%',
+		},
 		{
 			xtype : 'textarea',
 			fieldLabel : 'Description',
