@@ -38,16 +38,34 @@ Ext.onReady(function(){
 					
 			},
 			       	{			
-			       		xtype:'panel',
+			       		xtype:'tabpanel',
 			       		region:'north',
-			       		title:'Content Panel',
-			       		id:'contentpanel',			       	
+			       		title:'Article Content',
+			       		id:'contenttabpanel',
+			       		activeTab:0,
 			       		style: {
 			             color: '#66b3ff'			             
 			       		},
 			       	//	flex:1,
 			       		height:"98%",
-			       		autoScroll: true
+			       		autoScroll: true,
+			       		items:[
+			       		    {
+			       		    	title:'PDF content',
+			       		    	bodyBorder: true,
+			       		    	border:true,
+			       		    	html:'<iframe name="pdfcontent" id="pdfcontent" width=99% height=95% border=0 />'
+			       		    },
+			       		   {
+			       		       title:'TEXT content',
+			       			   xtype:'panel',
+			       			   id:'contentpanel',
+			       			   bodyBorder: true,
+			       			   border:true,
+			       			   frame:true,
+			       			   html:' test 1'
+			       		   }			       		   
+			       		]
 			       	}
 			       	]
 				

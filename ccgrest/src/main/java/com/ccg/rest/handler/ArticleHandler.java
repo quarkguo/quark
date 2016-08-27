@@ -2,6 +2,8 @@ package com.ccg.rest.handler;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -101,6 +103,22 @@ public class ArticleHandler {
 	    return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
 	}
 
+	@RequestMapping(value="/article/{articleId}/{positions}/textcontent",method=RequestMethod.GET)
+	public ResponseEntity<String> getArticleTextContent(
+			@PathVariable("articleId") Integer articleId, 
+			@PathVariable("positions") String positions,  
+			HttpServletResponse response) throws Exception
+	{
+		ArticleContent content = dataservice.getArticleContent(articleId);
+		String[] ary=positions.split("-");
+		int startPosi=Integer.parseInt(ary[0]);
+		int endPosi=Integer.parseInt(ary[1]);
+		String json=toJson( content.getContent().substring(startPosi,endPosi));
+		HttpHeaders responseHeaders = new HttpHeaders();
+	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+	    return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
+	}
+	
 	@RequestMapping(method=RequestMethod.GET, value="/category/{categoryId}/content")
 	public ResponseEntity<String> getCategoryContentById(@PathVariable("categoryId") Integer categoryId) {
 		CategoryContent content = dataservice.getCategoryContentById(categoryId);
