@@ -26,7 +26,8 @@ ccg.data.relateddocstore = Ext.create('Ext.data.TreeStore', {
 
 ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
     store: ccg.data.doccategorystore,
-    height: 240,
+    minHeight: 240,
+   maxHeight:320,
 //    width: 300,
     title: 'Document Cateogry',
     useArrows: true,
@@ -42,7 +43,12 @@ ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
     ],
     listeners: {
         itemclick: function(s,r) {           
-       	 	console.log(r);
+       	 	console.log(r.data);
+       	 	// rendering PDF document
+       	 	var url='rest/article/'+r.data.articleID+'/'+r.data.startPage+'-'+r.data.endPage+'/download'
+       	 	var pdfPanel=document.getElementById('pdfcontent');
+       	 	pdfPanel.src=url;
+       	 	/*
        	 	if(r.data.categoryID)
        	 	{
        	 		// pull content of categoryID
@@ -80,6 +86,7 @@ ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
     	 		
     	 		
     	 	}
+    	 	*/
         }
     },
 });
