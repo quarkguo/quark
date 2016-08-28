@@ -48,6 +48,19 @@ ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
        	 	var url='rest/article/'+r.data.articleID+'/'+r.data.startPage+'-'+r.data.endPage+'/download'
        	 	var pdfPanel=document.getElementById('pdfcontent');
        	 	pdfPanel.src=url;
+       	 	
+       	 	// now rendering Text content
+       	 	var texturl='rest/article/'+r.data.articleID+'/'+r.data.startposi+'-'+r.data.endposi+'/textcontent'
+       	 	console.log(texturl);
+       	 	Ext.Ajax.request({
+       	 		url:texturl,
+       	 		callback: function(options,success,response) {
+       	 		var o= Ext.util.JSON.decode(response.responseText);
+       	 		Ext.getCmp('contentpanel').update(o);
+       	 		Ext.getCmp('contentpanel').setTitle("Article:["+r.data.articleID+"] -- ["+r.data.text+"]");
+       	 		}
+       	 	});
+       	 	
        	 	/*
        	 	if(r.data.categoryID)
        	 	{
