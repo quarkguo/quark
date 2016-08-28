@@ -42,51 +42,28 @@ ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
 	}
     ],
     listeners: {
-        itemclick: function(s,r) {           
+        itemclick: function(s,r) {        
+        	if(r.data)
+        	{
        	 	console.log(r.data);
        	 	// rendering PDF document
        	 	var url='rest/article/'+r.data.articleID+'/'+r.data.startPage+'-'+r.data.endPage+'/download'
        	 	var pdfPanel=document.getElementById('pdfcontent');
        	 	pdfPanel.src=url;
-       	 	/*
-       	 	if(r.data.categoryID)
-       	 	{
-       	 		// pull content of categoryID
-       	 	   var urlstr="rest/category/"+r.data.categoryID+"/content";
-       	 	   console.log(urlstr);      	 	   
-       	 	   // ajax call
-       	 	   Ext.Ajax.request({
-       	       url: urlstr,
-
-       	       callback: function(options, success, response) {
-       	    	 console.log(response.responseText);
-       	    	var o= Ext.util.JSON.decode(response.responseText);
-       	    	console.log(o);
-       	    	Ext.getCmp('contentpanel').update(o.categorycontent);
-       	    	Ext.getCmp('contentpanel').setTitle("Content Panel -- Article:["+o.articleID+"] -- Category:["+o.categoryID+"]");
-       	     }
+       	 	
+       	 	// now rendering Text content
+       	 	var texturl='rest/article/'+r.data.articleID+'/'+r.data.startposi+'-'+r.data.endposi+'/textcontent'
+       	 	console.log(texturl);
+       	 	Ext.Ajax.request({
+       	 		url:texturl,
+       	 		callback: function(options,success,response) {
+       	 		var o= Ext.util.JSON.decode(response.responseText);
+       	 		Ext.getCmp('contentpanel').update(o);
+       	 		Ext.getCmp('contentpanel').setTitle("Article:["+r.data.articleID+"] -- ["+r.data.text+"]");
+       	 		}
        	 	});
-       	 	}
-       	 	else if(r.data.subcategoryID)
-    	 	{
-        	 	   var urlstr="rest/subcategory/"+r.data.subcategoryID+"/content";
-           	 	   console.log(urlstr);      	 	   
-           	 	   // ajax call
-           	 	   Ext.Ajax.request({
-           	       url: urlstr,
+        	}
 
-           	       callback: function(options, success, response) {
-           	    	 console.log(response.responseText);
-           	    	var o= Ext.util.JSON.decode(response.responseText);
-           	    	console.log(o);
-           	    	Ext.getCmp('contentpanel').update(o.subcategorycontent);
-           	    	Ext.getCmp('contentpanel').setTitle("Content Panel -- Article:["+o.articleID+"] -- Category:["+o.categoryID+"] -- SubCategory:["+o.subcategoryID+"]");
-           	     }
-           	 	});
-    	 		
-    	 		
-    	 	}
-    	 	*/
         }
     },
 });

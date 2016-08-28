@@ -103,11 +103,11 @@ public class ArticleHandler {
 	    return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
 	}
 
-	@RequestMapping(value="/article/{articleId}/{positions}/textcontent",method=RequestMethod.GET)
+	@RequestMapping(value="/{articleId}/{positions}/textcontent",method=RequestMethod.GET)
 	public ResponseEntity<String> getArticleTextContent(
 			@PathVariable("articleId") Integer articleId, 
-			@PathVariable("positions") String positions,  
-			HttpServletResponse response) throws Exception
+			@PathVariable("positions") String positions  
+			) 
 	{
 		ArticleContent content = dataservice.getArticleContent(articleId);
 		String[] ary=positions.split("-");
@@ -125,7 +125,7 @@ public class ArticleHandler {
 		String json = toJson(content);
 	    HttpHeaders responseHeaders = new HttpHeaders();
 	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-	    return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
+	    return new ResponseEntity<String>(json, responseHeaders, HttpStatus.ACCEPTED);
 	}
 	
 	@RequestMapping(method=RequestMethod.GET, value="/subcategory/{subcategoryId}/content")
