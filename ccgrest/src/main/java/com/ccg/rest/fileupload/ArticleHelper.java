@@ -190,6 +190,7 @@ public class ArticleHelper {
 		meta.setAcceptStatus(requestData.getAcceptStatus());
 		
 		dataservice.saveOrUpdateArticleMetaData(meta);
+		
 		try{
 			dataservice.indexingArticle2(articleId);
 		}catch(Exception e){
