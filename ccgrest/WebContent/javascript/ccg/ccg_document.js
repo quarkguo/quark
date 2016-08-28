@@ -42,7 +42,9 @@ ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
 	}
     ],
     listeners: {
-        itemclick: function(s,r) {           
+        itemclick: function(s,r) {        
+        	if(r.data)
+        	{
        	 	console.log(r.data);
        	 	// rendering PDF document
        	 	var url='rest/article/'+r.data.articleID+'/'+r.data.startPage+'-'+r.data.endPage+'/download'
@@ -60,46 +62,8 @@ ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
        	 		Ext.getCmp('contentpanel').setTitle("Article:["+r.data.articleID+"] -- ["+r.data.text+"]");
        	 		}
        	 	});
-       	 	
-       	 	/*
-       	 	if(r.data.categoryID)
-       	 	{
-       	 		// pull content of categoryID
-       	 	   var urlstr="rest/category/"+r.data.categoryID+"/content";
-       	 	   console.log(urlstr);      	 	   
-       	 	   // ajax call
-       	 	   Ext.Ajax.request({
-       	       url: urlstr,
+        	}
 
-       	       callback: function(options, success, response) {
-       	    	 console.log(response.responseText);
-       	    	var o= Ext.util.JSON.decode(response.responseText);
-       	    	console.log(o);
-       	    	Ext.getCmp('contentpanel').update(o.categorycontent);
-       	    	Ext.getCmp('contentpanel').setTitle("Content Panel -- Article:["+o.articleID+"] -- Category:["+o.categoryID+"]");
-       	     }
-       	 	});
-       	 	}
-       	 	else if(r.data.subcategoryID)
-    	 	{
-        	 	   var urlstr="rest/subcategory/"+r.data.subcategoryID+"/content";
-           	 	   console.log(urlstr);      	 	   
-           	 	   // ajax call
-           	 	   Ext.Ajax.request({
-           	       url: urlstr,
-
-           	       callback: function(options, success, response) {
-           	    	 console.log(response.responseText);
-           	    	var o= Ext.util.JSON.decode(response.responseText);
-           	    	console.log(o);
-           	    	Ext.getCmp('contentpanel').update(o.subcategorycontent);
-           	    	Ext.getCmp('contentpanel').setTitle("Content Panel -- Article:["+o.articleID+"] -- Category:["+o.categoryID+"] -- SubCategory:["+o.subcategoryID+"]");
-           	     }
-           	 	});
-    	 		
-    	 		
-    	 	}
-    	 	*/
         }
     },
 });
