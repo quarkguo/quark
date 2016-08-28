@@ -18,6 +18,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 
 import com.ccg.common.data.SearchResult;
+import com.ccg.common.data.SearchResult2;
 import com.ccg.util.ConfigurationManager;
 import com.ccg.util.JSON;
 
@@ -71,5 +72,27 @@ public class SearchEngine {
 	        }
 	    return result;
 	}
+	
+	public List<SearchResult2> search2(String queryString, int n) throws IOException, ParseException{
+		List<SearchResult2> result = new ArrayList<SearchResult2>();
+		
+		Query query = parser.parse(queryString);
+		TopDocs topDocs = searcher.search(query, n);
+	    ScoreDoc[] hits = topDocs.scoreDocs;
+	    for (int i = 0; i < hits.length; i++) {
+	            Document doc = getDocument(hits[i].doc);
+	            SearchResult2 sr = new SearchResult2();
+	            
+	            sr.setArticleId(doc.get("aId"));
+	            sr.setArticleTitle(doc.get("aTitle"));
+	            sr.setPageNumber(doc.get("aPageNum"));
+	            sr.setScore(hits[i].score);
+	            result.add(sr);
+	        }
+	    return result;
+	}
+		
+	
+	
 	
 }

@@ -36,6 +36,8 @@ public class Indexer {
     public Indexer() {
     	Properties prop = ConfigurationManager.getConfig("ccg.properties");
     	indexLocation = prop.getProperty("index.repository");
+    	
+    	System.out.println("===Index Location: " + indexLocation);
     }
  
     private IndexWriter indexWriter = null;
@@ -113,6 +115,7 @@ public class Indexer {
  			String articleId, String articleTitle, IndexWriter writer){
     	
  		//IndexWriter writer  = getIndexWriter(false);
+ 		
     	
  		try {
  	       Document doc = new Document();
@@ -130,6 +133,25 @@ public class Indexer {
 		} 		
  	}
      
+ 	public void indexingPage(String articleId, String articleTitle, String pageNumber,
+ 			String pageContent, IndexWriter writer){
+		try {
+	 	       Document doc = new Document();
+		        doc.add(new StringField("aId", articleId, Field.Store.YES));
+		        doc.add(new StringField("aTitle", articleTitle, Field.Store.YES));
+		        doc.add(new StringField("aPageNum", pageNumber, Field.Store.YES));    	        
+		        
+		        String fullSearchableText = pageContent;
+		        doc.add(new TextField(INDEX.CONTENT, fullSearchableText, Field.Store.NO));
+		        writer.addDocument(doc);
+		        
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 					
+ 	}
+ 	
+ 	
+ 	
     private boolean deleteDirectory(File directory) {
 	    if(directory.exists()){
 	        File[] files = directory.listFiles();

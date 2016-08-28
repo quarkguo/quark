@@ -33,7 +33,8 @@ public interface CCGDBService {
 	public void deleteArticle(int articleID);
 	public void indexingArticle(Integer articleId);
 	public void indexingAll();
-	
+	public void indexingArticle2(Integer articleId) throws Exception;
+	public void indexingAll2() throws Exception;
 	public CCGArticleInfo saveArticleInfo(CCGArticleInfo info);
 
 }

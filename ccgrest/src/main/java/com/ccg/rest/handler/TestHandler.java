@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,10 +29,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ccg.common.data.ArticleBasicInfo;
 import com.ccg.common.data.ArticleContent;
 import com.ccg.common.data.ArticleMetaData;
-import com.ccg.common.data.WCategory;
 import com.ccg.common.data.CategoryContent;
-import com.ccg.common.data.SearchResult;
+import com.ccg.common.data.SearchResult2;
 import com.ccg.common.data.SubCategoryContent;
+import com.ccg.common.data.WCategory;
 import com.ccg.common.pdf.util.PdfUtil;
 import com.ccg.ingestion.extract.ArticleCategoryPatternConfig;
 import com.ccg.services.data.CCGDBService;
@@ -246,8 +245,10 @@ public class TestHandler {
 		String json = "";
 		try {
 			SearchEngine se = new SearchEngine();
-			List<SearchResult> srList = se.search(query, default_limit);
+			List<SearchResult2> srList = se.search2(query, default_limit);
 			json = toJson(srList);
+			
+			System.out.println("Search Result: " + json);
 			
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -1,8 +1,12 @@
 package com.ccg.services.data;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,10 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.ccg.common.data.ArticleBasicInfo;
 import com.ccg.common.data.ArticleContent;
 import com.ccg.common.data.ArticleMetaData;
-import com.ccg.common.data.WCategory;
 import com.ccg.common.data.CategoryContent;
-import com.ccg.common.data.SubCategory;
 import com.ccg.common.data.SubCategoryContent;
+import com.ccg.common.data.WCategory;
 import com.ccg.dataaccess.dao.api.CCGArticleDAO;
 import com.ccg.dataaccess.dao.api.CCGArticleInfoDAO;
 import com.ccg.dataaccess.dao.api.CCGArticleMetadataDAO;
@@ -35,6 +38,10 @@ import com.ccg.services.index.Indexer;
 import com.ccg.util.JsonHelper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
+import com.itextpdf.text.pdf.parser.SimpleTextExtractionStrategy;
+import com.itextpdf.text.pdf.parser.TextExtractionStrategy;
 
 @Service("CCGDBService")
 public class CCGDBSerivceImpl implements CCGDBService {
@@ -360,6 +367,32 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	
 	@Override
 	@Transactional(readOnly=true)
+	public void indexingArticle2(Integer articleId) throws Exception{
+		
+		Indexer indexer = new Indexer();
+		IndexWriter writer = indexer.getIndexWriter(false);
+		
+		ArticleContent content = getArticleContent(articleId);
+		String filename = content.getUrl();
+		System.out.println("========== file name====" + filename);
+		List<String> pageContents = this.getPdfPageContentAsList(filename);
+		int pageNumber = 0;
+		
+		System.out.println("===== title: " + content.getContentTitle());
+		
+		for(String pageContent: pageContents){
+			indexer.indexingPage(
+					"" + articleId, 
+					content.getContentTitle(), 
+					"" + ++pageNumber, 
+					pageContent, 
+					writer);
+		}
+		indexer.closeIndexWriter();
+	}	
+	
+	@Override
+	@Transactional(readOnly=true)
 	public void indexingAll(){
 		List<ArticleBasicInfo> articleList = this.getArticleBasicInfo();
 		
@@ -382,9 +415,61 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	}
 
 	@Override
+	@Transactional(readOnly=true)
+	public void indexingAll2() throws Exception{
+		List<ArticleBasicInfo> articleList = this.getArticleBasicInfo();
+		
+		Indexer indexer = new Indexer();
+		IndexWriter writer = indexer.getIndexWriter(true);
+
+		for(ArticleBasicInfo info : articleList){
+			Integer articleId = info.getArticleID();
+			
+			ArticleContent content = getArticleContent(articleId);
+			String filename = content.getUrl();
+			System.out.println("========== file name====" + filename);
+			List<String> pageContents = this.getPdfPageContentAsList(filename);
+			int pageNumber = 0;
+			for(String pageContent: pageContents){
+				indexer.indexingPage(
+						"" + articleId, 
+						info.getTitle(), 
+						"" + ++pageNumber, 
+						pageContent, 
+						writer);
+			}
+			
+		}		
+		indexer.closeIndexWriter();
+	}	
+	
+	
+	
+	@Override
 	@Transactional
 	public CCGArticleInfo saveArticleInfo(CCGArticleInfo info) {
 		// TODO Auto-generated method stub
 		return articleInfoDAO.save(info);
+	}
+	
+	private List<String> getPdfPageContentAsList(String filename) throws Exception{
+		InputStream is = new FileInputStream(new File(filename));
+		List<String> pageContents = new LinkedList<String>();
+		try{
+			PdfReader reader = new PdfReader(is);
+			PdfReaderContentParser parser = new PdfReaderContentParser(reader);
+			TextExtractionStrategy strategy;
+	
+			//PDF file page number starts from 1, not 0
+			for (int i = 1; i <= reader.getNumberOfPages(); i++) {
+				strategy = parser.processContent(i, new SimpleTextExtractionStrategy());
+				// System.out.println(strategy.getResultantText());
+				pageContents.add(strategy.getResultantText());		
+			}
+		}finally{
+			is.close();
+		}
+		return pageContents;
+		
 	}
 }
