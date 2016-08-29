@@ -45,6 +45,13 @@ Ext.onReady(function(){
 			    			{
 			    				ccg.ui.contentsearchPanel.show();
 			    			}
+						},
+						{
+							type: 'gear', // this doesn't appear to work, probably I need to use a valid class
+							tooltip: 'Document Meta Data',
+							handler: function() {
+								ccg.ui.metapanel.show();
+							}
 						}
 						]
 					},
