@@ -19,6 +19,13 @@ public class WCategory{
 	public void setLeaf(boolean leaf) {
 		this.leaf = leaf;
 	}
+	int searchCount;
+	public int getSearchCount() {
+		return searchCount;
+	}
+	public void setSearchCount(int searchCount) {
+		this.searchCount = searchCount;
+	}
 	Integer categoryID;
 	String articleID;
 	@SerializedName("text") 

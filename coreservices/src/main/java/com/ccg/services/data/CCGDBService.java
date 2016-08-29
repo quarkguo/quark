@@ -7,6 +7,7 @@ import com.ccg.common.data.ArticleContent;
 import com.ccg.common.data.ArticleMetaData;
 import com.ccg.common.data.WCategory;
 import com.ccg.common.data.CategoryContent;
+import com.ccg.common.data.SearchResult2;
 import com.ccg.common.data.SubCategoryContent;
 import com.ccg.dataaccess.entity.CCGArticle;
 import com.ccg.dataaccess.entity.CCGArticleInfo;
@@ -36,5 +37,6 @@ public interface CCGDBService {
 	public void indexingArticle2(Integer articleId) throws Exception;
 	public void indexingAll2() throws Exception;
 	public CCGArticleInfo saveArticleInfo(CCGArticleInfo info);
+	public List<WCategory> buildSearchCategory(List<SearchResult2> searchRes,String searchToken);
 
 }

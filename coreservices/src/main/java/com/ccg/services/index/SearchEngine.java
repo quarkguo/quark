@@ -9,6 +9,7 @@ import java.util.Properties;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
+import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -82,7 +83,8 @@ public class SearchEngine {
 	    for (int i = 0; i < hits.length; i++) {
 	            Document doc = getDocument(hits[i].doc);
 	            SearchResult2 sr = new SearchResult2();
-	            
+	            List<IndexableField> fields=doc.getFields();
+
 	            sr.setArticleId(doc.get("aId"));
 	            sr.setArticleTitle(doc.get("aTitle"));
 	            sr.setPageNumber(doc.get("aPageNum"));

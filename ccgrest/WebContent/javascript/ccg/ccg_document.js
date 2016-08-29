@@ -45,29 +45,30 @@ ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
         itemclick: function(s,r) {        
         	if(r.data)
         	{
-       	 	console.log(r.data);
-       	 	// rendering PDF document
-       	 	var url='rest/article/'+r.data.articleID+'/'+r.data.startPage+'-'+r.data.endPage+'/download'
-       	 	var pdfPanel=document.getElementById('pdfcontent');
-       	 	pdfPanel.src=url;
-       	 	
-       	 	// now rendering Text content
-       	 	var texturl='rest/article/'+r.data.articleID+'/'+r.data.startposi+'-'+r.data.endposi+'/textcontent'
-       	 	console.log(texturl);
-       	 	Ext.Ajax.request({
-       	 		url:texturl,
-       	 		callback: function(options,success,response) {
-       	 		var o= Ext.util.JSON.decode(response.responseText);
-       	 		Ext.getCmp('contentpanel').update(o);
-       	 		Ext.getCmp('contentpanel').setTitle("Article:["+r.data.articleID+"] -- ["+r.data.text+"]");
-       	 		}
-       	 	});
+        		ccg.ui.updateSelectedContent(r.data);
         	}
-
         }
     },
 });
-
+ccg.ui.updateSelectedContent= function(data){
+	 	// rendering PDF document
+		Ext.getCmp('contenttabpanel').setActiveTab(0);
+	 	var url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/download'
+	 	var pdfPanel=document.getElementById('pdfcontent');
+	 	pdfPanel.src=url;
+	 	
+	 	// now rendering Text content
+	 	var texturl='rest/article/'+data.articleID+'/'+data.startposi+'-'+data.endposi+'/textcontent'
+	 	//console.log(texturl);
+	 	Ext.Ajax.request({
+	 		url:texturl,
+	 		callback: function(options,success,response) {
+	 		var o= Ext.util.JSON.decode(response.responseText);
+	 		Ext.getCmp('contentpanel').update(o);
+	 		Ext.getCmp('contentpanel').setTitle("Article:["+data.articleID+"] -- ["+data.text+"]");
+	 		}
+	 	});
+};
 ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
     title: 'Search Content', 
     width: 300,
@@ -90,6 +91,7 @@ ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
                 	
                 	var jdata={"query":keyword,"limit":100};
                 	console.log(jdata);
+                	ccg.data.relateddocstore.on("load",function(eopts){ccg.ui.relateddoclist.expandAll();});
                 	ccg.data.relateddocstore.load({url:"rest/search",params:jdata,method:"GET"});
                 	/*
                 	Ext.Ajax.request({
@@ -130,58 +132,14 @@ ccg.ui.relateddoclist =Ext.create('Ext.tree.Panel', {
     title: 'Related Content:',
     useArrows: true,
     tools: [
-     {
-            type: 'search', // this doesn't appear to work, probably I need to use a valid class
-            tooltip: 'Search Related Content',
-            handler: function() {
-                console.log('TODO: Add project');
-                console.log(ccg.ui.contentsearchPanel);
-                ccg.ui.contentsearchPanel.show();
-            }
-        }],
+     ],
     listeners: {
-            itemclick: function(s,r) {           
-           	 	console.log(r);
-           	 	if(r.data.categoryID)
-           	 	{
-           	 		// pull content of categoryID
-           	 	   var urlstr="rest/category/"+r.data.categoryID+"/content";
-           	 	   // set gloabl variable for PDF
-           	 	   ccg.data.currentArticle.id=r.data.articleId;
-           	 	   ccg.data.currentArticle.title=r.data.articleTitle;
-           	 	   console.log(urlstr);      	 	   
-           	 	   // ajax call
-           	 	Ext.Ajax.request({
-           	     url: urlstr,
-           	     callback: function(options, success, response) {
-           	    	 console.log(response.responseText);
-           	    	var o= Ext.util.JSON.decode(response.responseText);
-           	    	console.log(o);
-           	    	var keyword=ccg.ui.contentsearchPanel.items.items[0].getValue();
-           	    	var regex=new RegExp('(' + keyword + ')', 'gi')
-           	    	var replacedtext=o.categorycontent.replace(regex, "<span class='category-content-search-token'>$1</span>")
-           	    	console.log(replacedtext);
-           	    	Ext.getCmp('contentpanel').update(replacedtext);
-           	    	Ext.getCmp('contentpanel').setTitle("Content Panel -- Article:["+o.articleID+"] -- Category:["+o.categoryID+"]");
-           	    	// need to sync the tree panel and category panel
-           	    	var root=ccg.ui.doclist.getRootNode();
-           	    	console.log(root);
-           	    	for(var i=0;i<root.childNodes.length;i++)
-           	    	{
-           	    		var child=root.childNodes[i];
-           	    		console.log(child);
-           	    		if(child.data.articleID+""==o.articleID+"")
-           	    		{
-           	    			console.log("found "+child);
-           	    			ccg.ui.doclist.getSelectionModel().select(child,true);
-           	    			//ccg.ui.doclist.fireEvent('itemclick',child,0);
-           	    			ccg.ui.loadDocCategory(o.articleID);
-           	    			break;
-           	    		}
-           	    	}
-           	     }
-           	 });
-           	 	}}
+            itemclick: function(s,r) {
+            	if(r.data&&r.data.startPage)
+            	{
+            		ccg.ui.updateSelectedContent(r.data);
+            	}	
+            }
     }
 });
 

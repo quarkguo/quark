@@ -189,8 +189,7 @@ Ext.define('com.ccg.toolbar',{
                 text: 'Profile',
                 iconCls: 'file',     
                 handler: function() {
-                    console.log('TODO: Add project');
-                    console.log(ccg.ui.contentsearchPanel);
+                   
                     ccg.ui.userprofilepanel.show();
                     // here we need to pull all content
                     var userprofileurl="rest/user/profile";

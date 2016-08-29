@@ -16,27 +16,38 @@ Ext.onReady(function(){
 		     split:true,
 		     collapsible:true,
 			items:[
-			   	ccg.ui.doclist,
-			    ccg.ui.relateddoclist 
+			   	ccg.ui.doclist
 			]
 		},
 		{
-			title:'Main',
 			region:'center',
 			layout:'border',
-			 frame: true,
+			frame: true,
+						
 			defaults: {		        
 		        bodyPadding: 10
 		    },
 			items:[{			
 				region:'north',
-				   split:true,
+				   split:true,				   
+				   xtype:'tabpanel',
 				     collapsible:true,
+				     activeTab:0,
 				items:[
-				       ccg.ui.doccategory			       		       			        
-				]
-					
-			},
+				       ccg.ui.doccategory,
+				       ccg.ui.relateddoclist 
+				],
+				tools:[
+						 {
+			    			type: 'search', // this doesn't appear to work, probably I need to use a valid class
+			    			tooltip: 'Search Related Content',
+			    			handler: function() 
+			    			{
+			    				ccg.ui.contentsearchPanel.show();
+			    			}
+						}
+						]
+					},
 			       	{			
 			       		xtype:'tabpanel',
 			       		region:'north',

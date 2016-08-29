@@ -213,7 +213,7 @@ public class TestHandler {
 		//Indexer indexer = new Indexer();
 		try{
 			//indexer.rebuildIndexes(articleList);;
-			dataservice.indexingAll();
+			dataservice.indexingAll2();
 			response.code = 0;
 			response.status = "success";
 		}catch(Exception e){
@@ -246,9 +246,10 @@ public class TestHandler {
 		try {
 			SearchEngine se = new SearchEngine();
 			List<SearchResult2> srList = se.search2(query, default_limit);
-			json = toJson(srList);
+			List<WCategory> res=dataservice.buildSearchCategory(srList,query);
+			json = toJson(res);
 			
-			System.out.println("Search Result: " + json);
+		//	System.out.println("Search Result: " + json);
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -402,15 +403,6 @@ public class TestHandler {
 		return patternString;
 	}		
 
-	
-	
-	
-	private boolean isAllowed(HttpServletRequest request, Integer articleId, Integer categoryId){
-		
-		
-		return false;
-	}
-	
 	
 	
 }

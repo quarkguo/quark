@@ -4,11 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.lucene.index.IndexWriter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +23,7 @@ import com.ccg.common.data.ArticleBasicInfo;
 import com.ccg.common.data.ArticleContent;
 import com.ccg.common.data.ArticleMetaData;
 import com.ccg.common.data.CategoryContent;
+import com.ccg.common.data.SearchResult2;
 import com.ccg.common.data.SubCategoryContent;
 import com.ccg.common.data.WCategory;
 import com.ccg.dataaccess.dao.api.CCGArticleDAO;
@@ -471,5 +476,97 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		}
 		return pageContents;
 		
+	}
+
+	@Override
+	@Transactional
+	public List<WCategory> buildSearchCategory(List<SearchResult2> searchRes,String searchToken) {
+		// TODO Auto-generated method stub
+		List<WCategory> res=new ArrayList<WCategory>();  // here we store all the result of the Matched Article
+		HashMap<Integer,WCategory> lookupMap=new HashMap<Integer,WCategory>(); // this is duplicate store for lookup ref
+		for(SearchResult2 s:searchRes)
+		{
+			Integer articleID=new Integer(s.getArticleId());
+			int pageNumber=Integer.parseInt(s.getPageNumber());
+			WCategory a_wc=lookupMap.get(articleID);
+			
+			if(a_wc==null)
+			{
+				// lookup article Info
+				a_wc=new WCategory();
+				a_wc.setArticleID(articleID+"");
+				
+				CCGArticleInfo info=articleInfoDAO.findById(articleID);
+				Category[] ary=JsonHelper.fromJson(info.getToc(), Category[].class);
+				// count query token
+				CCGContent content=articleDAO.findById(articleID).getContent();
+				int count=JsonHelper.countWord(content.getContent(), searchToken);
+				a_wc.setSearchCount(count);
+				a_wc.setCategorytitle(s.getArticleTitle() +" --[Matched:"+count+"]");
+				// add all children
+				for(Category c:ary)
+				{
+					a_wc.getSubCategories().add(convertCategory(c));
+				}
+				// now set start/end page and position
+				a_wc.setStartPage(ary[0].getStartPage());
+				a_wc.setStartposi(ary[0].getStartPosition());
+				a_wc.setEndPage(ary[ary.length-1].getEndPage());
+				a_wc.setEndposi(ary[ary.length-1].getEndPosition());
+				// add to the collection
+				res.add(a_wc);
+				lookupMap.put(articleID, a_wc);
+			}
+			// now insert new category into the existi category list
+			addPageIntoCategory(a_wc,pageNumber);
+		}
+		// convert sorted map to results
+		Collections.sort(res,new Comparator<WCategory>(){
+
+			@Override
+			public int compare(WCategory arg0, WCategory arg1) {
+				// TODO Auto-generated method stub
+				return arg1.getSearchCount()-arg0.getSearchCount();
+			}
+			
+		});
+		return res;
+	}
+	public boolean addPageIntoCategory(WCategory root,int pageNumber)
+	{
+		if(root.getStartPage()>pageNumber||root.getEndPage()<pageNumber)
+		{
+			return false;
+		}
+		else
+		{
+			if(root.getSubCategories()!=null&&root.getSubCategories().size()>0)
+			{
+				// here we need to add the page into sub category
+				for(WCategory sub:root.getSubCategories())
+				{
+					if(addPageIntoCategory(sub,pageNumber))
+					{
+						return true;
+					}
+				}
+				return false;
+			}
+			else
+			{
+				WCategory thepage=new WCategory();
+				thepage.setArticleID(root.getArticleID());
+				thepage.setStartPage(pageNumber);
+				thepage.setEndposi(root.getEndposi());
+				thepage.setStartposi(root.getStartposi());
+				thepage.setEndPage(pageNumber);
+				thepage.setLeaf(true);
+				thepage.setCategorytitle("[Matched Page: #"+pageNumber+"]");
+				root.getSubCategories().add(thepage);
+				root.setLeaf(false);
+				
+				return true;
+			}
+		}
 	}
 }
