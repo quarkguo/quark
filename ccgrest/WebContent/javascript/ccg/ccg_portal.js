@@ -30,12 +30,13 @@ Ext.onReady(function(){
 			items:[{			
 				region:'north',
 				   split:true,				   
-				   xtype:'tabpanel',
+				   xtype:'tabpanel',				   
+				   id:'categorytabpanel',
 				     collapsible:true,
 				     activeTab:0,
 				items:[
-				       ccg.ui.doccategory,
-				       ccg.ui.relateddoclist 
+				       ccg.ui.doccategory
+				       //ccg.ui.relateddoclist 
 				],
 				tools:[
 						 {
@@ -69,13 +70,13 @@ Ext.onReady(function(){
 			       		autoScroll: true,
 			       		items:[
 			       		    {
-			       		    	title:'PDF content',
+			       		    	title:'Original Content',
 			       		    	bodyBorder: true,
 			       		    	border:true,
 			       		    	html:'<iframe name="pdfcontent" id="pdfcontent" width=99% height=95% border=0 />'
 			       		    },
 			       		   {
-			       		       title:'TEXT content',
+			       		       title:'Text Content',
 			       			   xtype:'panel',
 			       			   id:'contentpanel',
 			       			   bodyBorder: true,

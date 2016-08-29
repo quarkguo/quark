@@ -502,15 +502,15 @@ public class CCGDBSerivceImpl implements CCGDBService {
 				CCGContent content=articleDAO.findById(articleID).getContent();
 				int count=JsonHelper.countWord(content.getContent(), searchToken);
 				a_wc.setSearchCount(count);
-				a_wc.setCategorytitle(s.getArticleTitle() +" --[Matched:"+count+"]");
+				a_wc.setCategorytitle("Article:["+s.getArticleTitle()+"]" +" --[Matched:"+count+"]");
 				// add all children
 				for(Category c:ary)
 				{
 					a_wc.getSubCategories().add(convertCategory(c));
 				}
 				// now set start/end page and position
-				a_wc.setStartPage(ary[0].getStartPage());
-				a_wc.setStartposi(ary[0].getStartPosition());
+				a_wc.setStartPage(1);
+				a_wc.setStartposi(1);
 				a_wc.setEndPage(ary[ary.length-1].getEndPage());
 				a_wc.setEndposi(ary[ary.length-1].getEndPosition());
 				// add to the collection
@@ -519,6 +519,9 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			}
 			// now insert new category into the existi category list
 			addPageIntoCategory(a_wc,pageNumber);
+			// now reset the page number to be the first page
+			a_wc.setEndPage(a_wc.getStartPage());
+			a_wc.setEndposi(500);
 		}
 		// convert sorted map to results
 		Collections.sort(res,new Comparator<WCategory>(){

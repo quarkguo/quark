@@ -13,6 +13,7 @@ ccg.data.doccategorystore = Ext.create('Ext.data.TreeStore', {
             
         }
     });
+/*
 ccg.data.relateddocstore = Ext.create('Ext.data.TreeStore', {
     proxy: {
         type: 'ajax',
@@ -23,7 +24,20 @@ ccg.data.relateddocstore = Ext.create('Ext.data.TreeStore', {
         expanded: true
     }
 });
-
+*/
+ccg.data.buildSearchStore = function(jsondata,querystr){
+	 var s=Ext.create('Ext.data.TreeStore', {
+		    proxy: {
+		        type: 'ajax',
+		        url: ''
+		    },
+		    root: {
+		        text: 'Related Content for Search:['+querystr+']',        
+		        expanded: true
+		    }
+		 });
+	 return s;
+};
 ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
     store: ccg.data.doccategorystore,
     minHeight: 240,
@@ -43,7 +57,7 @@ ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
     ],
     listeners: {
         itemclick: function(s,r) {        
-        	if(r.data)
+        	if(r.data&&r.data.startPage)
         	{
         		ccg.ui.updateSelectedContent(r.data);
         	}
@@ -69,6 +83,7 @@ ccg.ui.updateSelectedContent= function(data){
 	 		}
 	 	});
 };
+
 ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
     title: 'Search Content', 
     width: 300,
@@ -86,14 +101,29 @@ ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
                 text: 'search',
                 handler: function () {
                 	//alert("search");
+                	if(Ext.getCmp('categorytabpanel').items.length>3)
+                	{
+                		Ext.Msg.alert("At Most Three Search Panels. Please close one before new search.");
+                		return ;
+                	}
                 	var keyword=ccg.ui.contentsearchPanel.items.items[0].getValue();
                 	//console.log(keyword);
                 	
-                	var jdata={"query":keyword,"limit":100};
+                	var jdata={"query":keyword,"limit":30};
                 	console.log(jdata);
-                	ccg.data.relateddocstore.on("load",function(eopts){ccg.ui.relateddoclist.expandAll();});
-                	ccg.data.relateddocstore.load({url:"rest/search",params:jdata,method:"GET"});
-                	/*
+                	var thestore=ccg.data.buildSearchStore(jdata,keyword);
+                    var searchPanel=new ccg.ui.relateddoclist(thestore,keyword);
+                    Ext.getCmp('categorytabpanel').add(searchPanel).show();
+                 
+                    	var myMask = Ext.MessageBox.wait("Processing....","Searching Article...");
+                   // 
+                    // now load data
+                   // thestore.on("load",function(){myMask.hide();})
+                    thestore.load({url:"rest/search",params:jdata,method:"GET",callback:function(){myMask.close();}});
+                	//ccg.data.relateddocstore.on("load",function(eopts){ccg.ui.relateddoclist.expandAll();});
+                	//ccg.data.relateddocstore.load({url:"rest/search",params:jdata,method:"GET"});
+                	
+                    /*
                 	Ext.Ajax.request({
                   	     url: "rest/search",
                   	     method:"GET",
@@ -101,7 +131,10 @@ ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
                   	   success: function(response, opts) {
                            var jdata = Ext.decode(response.responseText);
                            console.log(jdata);
-                         //  ccg.ui.relateddoclist.update(jdata);
+                           console.log(keyword);
+                           var thestore=ccg.data.buildSearchStore(jdata,keyword);
+                           var searchPanel=new ccg.ui.relateddoclist(thestore,keyword);
+                           Ext.getCmp('categorytabpanel').add(searchPanel).show();
                         },
                         failure: function(response, opts) {
                            console.log('server-side failure with status code ' + response.status);
@@ -125,14 +158,25 @@ ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
                 }
             }
 });
-ccg.ui.relateddoclist =Ext.create('Ext.tree.Panel', {
-    store: ccg.data.relateddocstore,
-    height: 240,
-    width: 300,
-    title: 'Related Content:',
+// define related documement
+ccg.ui.mycolors=["#ffcccc","#ccffcc","orange"];
+ccg.ui.relateddoclist = function (datastore,searchkey){ 
+	var index=Ext.getCmp('categorytabpanel').items.length;
+	var c=ccg.ui.mycolors[index-1];
+	var panel=Ext.create('Ext.tree.Panel', {
+		tools : [{
+		        type : 'help',
+		        handler : function(event, toolEl, panel) {
+		                alert('Should I be rendered up here?');
+		            }
+		    }],
+	minHeight: 240,
+	maxHeight:320,
+	style: {borderColor:c, borderStyle:'double', borderWidth:'3px'},
+    store: datastore,
+    title: 'Related Content for:['+searchkey+']',   
     useArrows: true,
-    tools: [
-     ],
+    closable: true,
     listeners: {
             itemclick: function(s,r) {
             	if(r.data&&r.data.startPage)
@@ -141,7 +185,9 @@ ccg.ui.relateddoclist =Ext.create('Ext.tree.Panel', {
             	}	
             }
     }
-});
+	});
+	return panel;
+	};
 
 ccg.ui.docmainpanel=Ext.create("Ext.panel.Panel",{	
 	layout:'border',
@@ -428,7 +474,7 @@ ccg.ui.passwordresetpanel=Ext.create('Ext.form.Panel', {
     }]
 });
 
-
+/*
 ccg.data.patterns=[];
 ccg.article.pattern.loader=function(){
 	var pattern;
@@ -456,9 +502,9 @@ ccg.article.pattern.loader=function(){
 		}
 	});
 }();
-
+*/
 ccg.initUploadFilePanel = function(){
-ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', { 
+	ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', { 
 	id : 'uploadfileform',
 	//renderTo : 'formId',
 	border : true,
