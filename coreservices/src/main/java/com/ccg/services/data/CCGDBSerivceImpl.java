@@ -26,12 +26,14 @@ import com.ccg.dataaccess.dao.api.CCGArticleInfoDAO;
 import com.ccg.dataaccess.dao.api.CCGArticleMetadataDAO;
 import com.ccg.dataaccess.dao.api.CCGCategoryDAO;
 import com.ccg.dataaccess.dao.api.CCGContentDAO;
+import com.ccg.dataaccess.dao.api.CCGGroupArticleAccessDAO;
 import com.ccg.dataaccess.dao.api.CCGSubcategoryDAO;
 import com.ccg.dataaccess.entity.CCGArticle;
 import com.ccg.dataaccess.entity.CCGArticleInfo;
 import com.ccg.dataaccess.entity.CCGArticleMetadata;
 import com.ccg.dataaccess.entity.CCGCategory;
 import com.ccg.dataaccess.entity.CCGContent;
+import com.ccg.dataaccess.entity.CCGGroupArticleAccess;
 import com.ccg.dataaccess.entity.CCGSubcategory;
 import com.ccg.ingestion.extract.Category;
 import com.ccg.services.index.Indexer;
@@ -64,6 +66,8 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	@Autowired
 	private CCGArticleMetadataDAO metadataDAO;
 	
+	@Autowired
+	private CCGGroupArticleAccessDAO groupArticleAccessDAO;
 	
 	@Override
 	@Transactional(readOnly=false)
@@ -348,6 +352,11 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	public void deleteArticle(int articleID) {
 		// TODO Auto-generated method stub
 		articleDAO.delete(articleDAO.findById(articleID));
+		articleInfoDAO.delete(articleInfoDAO.findById(articleID));
+		List<CCGGroupArticleAccess> entityList = groupArticleAccessDAO.findRecordsByArticleId(articleID);
+		for(CCGGroupArticleAccess entity : entityList){
+			groupArticleAccessDAO.delete(entity);
+		}
 	}
 	
 	@Override

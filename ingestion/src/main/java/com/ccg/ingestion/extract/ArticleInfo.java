@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ArticleInfo {
+	String id;
 	String title;
 	String type="PDF"; // PDF, ...
 	String content;
@@ -49,5 +50,11 @@ public class ArticleInfo {
 	}
 	public void setCategoryList(List<Category> categoryList) {
 		this.categoryList = categoryList;
+	}
+	public String getId(){
+		return this.id;
+	}
+	public void setId(String id){
+		this.id = id;
 	}
 }

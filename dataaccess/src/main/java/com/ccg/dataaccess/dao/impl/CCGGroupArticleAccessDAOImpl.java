@@ -1,5 +1,7 @@
 package com.ccg.dataaccess.dao.impl;
 
+import java.util.List;
+
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
@@ -18,6 +20,13 @@ public class CCGGroupArticleAccessDAOImpl extends CCGBaseDAOImpl<CCGGroupArticle
 		q.setParameter("articleID", articleID);
 		
 		return (CCGGroupArticleAccess)q.getSingleResult();
+	}
+	
+	@Override
+	public List<CCGGroupArticleAccess> findRecordsByArticleId(int articleID){
+		Query q = entityManager.createQuery("from CCGGroupArticleAccess where articleID =:articleID");
+		q.setParameter("articleID", articleID);		
+		return (List<CCGGroupArticleAccess>)q.getSingleResult();			
 	}
 
 }
