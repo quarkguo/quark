@@ -26,6 +26,13 @@ public class WCategory{
 	public void setSearchCount(int searchCount) {
 		this.searchCount = searchCount;
 	}
+	String icon;
+	public String getIcon() {
+		return icon;
+	}
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
 	Integer categoryID;
 	String articleID;
 	@SerializedName("text") 

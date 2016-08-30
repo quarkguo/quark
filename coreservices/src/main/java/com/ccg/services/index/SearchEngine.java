@@ -3,6 +3,7 @@ package com.ccg.services.index;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
@@ -91,7 +92,36 @@ public class SearchEngine {
 	            sr.setScore(hits[i].score);
 	            result.add(sr);
 	        }
+	 //   sortSearchResult(result);
 	    return result;
+	}
+	
+	public HashMap<Integer,List<Integer>> sortSearchResult(List<SearchResult2> data)
+	{
+		HashMap<Integer,List<Integer>> res=new HashMap<Integer,List<Integer>>();
+		for(SearchResult2 s:data)
+		{
+			Integer articleID=Integer.parseInt(s.getArticleId());
+			Integer pagenum=Integer.parseInt(s.getPageNumber());
+			
+			if(res.containsKey(articleID))
+			{
+				List<Integer> pages=res.get(articleID);
+				pages.add(pagenum);
+			}
+			else
+			{
+				List<Integer> pages=new ArrayList<Integer>();
+				pages.add(pagenum);
+				res.put(articleID, pages);
+			}
+		}
+		
+		for(Integer k:res.keySet())
+		{
+			System.out.println("^^^^^^ artcile:"+k+"  pages :"+res.get(k).size());
+		}
+		return res;
 	}
 		
 	

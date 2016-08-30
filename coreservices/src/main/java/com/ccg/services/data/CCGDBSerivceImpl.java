@@ -171,7 +171,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		wc.setArticleID(c.getArticleID()+"");
 		wc.setCategoryID(-1);
 		wc.setCategoryseq(0);
-		wc.setCategorytitle(c.getTitle());
+		wc.setCategorytitle(c.getTitle()+" "+c.getStartPage()+"-"+c.getEndPage());
 		wc.setEndPage(c.getEndPage());
 		wc.setEndposi(c.getEndPosition());
 		wc.setStartPage(c.getStartPage());
@@ -518,7 +518,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 					a_wc.getSubCategories().add(convertCategory(c));
 				}
 				// now set start/end page and position
-				a_wc.setStartPage(1);
+				a_wc.setStartPage(1);				
 				a_wc.setStartposi(1);
 				a_wc.setEndPage(ary[ary.length-1].getEndPage());
 				a_wc.setEndposi(ary[ary.length-1].getEndPosition());
@@ -527,10 +527,9 @@ public class CCGDBSerivceImpl implements CCGDBService {
 				lookupMap.put(articleID, a_wc);
 			}
 			// now insert new category into the existi category list
+			System.out.println("trying to add page...."+pageNumber+" in "+a_wc.getStartPage()+"-"+a_wc.getEndPage());
 			addPageIntoCategory(a_wc,pageNumber);
-			// now reset the page number to be the first page
-			a_wc.setEndPage(a_wc.getStartPage());
-			a_wc.setEndposi(500);
+				
 		}
 		// convert sorted map to results
 		Collections.sort(res,new Comparator<WCategory>(){
@@ -542,8 +541,14 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			}
 			
 		});
+		for(WCategory wc:res)
+		{
+			wc.setEndPage(wc.getSubCategories().get(0).getStartPage());
+			wc.setEndposi(500);
+		}
 		return res;
 	}
+	
 	public boolean addPageIntoCategory(WCategory root,int pageNumber)
 	{
 		if(root.getStartPage()>pageNumber||root.getEndPage()<pageNumber)
@@ -573,10 +578,11 @@ public class CCGDBSerivceImpl implements CCGDBService {
 				thepage.setStartposi(root.getStartposi());
 				thepage.setEndPage(pageNumber);
 				thepage.setLeaf(true);
-				thepage.setCategorytitle("[Matched Page: #"+pageNumber+"]");
+				thepage.setIcon("images/docs.jpg");
+				thepage.setCategorytitle("<font color='#ff4444'>[Matched Page: #"+pageNumber+"]</font>");
 				root.getSubCategories().add(thepage);
 				root.setLeaf(false);
-				
+				System.out.println("added .....->"+pageNumber);
 				return true;
 			}
 		}
