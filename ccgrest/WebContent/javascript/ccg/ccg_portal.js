@@ -4,6 +4,7 @@
 
 Ext.onReady(function(){
 	// some initialization functions
+	ccg.initUploadFilePanel();
 	Ext.create('Ext.container.Viewport',{
 		layout:'border',
 		items:[{
