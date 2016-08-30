@@ -13,6 +13,8 @@ public class ArticleMetaData {
 	
 	private Date createDate;
 	private Date lastUpdateDate;
+	
+	private boolean deleteArticle;
 
 	public Integer getArticleId() {
 		return articleId;
@@ -68,6 +70,12 @@ public class ArticleMetaData {
 	}
 	public void setLastUpdateDate(Date lastUpdateDate) {
 		this.lastUpdateDate = lastUpdateDate;
+	}
+	public boolean isDeleteArticle() {
+		return deleteArticle;
+	}
+	public void setDeleteArticle(boolean deleteArticle) {
+		this.deleteArticle = deleteArticle;
 	}	
 	
 	

@@ -171,8 +171,12 @@ public class TestHandler {
 		json = toJson(meta);
 		
 		System.out.println(json);
+		if(meta.isDeleteArticle()){
+			dataservice.deleteArticle(meta.getArticleId());
+		}else{
+			dataservice.saveOrUpdateArticleMetaData(meta);
+		}
 		
-		dataservice.saveOrUpdateArticleMetaData(meta);
 		
 	    HttpHeaders responseHeaders = new HttpHeaders();
 	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);

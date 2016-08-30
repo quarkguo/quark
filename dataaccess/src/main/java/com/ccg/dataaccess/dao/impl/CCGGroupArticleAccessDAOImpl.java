@@ -1,5 +1,6 @@
 package com.ccg.dataaccess.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -25,8 +26,17 @@ public class CCGGroupArticleAccessDAOImpl extends CCGBaseDAOImpl<CCGGroupArticle
 	@Override
 	public List<CCGGroupArticleAccess> findRecordsByArticleId(int articleID){
 		Query q = entityManager.createQuery("from CCGGroupArticleAccess where articleID =:articleID");
-		q.setParameter("articleID", articleID);		
-		return (List<CCGGroupArticleAccess>)q.getSingleResult();			
+		q.setParameter("articleID", articleID);	
+		List<CCGGroupArticleAccess> accessList = new ArrayList<CCGGroupArticleAccess>();
+		try{
+			accessList = (List<CCGGroupArticleAccess>)q.getSingleResult();
+		}catch(javax.persistence.NoResultException e){
+			System.out.println(e.getLocalizedMessage() + ": " + articleID);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		return 	accessList;		
 	}
 
 }

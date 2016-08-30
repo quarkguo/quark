@@ -244,6 +244,14 @@ ccg.ui.metapanel=Ext.create('Ext.form.Panel', {
         {
             fieldLabel: 'Praisal Scores',
             name: 'praisalscore'
+        },
+        {
+        	xtype: 'checkboxfield',
+        	fieldLabel: 'Delete this article',
+        	value:0,
+        	inputValue:true,
+        	uncheckValue:false,
+        	name:'deleteArticle'
         }
         /*{
             xtype: 'datefield',
@@ -272,6 +280,7 @@ ccg.ui.metapanel=Ext.create('Ext.form.Panel', {
                    success: function(response, opts) {
                       var obj = Ext.decode(response.responseText);
                       console.log(obj);
+                      window.location.reload();
                    },
                    failure: function(response, opts) {
                       console.log('server-side failure with status code ' + response.status);
