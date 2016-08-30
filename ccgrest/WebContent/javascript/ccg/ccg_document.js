@@ -13,6 +13,7 @@ ccg.data.doccategorystore = Ext.create('Ext.data.TreeStore', {
             
         }
     });
+/*
 ccg.data.relateddocstore = Ext.create('Ext.data.TreeStore', {
     proxy: {
         type: 'ajax',
@@ -23,7 +24,20 @@ ccg.data.relateddocstore = Ext.create('Ext.data.TreeStore', {
         expanded: true
     }
 });
-
+*/
+ccg.data.buildSearchStore = function(jsondata,querystr){
+	 var s=Ext.create('Ext.data.TreeStore', {
+		    proxy: {
+		        type: 'ajax',
+		        url: ''
+		    },
+		    root: {
+		        text: 'Related Content for Search:['+querystr+']',        
+		        expanded: true
+		    }
+		 });
+	 return s;
+};
 ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
     store: ccg.data.doccategorystore,
     minHeight: 240,
@@ -43,30 +57,32 @@ ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
     ],
     listeners: {
         itemclick: function(s,r) {        
-        	if(r.data)
+        	if(r.data&&r.data.startPage)
         	{
-       	 	console.log(r.data);
-       	 	// rendering PDF document
-       	 	var url='rest/article/'+r.data.articleID+'/'+r.data.startPage+'-'+r.data.endPage+'/download'
-       	 	var pdfPanel=document.getElementById('pdfcontent');
-       	 	pdfPanel.src=url;
-       	 	
-       	 	// now rendering Text content
-       	 	var texturl='rest/article/'+r.data.articleID+'/'+r.data.startposi+'-'+r.data.endposi+'/textcontent'
-       	 	console.log(texturl);
-       	 	Ext.Ajax.request({
-       	 		url:texturl,
-       	 		callback: function(options,success,response) {
-       	 		var o= Ext.util.JSON.decode(response.responseText);
-       	 		Ext.getCmp('contentpanel').update(o);
-       	 		Ext.getCmp('contentpanel').setTitle("Article:["+r.data.articleID+"] -- ["+r.data.text+"]");
-       	 		}
-       	 	});
+        		ccg.ui.updateSelectedContent(r.data);
         	}
-
         }
     },
 });
+ccg.ui.updateSelectedContent= function(data){
+	 	// rendering PDF document
+		Ext.getCmp('contenttabpanel').setActiveTab(0);
+	 	var url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/download'
+	 	var pdfPanel=document.getElementById('pdfcontent');
+	 	pdfPanel.src=url;
+	 	
+	 	// now rendering Text content
+	 	var texturl='rest/article/'+data.articleID+'/'+data.startposi+'-'+data.endposi+'/textcontent'
+	 	//console.log(texturl);
+	 	Ext.Ajax.request({
+	 		url:texturl,
+	 		callback: function(options,success,response) {
+	 		var o= Ext.util.JSON.decode(response.responseText);
+	 		Ext.getCmp('contentpanel').update(o);
+	 		Ext.getCmp('contentpanel').setTitle("Article:["+data.articleID+"] -- ["+data.text+"]");
+	 		}
+	 	});
+};
 
 ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
     title: 'Search Content', 
@@ -85,13 +101,29 @@ ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
                 text: 'search',
                 handler: function () {
                 	//alert("search");
+                	if(Ext.getCmp('categorytabpanel').items.length>3)
+                	{
+                		Ext.Msg.alert("At Most Three Search Panels. Please close one before new search.");
+                		return ;
+                	}
                 	var keyword=ccg.ui.contentsearchPanel.items.items[0].getValue();
                 	//console.log(keyword);
                 	
-                	var jdata={"query":keyword,"limit":100};
+                	var jdata={"query":keyword,"limit":30};
                 	console.log(jdata);
-                	ccg.data.relateddocstore.load({url:"rest/search",params:jdata,method:"GET"});
-                	/*
+                	var thestore=ccg.data.buildSearchStore(jdata,keyword);
+                    var searchPanel=new ccg.ui.relateddoclist(thestore,keyword);
+                    Ext.getCmp('categorytabpanel').add(searchPanel).show();
+                 
+                    	var myMask = Ext.MessageBox.wait("Processing....","Searching Article...");
+                   // 
+                    // now load data
+                   // thestore.on("load",function(){myMask.hide();})
+                    thestore.load({url:"rest/search",params:jdata,method:"GET",callback:function(){myMask.close();}});
+                	//ccg.data.relateddocstore.on("load",function(eopts){ccg.ui.relateddoclist.expandAll();});
+                	//ccg.data.relateddocstore.load({url:"rest/search",params:jdata,method:"GET"});
+                	
+                    /*
                 	Ext.Ajax.request({
                   	     url: "rest/search",
                   	     method:"GET",
@@ -99,7 +131,10 @@ ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
                   	   success: function(response, opts) {
                            var jdata = Ext.decode(response.responseText);
                            console.log(jdata);
-                         //  ccg.ui.relateddoclist.update(jdata);
+                           console.log(keyword);
+                           var thestore=ccg.data.buildSearchStore(jdata,keyword);
+                           var searchPanel=new ccg.ui.relateddoclist(thestore,keyword);
+                           Ext.getCmp('categorytabpanel').add(searchPanel).show();
                         },
                         failure: function(response, opts) {
                            console.log('server-side failure with status code ' + response.status);
@@ -123,67 +158,36 @@ ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
                 }
             }
 });
-ccg.ui.relateddoclist =Ext.create('Ext.tree.Panel', {
-    store: ccg.data.relateddocstore,
-    height: 240,
-    width: 300,
-    title: 'Related Content:',
+// define related documement
+ccg.ui.mycolors=["#ffcccc","#ccffcc","orange"];
+ccg.ui.relateddoclist = function (datastore,searchkey){ 
+	var index=Ext.getCmp('categorytabpanel').items.length;
+	var c=ccg.ui.mycolors[index-1];
+	var panel=Ext.create('Ext.tree.Panel', {
+		tools : [{
+		        type : 'help',
+		        handler : function(event, toolEl, panel) {
+		                alert('Should I be rendered up here?');
+		            }
+		    }],
+	minHeight: 240,
+	maxHeight:320,
+	style: {borderColor:c, borderStyle:'double', borderWidth:'3px'},
+    store: datastore,
+    title: 'Related Content for:['+searchkey+']',   
     useArrows: true,
-    tools: [
-     {
-            type: 'search', // this doesn't appear to work, probably I need to use a valid class
-            tooltip: 'Search Related Content',
-            handler: function() {
-                console.log('TODO: Add project');
-                console.log(ccg.ui.contentsearchPanel);
-                ccg.ui.contentsearchPanel.show();
-            }
-        }],
+    closable: true,
     listeners: {
-            itemclick: function(s,r) {           
-           	 	console.log(r);
-           	 	if(r.data.categoryID)
-           	 	{
-           	 		// pull content of categoryID
-           	 	   var urlstr="rest/category/"+r.data.categoryID+"/content";
-           	 	   // set gloabl variable for PDF
-           	 	   ccg.data.currentArticle.id=r.data.articleId;
-           	 	   ccg.data.currentArticle.title=r.data.articleTitle;
-           	 	   console.log(urlstr);      	 	   
-           	 	   // ajax call
-           	 	Ext.Ajax.request({
-           	     url: urlstr,
-           	     callback: function(options, success, response) {
-           	    	 console.log(response.responseText);
-           	    	var o= Ext.util.JSON.decode(response.responseText);
-           	    	console.log(o);
-           	    	var keyword=ccg.ui.contentsearchPanel.items.items[0].getValue();
-           	    	var regex=new RegExp('(' + keyword + ')', 'gi')
-           	    	var replacedtext=o.categorycontent.replace(regex, "<span class='category-content-search-token'>$1</span>")
-           	    	console.log(replacedtext);
-           	    	Ext.getCmp('contentpanel').update(replacedtext);
-           	    	Ext.getCmp('contentpanel').setTitle("Content Panel -- Article:["+o.articleID+"] -- Category:["+o.categoryID+"]");
-           	    	// need to sync the tree panel and category panel
-           	    	var root=ccg.ui.doclist.getRootNode();
-           	    	console.log(root);
-           	    	for(var i=0;i<root.childNodes.length;i++)
-           	    	{
-           	    		var child=root.childNodes[i];
-           	    		console.log(child);
-           	    		if(child.data.articleID+""==o.articleID+"")
-           	    		{
-           	    			console.log("found "+child);
-           	    			ccg.ui.doclist.getSelectionModel().select(child,true);
-           	    			//ccg.ui.doclist.fireEvent('itemclick',child,0);
-           	    			ccg.ui.loadDocCategory(o.articleID);
-           	    			break;
-           	    		}
-           	    	}
-           	     }
-           	 });
-           	 	}}
+            itemclick: function(s,r) {
+            	if(r.data&&r.data.startPage)
+            	{
+            		ccg.ui.updateSelectedContent(r.data);
+            	}	
+            }
     }
-});
+	});
+	return panel;
+	};
 
 ccg.ui.docmainpanel=Ext.create("Ext.panel.Panel",{	
 	layout:'border',
@@ -470,7 +474,7 @@ ccg.ui.passwordresetpanel=Ext.create('Ext.form.Panel', {
     }]
 });
 
-
+/*
 ccg.data.patterns=[];
 ccg.article.pattern.loader=function(){
 	var pattern;
@@ -498,9 +502,9 @@ ccg.article.pattern.loader=function(){
 		}
 	});
 }();
-
+*/
 ccg.initUploadFilePanel = function(){
-ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', { 
+	ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', { 
 	id : 'uploadfileform',
 	//renderTo : 'formId',
 	border : true,

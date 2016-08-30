@@ -16,27 +16,46 @@ Ext.onReady(function(){
 		     split:true,
 		     collapsible:true,
 			items:[
-			   	ccg.ui.doclist,
-			    ccg.ui.relateddoclist 
+			   	ccg.ui.doclist
 			]
 		},
 		{
-			title:'Main',
 			region:'center',
 			layout:'border',
-			 frame: true,
+			frame: true,
+						
 			defaults: {		        
 		        bodyPadding: 10
 		    },
 			items:[{			
 				region:'north',
-				   split:true,
+				   split:true,				   
+				   xtype:'tabpanel',				   
+				   id:'categorytabpanel',
 				     collapsible:true,
+				     activeTab:0,
 				items:[
-				       ccg.ui.doccategory			       		       			        
-				]
-					
-			},
+				       ccg.ui.doccategory
+				       //ccg.ui.relateddoclist 
+				],
+				tools:[
+						 {
+			    			type: 'search', // this doesn't appear to work, probably I need to use a valid class
+			    			tooltip: 'Search Related Content',
+			    			handler: function() 
+			    			{
+			    				ccg.ui.contentsearchPanel.show();
+			    			}
+						},
+						{
+							type: 'gear', // this doesn't appear to work, probably I need to use a valid class
+							tooltip: 'Document Meta Data',
+							handler: function() {
+								ccg.ui.metapanel.show();
+							}
+						}
+						]
+					},
 			       	{			
 			       		xtype:'tabpanel',
 			       		region:'north',
@@ -51,13 +70,13 @@ Ext.onReady(function(){
 			       		autoScroll: true,
 			       		items:[
 			       		    {
-			       		    	title:'PDF content',
+			       		    	title:'Original Content',
 			       		    	bodyBorder: true,
 			       		    	border:true,
 			       		    	html:'<iframe name="pdfcontent" id="pdfcontent" width=99% height=95% border=0 />'
 			       		    },
 			       		   {
-			       		       title:'TEXT content',
+			       		       title:'Text Content',
 			       			   xtype:'panel',
 			       			   id:'contentpanel',
 			       			   bodyBorder: true,

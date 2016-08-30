@@ -56,10 +56,9 @@ ccg.ui.loadDocCategory=function(arcID)
 
  ccg.ui.doclist =Ext.create('Ext.tree.Panel', {
      store: ccg.data.docliststore,
-     height: 360,
      width:320,
      title: 'Document List',     
-     useArrows: true,
+     useArrows: true,    
      listeners: {
          itemclick: function(s,r) {           
         	 if(r.data.leaf)
@@ -189,8 +188,7 @@ Ext.define('com.ccg.toolbar',{
                 text: 'Profile',
                 iconCls: 'file',     
                 handler: function() {
-                    console.log('TODO: Add project');
-                    console.log(ccg.ui.contentsearchPanel);
+                   
                     ccg.ui.userprofilepanel.show();
                     // here we need to pull all content
                     var userprofileurl="rest/user/profile";
