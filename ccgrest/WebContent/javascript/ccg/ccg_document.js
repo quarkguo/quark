@@ -64,10 +64,15 @@ ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
         }
     },
 });
-ccg.ui.updateSelectedContent= function(data){
+ccg.ui.updateSelectedContent= function(data,searchKey){
 	 	// rendering PDF document
 		Ext.getCmp('contenttabpanel').setActiveTab(0);
-	 	var url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/download'
+		var url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/download'
+		if(searchKey!=null)
+		{
+			var query=escape(searchKey);
+			url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/'+query+'/download';
+		}
 	 	var pdfPanel=document.getElementById('pdfcontent');
 	 	pdfPanel.src=url;
 	 	
@@ -78,6 +83,11 @@ ccg.ui.updateSelectedContent= function(data){
 	 		url:texturl,
 	 		callback: function(options,success,response) {
 	 		var o= Ext.util.JSON.decode(response.responseText);
+	 		if(searchKey!=null)
+	 		{
+	 			o=o.replace(searchKey,"<font color=red>"+searchKey+"</font>")
+	 		}
+	 		
 	 		Ext.getCmp('contentpanel').update(o);
 	 		Ext.getCmp('contentpanel').setTitle("Article:["+data.articleID+"] -- ["+data.text+"]");
 	 		}
@@ -109,7 +119,7 @@ ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
                 	var keyword=ccg.ui.contentsearchPanel.items.items[0].getValue();
                 	//console.log(keyword);
                 	
-                	var jdata={"query":keyword,"limit":30};
+                	var jdata={"query":keyword,"limit":500};
                 	console.log(jdata);
                 	var thestore=ccg.data.buildSearchStore(jdata,keyword);
                     var searchPanel=new ccg.ui.relateddoclist(thestore,keyword);
@@ -164,12 +174,6 @@ ccg.ui.relateddoclist = function (datastore,searchkey){
 	var index=Ext.getCmp('categorytabpanel').items.length;
 	var c=ccg.ui.mycolors[index-1];
 	var panel=Ext.create('Ext.tree.Panel', {
-		tools : [{
-		        type : 'help',
-		        handler : function(event, toolEl, panel) {
-		                alert('Should I be rendered up here?');
-		            }
-		    }],
 	minHeight: 240,
 	maxHeight:320,
 	style: {borderColor:c, borderStyle:'double', borderWidth:'3px'},
@@ -179,10 +183,20 @@ ccg.ui.relateddoclist = function (datastore,searchkey){
     closable: true,
     listeners: {
             itemclick: function(s,r) {
+            	
             	if(r.data&&r.data.startPage)
             	{
-            		ccg.ui.updateSelectedContent(r.data);
+            		ccg.ui.updateSelectedContent(r.data,searchkey);
+            		if(r.data.text.indexOf("Article")>-1)
+            		{
+            			if(r.data.expanded!=true)
+            			{
+            				this.expandNode(r,true);
+            			}
+            		}
             	}	
+            	// now check if the tree is expanded
+            	
             }
     }
 	});
