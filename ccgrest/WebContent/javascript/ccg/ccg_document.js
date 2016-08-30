@@ -68,11 +68,11 @@ ccg.ui.updateSelectedContent= function(data,searchKey){
 	 	// rendering PDF document
 		Ext.getCmp('contenttabpanel').setActiveTab(0);
 		var url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/download'
-		if(searchKey!=null)
+		/*if(searchKey!=null)
 		{
 			var query=escape(searchKey);
 			url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/'+query+'/download';
-		}
+		}*/
 	 	var pdfPanel=document.getElementById('pdfcontent');
 	 	pdfPanel.src=url;
 	 	
