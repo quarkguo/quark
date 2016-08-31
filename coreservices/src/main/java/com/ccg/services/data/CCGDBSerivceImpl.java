@@ -438,7 +438,8 @@ public class CCGDBSerivceImpl implements CCGDBService {
 
 		for(ArticleBasicInfo info : articleList){
 			Integer articleId = info.getArticleID();
-			
+			try
+			{
 			ArticleContent content = getArticleContent(articleId);
 			String filename = content.getUrl();
 			System.out.println("========== file name====" + filename);
@@ -452,7 +453,11 @@ public class CCGDBSerivceImpl implements CCGDBService {
 						pageContent, 
 						writer);
 			}
-			
+			}
+			catch(Exception e)
+			{
+				// here continue
+			}
 		}		
 		indexer.closeIndexWriter();
 	}	
