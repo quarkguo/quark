@@ -41,7 +41,6 @@ ccg.data.buildSearchStore = function(jsondata,querystr){
 ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
     store: ccg.data.doccategorystore,
     minHeight: 240,
-   maxHeight:320,
 //    width: 300,
     title: 'Document Cateogry',
     useArrows: true,
