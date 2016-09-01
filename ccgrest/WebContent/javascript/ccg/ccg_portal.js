@@ -16,8 +16,22 @@ Ext.onReady(function(){
 			region:"west",
 		     split:true,
 		     collapsible:true,
+		     width:"35%",
 			items:[
-			   	ccg.ui.doclist
+			   	ccg.ui.doclist,
+			   	{			
+					region:'north',
+					   split:true,				   
+					   xtype:'tabpanel',				   
+					   id:'categorytabpanel',
+					     collapsible:true,
+					     activeTab:0,
+					items:[
+					       ccg.ui.doccategory
+					       //ccg.ui.relateddoclist 
+					]
+					
+						}
 			]
 		},
 		{
@@ -28,35 +42,7 @@ Ext.onReady(function(){
 			defaults: {		        
 		        bodyPadding: 10
 		    },
-			items:[{			
-				region:'north',
-				   split:true,				   
-				   xtype:'tabpanel',				   
-				   id:'categorytabpanel',
-				     collapsible:true,
-				     activeTab:0,
-				items:[
-				       ccg.ui.doccategory
-				       //ccg.ui.relateddoclist 
-				],
-				tools:[
-						 {
-			    			type: 'search', // this doesn't appear to work, probably I need to use a valid class
-			    			tooltip: 'Search Related Content',
-			    			handler: function() 
-			    			{
-			    				ccg.ui.contentsearchPanel.show();
-			    			}
-						},
-						{
-							type: 'gear', // this doesn't appear to work, probably I need to use a valid class
-							tooltip: 'Document Meta Data',
-							handler: function() {
-								ccg.ui.metapanel.show();
-							}
-						}
-						]
-					},
+			items:[
 			       	{			
 			       		xtype:'tabpanel',
 			       		region:'north',
@@ -87,7 +73,24 @@ Ext.onReady(function(){
 			       		   }			       		   
 			       		]
 			       	}
-			       	]
+			       	],
+			       	tools:[
+							 {
+				    			type: 'search', // this doesn't appear to work, probably I need to use a valid class
+				    			tooltip: 'Search Related Content',
+				    			handler: function() 
+				    			{
+				    				ccg.ui.contentsearchPanel.show();
+				    			}
+							},
+							{
+								type: 'gear', // this doesn't appear to work, probably I need to use a valid class
+								tooltip: 'Document Meta Data',
+								handler: function() {
+									ccg.ui.metapanel.show();
+								}
+							}
+							]
 				
 		}		
 		]
