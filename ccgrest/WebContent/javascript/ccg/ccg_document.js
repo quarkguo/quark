@@ -497,7 +497,7 @@ ccg.ui.passwordresetpanel=Ext.create('Ext.form.Panel', {
     }]
 });
 
-/*
+
 ccg.data.patterns=[];
 ccg.article.pattern.loader=function(){
 	var pattern;
@@ -525,7 +525,8 @@ ccg.article.pattern.loader=function(){
 		}
 	});
 }();
-*/
+
+//ccg.initUploadFilePanel();
 ccg.initUploadFilePanel = function(){
 	ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', { 
 	id : 'uploadfileform',
