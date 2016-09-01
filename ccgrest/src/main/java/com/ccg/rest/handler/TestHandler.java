@@ -237,7 +237,7 @@ public class TestHandler {
 			@RequestParam(value="query", required=false) String query,
 			@RequestParam(value="limit", required=false) String limit) {
 		
-		int default_limit = 100;
+		int default_limit = 1000;
 		if(limit != null){
 			try{
 				default_limit = Integer.parseInt(limit);
@@ -250,6 +250,8 @@ public class TestHandler {
 		try {
 			SearchEngine se = new SearchEngine();
 			List<SearchResult2> srList = se.search2(query, default_limit);
+			srList = dataservice.filterDeletedResult(srList);
+			
 			List<WCategory> res=dataservice.buildSearchCategory(srList,query);
 			json = toJson(res);
 			

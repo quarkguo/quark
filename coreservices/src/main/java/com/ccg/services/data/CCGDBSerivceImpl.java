@@ -42,6 +42,7 @@ import com.ccg.dataaccess.entity.CCGGroupArticleAccess;
 import com.ccg.dataaccess.entity.CCGSubcategory;
 import com.ccg.ingestion.extract.Category;
 import com.ccg.services.index.Indexer;
+import com.ccg.util.JSON;
 import com.ccg.util.JsonHelper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -511,25 +512,27 @@ public class CCGDBSerivceImpl implements CCGDBService {
 				a_wc.setArticleID(articleID+"");
 				
 				CCGArticleInfo info=articleInfoDAO.findById(articleID);
-				Category[] ary=JsonHelper.fromJson(info.getToc(), Category[].class);
-				// count query token
-				CCGContent content=articleDAO.findById(articleID).getContent();
-				int count=JsonHelper.countWord(content.getContent(), searchToken);
-				a_wc.setSearchCount(count);
-				a_wc.setCategorytitle("Article:["+s.getArticleTitle()+"]" +" --[Matched:"+count+"]");
-				// add all children
-				for(Category c:ary)
-				{
-					a_wc.getSubCategories().add(convertCategory(c));
+				if(info != null){
+					Category[] ary=JsonHelper.fromJson(info.getToc(), Category[].class);
+					// count query token
+					CCGContent content=articleDAO.findById(articleID).getContent();
+					int count=JsonHelper.countWord(content.getContent(), searchToken);
+					a_wc.setSearchCount(count);
+					a_wc.setCategorytitle("Article:["+s.getArticleTitle()+"]" +" --[Matched:"+count+"]");
+					// add all children
+					for(Category c:ary)
+					{
+						a_wc.getSubCategories().add(convertCategory(c));
+					}
+					// now set start/end page and position
+					a_wc.setStartPage(1);				
+					a_wc.setStartposi(1);
+					a_wc.setEndPage(ary[ary.length-1].getEndPage());
+					a_wc.setEndposi(ary[ary.length-1].getEndPosition());
+					// add to the collection
+					res.add(a_wc);
+					lookupMap.put(articleID, a_wc);
 				}
-				// now set start/end page and position
-				a_wc.setStartPage(1);				
-				a_wc.setStartposi(1);
-				a_wc.setEndPage(ary[ary.length-1].getEndPage());
-				a_wc.setEndposi(ary[ary.length-1].getEndPosition());
-				// add to the collection
-				res.add(a_wc);
-				lookupMap.put(articleID, a_wc);
 			}
 			// now insert new category into the existi category list
 			System.out.println("trying to add page...."+pageNumber+" in "+a_wc.getStartPage()+"-"+a_wc.getEndPage());
@@ -591,5 +594,20 @@ public class CCGDBSerivceImpl implements CCGDBService {
 				return true;
 			}
 		}
+	}
+	
+	@Override
+	public List<SearchResult2> filterDeletedResult( List<SearchResult2> searchResultList){
+		
+		List<SearchResult2> newList = new ArrayList<SearchResult2>();
+		for(SearchResult2 searchResult : searchResultList){
+			 String id = searchResult.getArticleId();
+			 int articleId = Integer.parseInt(id);
+			 CCGArticle ccgArticle = articleDAO.findById(articleId);
+			 if(ccgArticle != null){
+				 newList.add(searchResult);
+			 }
+		}
+		return newList;
 	}
 }
