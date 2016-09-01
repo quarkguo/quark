@@ -600,6 +600,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	public List<SearchResult2> filterDeletedResult( List<SearchResult2> searchResultList){
 		
 		List<SearchResult2> newList = new ArrayList<SearchResult2>();
+		float totalScore = 0f;
 		for(SearchResult2 searchResult : searchResultList){
 			 String id = searchResult.getArticleId();
 			 int articleId = Integer.parseInt(id);
@@ -607,7 +608,11 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			 if(ccgArticle != null){
 				 newList.add(searchResult);
 			 }
+			 totalScore += searchResult.getScore();
 		}
+		System.out.println("===filtered search results:");
+		System.out.println(JSON.toJson(newList));
+		
 		return newList;
 	}
 }
