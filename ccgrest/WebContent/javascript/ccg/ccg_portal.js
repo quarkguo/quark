@@ -16,7 +16,8 @@ Ext.onReady(function(){
 			region:"west",
 		     split:true,
 		     collapsible:true,
-		     width:"35%",
+		     height:'100%',
+		     width:"60%",
 			items:[
 			   	ccg.ui.doclist,
 			   	{			
@@ -60,7 +61,7 @@ Ext.onReady(function(){
 			       		    	title:'Original Content',
 			       		    	bodyBorder: true,
 			       		    	border:true,
-			       		    	html:'<iframe name="pdfcontent" id="pdfcontent" width=99% height=95% border=0 />'
+			       		    	html:'<iframe name="pdfcontent" id="pdfcontent" width=100% height=100% border=0 />'
 			       		    },
 			       		   {
 			       		       title:'Text Content',

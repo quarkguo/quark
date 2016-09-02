@@ -109,6 +109,14 @@ public class ArticleHandler {
 			@PathVariable("positions") String positions  
 			) 
 	{
+		
+		
+		System.out.println("====Position: " + positions);
+		/*
+		 * ====Position: undefined-undefined
+		 */
+		
+		
 		ArticleContent content = dataservice.getArticleContent(articleId);
 		String[] ary=positions.split("-");
 		int startPosi=Integer.parseInt(ary[0]);

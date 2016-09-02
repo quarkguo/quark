@@ -44,6 +44,7 @@ ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
 //    width: 300,
     title: 'Document Cateogry',
     useArrows: true,
+    autoScroll: true,
     autoload:false,
     tools:[
 	{
@@ -67,11 +68,15 @@ ccg.ui.updateSelectedContent= function(data,searchKey){
 	 	// rendering PDF document
 		Ext.getCmp('contenttabpanel').setActiveTab(0);
 		var url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/download'
-		/*if(searchKey!=null)
+		if(searchKey!=null)
 		{
 			var query=escape(searchKey);
 			url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/'+query+'/download';
-		}*/
+			if(data.startPage==data.endPage)
+			{
+				url='rest/article/'+data.articleID+'/'+data.startPage+'/'+query+'/download';
+			}
+		}
 	 	var pdfPanel=document.getElementById('pdfcontent');
 	 	pdfPanel.src=url;
 	 	
