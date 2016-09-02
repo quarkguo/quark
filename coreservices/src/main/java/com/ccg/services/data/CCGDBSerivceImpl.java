@@ -487,6 +487,15 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	@Transactional
 	public List<WCategory> buildSearchCategory(List<SearchResult2> searchRes,String searchToken) {
 		// TODO Auto-generated method stub
+		Collections.sort(searchRes, new Comparator<SearchResult2>(){
+
+			@Override
+			public int compare(SearchResult2 arg0, SearchResult2 arg1) {
+				// TODO Auto-generated method stub
+				return Integer.parseInt(arg0.getPageNumber())-Integer.parseInt(arg1.getPageNumber());
+			}
+			
+		});
 		List<WCategory> res=new ArrayList<WCategory>();  // here we store all the result of the Matched Article
 		HashMap<Integer,WCategory> lookupMap=new HashMap<Integer,WCategory>(); // this is duplicate store for lookup ref
 		for(SearchResult2 s:searchRes)
@@ -501,30 +510,39 @@ public class CCGDBSerivceImpl implements CCGDBService {
 				a_wc=new WCategory();
 				a_wc.setArticleID(articleID+"");
 				
-				CCGArticleInfo info=articleInfoDAO.findById(articleID);
-				Category[] ary=JsonHelper.fromJson(info.getToc(), Category[].class);
+				//CCGArticleInfo info=articleInfoDAO.findById(articleID);
+				//Category[] ary=JsonHelper.fromJson(info.getToc(), Category[].class);
 				// count query token
 				CCGContent content=articleDAO.findById(articleID).getContent();
 				int count=JsonHelper.countWord(content.getContent(), searchToken);
 				a_wc.setSearchCount(count);
 				a_wc.setCategorytitle("Article:["+s.getArticleTitle()+"]" +" --[Matched:"+count+"]");
 				// add all children
+				/*
 				for(Category c:ary)
 				{
 					a_wc.getSubCategories().add(convertCategory(c));
 				}
+				*/
 				// now set start/end page and position
 				a_wc.setStartPage(1);				
 				a_wc.setStartposi(1);
-				a_wc.setEndPage(ary[ary.length-1].getEndPage());
-				a_wc.setEndposi(ary[ary.length-1].getEndPosition());
+				a_wc.setEndPage(1);
+				a_wc.setEndposi(500);
 				// add to the collection
 				res.add(a_wc);
 				lookupMap.put(articleID, a_wc);
 			}
 			// now insert new category into the existi category list
 			System.out.println("trying to add page...."+pageNumber+" in "+a_wc.getStartPage()+"-"+a_wc.getEndPage());
-			addPageIntoCategory(a_wc,pageNumber);
+			WCategory thepage=new WCategory();
+			thepage.setArticleID(a_wc.getArticleID());
+			thepage.setStartPage(pageNumber);
+			thepage.setEndPage(pageNumber);
+			thepage.setLeaf(true);
+			thepage.setIcon("images/docs.jpg");
+			thepage.setCategorytitle("<font color='#ff4444'>[Matched Page: #"+pageNumber+"]</font>");
+			a_wc.getSubCategories().add(thepage);			
 				
 		}
 		// convert sorted map to results

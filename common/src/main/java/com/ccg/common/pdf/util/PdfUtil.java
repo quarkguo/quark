@@ -96,12 +96,22 @@ public class PdfUtil {
 				}
 			});
 			
-			file.save(new org.pdfclown.bytes.OutputStream(outputStream), SerializationModeEnum.Standard);
-			file.close();
+			file.save(new org.pdfclown.bytes.OutputStream(outputStream), SerializationModeEnum.Standard);	
+			outputStream.flush();
+			/*
+			try{
+				file.close();
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
 			//file.save(outputStream, SerializationModeEnum.Standard);
 			//file.sa
 			//IOutputStream output = new org.pdfclown.bytes.OutputStream(outputStream);
 			//file.close();
+			 * */
+			 
 		}
 
 	}
