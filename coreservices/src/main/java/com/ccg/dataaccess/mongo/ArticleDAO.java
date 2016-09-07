@@ -1,4 +1,4 @@
-package com.ccg.dataaccess.mongo.dao;
+package com.ccg.dataaccess.mongo;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
