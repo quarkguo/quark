@@ -326,6 +326,7 @@ public class TestHandler {
 		File pdfFile = new File(filename);
 		response.setHeader("content-disposition", "inline; filename=" + pdfFile.getName());
 		response.setContentType("application/pdf");		
+		
 		getParticalPdf(pdfFile, selectedPages, response.getOutputStream());
 	}	
 
@@ -356,10 +357,12 @@ public class TestHandler {
 			pages.add(Integer.parseInt(selectedPages));
 		}	
 		
-		// extract selected pages
-		InputStream is = new FileInputStream(pdfFile);
-		PdfUtil.extractSelectPage(is, outputStream, pages);
-		is.close();
+		synchronized(this){
+			// extract selected pages
+			InputStream is = new FileInputStream(pdfFile);
+			PdfUtil.extractSelectPage(is, outputStream, pages);
+			is.close();
+		}
 	}
 	
 	@RequestMapping(value="/article/{articleId}/{selectedPages}/{highlightRegEx}/download",method=RequestMethod.GET)
@@ -377,6 +380,7 @@ public class TestHandler {
 		System.out.println("=========>>>>" + highlightRegEx);
 
 		ByteArrayOutputStream particalPdfOutStream = new ByteArrayOutputStream();
+		
 		getParticalPdf(originalFile, selectedPages, particalPdfOutStream);
 		
 		byte[] particalPdfBytes = particalPdfOutStream.toByteArray();		

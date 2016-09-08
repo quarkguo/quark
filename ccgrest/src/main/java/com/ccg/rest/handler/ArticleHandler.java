@@ -117,11 +117,11 @@ public class ArticleHandler {
 		 */
 		
 		
-		ArticleContent content = dataservice.getArticleContent(articleId);
-		String[] ary=positions.split("-");
-		int startPosi=Integer.parseInt(ary[0]);
-		int endPosi=Integer.parseInt(ary[1]);
-		String json=toJson( content.getContent().substring(startPosi,endPosi));
+		//ArticleContent content = dataservice.getArticleContent(articleId);
+		//String[] ary=positions.split("-");
+		//int startPosi=Integer.parseInt(ary[0]);
+		//int endPosi=Integer.parseInt(ary[1]);
+		String json=toJson( "content.getContent().substring(startPosi,endPosi)");
 		HttpHeaders responseHeaders = new HttpHeaders();
 	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
 	    return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
