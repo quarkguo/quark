@@ -79,28 +79,23 @@ Ext.onReady(function(){
 			       	tools:[
 			       	       {
 							xtype:'panel',
-							align:'left',
+							align:'left',							
 							id:'navipanel',
 							layout:'hbox',
-							items:[
-							    { xtype:'tbtext',
-							      html:'<font color=green><u>This is a Testing Article</u></font>',
-							    	  border:true,
-							    	  shaddow:true
-							    },		
-							    {xtype:'tbtext',
-							    	width:'30px',
-							    	
-							    	text:'<center>|</center>'
-							    },
-							    {xtype:'tbtext',
-							     html:'<font color=green><u>1.0 Introduction</u></font>'							    	
+							hidden:true,
+							items:[							    
+							],
+							listeners:{
+							    click : function(s,r) {
+							    	console.log("clicking...")
+							    	console.log(r);
 							    }
-							]
+							}
 			       	       },
+			       	       /*
 			       	       	{xtype:'tbfill'},
 			       	        {xtype:'tbfill'},
-			       	        {xtype:'tbfill'},
+			       	        {xtype:'tbfill'},*/			       	        
 							 {
 				    			type: 'search', // this doesn't appear to work, probably I need to use a valid class
 				    			tooltip: 'Search Related Content',
@@ -119,10 +114,48 @@ Ext.onReady(function(){
 									ccg.ui.metapanel.show();
 								}
 							},
-							{type:'prev'}
+							{type:'prev',
+								id:'previcon',
+								page:-1,
+								hidden:true,
+								handler: function(){
+									var p=Ext.getCmp("previcon").page;
+									var aID=Ext.getCmp("previcon").articleID;
+									var key=Ext.getCmp("previcon").key;
+									console.log(p);
+									if(p>0)
+									{
+									  p=p-1;
+									  url='rest/article/'+aID+'/'+p+'/download'
+									  var pdfPanel=document.getElementById('pdfcontent');
+									  pdfPanel.src=url;
+									  Ext.getCmp("previcon").page=p;									  
+									}
+										
+									
+								 }
+								}
 							,
 							{
-								type:'next'								
+								type:'next',
+								id:'nexticon',							
+								hidden:true,
+								handler: function(){
+									var p=Ext.getCmp("previcon").page;
+									var aID=Ext.getCmp("previcon").articleID;
+									var key=Ext.getCmp("previcon").key;
+									console.log(p);
+									if(p>0)
+									{
+									  p=p+1;
+									  url='rest/article/'+aID+'/'+p+'/download'
+									  var pdfPanel=document.getElementById('pdfcontent');
+									  pdfPanel.src=url;
+									  Ext.getCmp("previcon").page=p;									  
+									}
+										
+									
+								 }
 							}
 							
 							]

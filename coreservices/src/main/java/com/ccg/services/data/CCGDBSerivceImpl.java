@@ -674,4 +674,46 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		
 		return newList;
 	}
+
+	@Override
+	public List<WCategory> getFlatCategory(int articleID, int page) {
+		// TODO Auto-generated method stub
+		List<WCategory> res=new ArrayList<WCategory>();
+		CCGArticleInfo info=articleInfoDAO.findById(articleID);
+		Category[] ary=JsonHelper.fromJson(info.getToc(), Category[].class);
+		for(Category c:ary)
+		{
+			WCategory wc=convertCategory(c);
+			if(matchCategoryWithPage(wc,page,res)) break;
+			
+		}
+		return res;
+	}
+	
+	boolean matchCategoryWithPage(WCategory root, int page,List<WCategory> l)
+	{
+		boolean found=false;
+		if(root.getStartPage()<=page&&root.getEndPage()>=page)
+		{
+			l.add(root);
+			found=true;
+			if(root.getSubCategories()!=null&&root.getSubCategories().size()>0)
+			{			
+				for(WCategory sub:root.getSubCategories())
+				{
+					if(matchCategoryWithPage(sub,page,l)) break;
+				}
+			}
+			root.getSubCategories().clear();
+		}
+		if(found)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 }

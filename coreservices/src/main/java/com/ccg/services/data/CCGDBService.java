@@ -39,5 +39,6 @@ public interface CCGDBService {
 	public CCGArticleInfo saveArticleInfo(CCGArticleInfo info);
 	public List<WCategory> buildSearchCategory(List<SearchResult2> searchRes,String searchToken);
 	public List<SearchResult2> filterDeletedResult( List<SearchResult2> searchResultList);
+	public List<WCategory> getFlatCategory(int artileID,int page);
 
 }
