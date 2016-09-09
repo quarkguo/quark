@@ -647,10 +647,10 @@ ccg.initUploadFilePanel = function(){
                     					Ext.MessageBox.confirm("Success", "Do you want load another one?", function(btn){
                     						if(btn === 'no'){
                     							ccg.ui.uploadfilepanel.hide();
-                    							
+                    							window.location.reload();
                     						}
                     					});
-                    					window.location.reload();
+                    					
                     				},
                     				failure: function(responseMsg){
                     					waitbox.hide();
