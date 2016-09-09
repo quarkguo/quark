@@ -81,6 +81,7 @@ ccg.ui.updateSelectedContent= function(data,searchKey){
 	 	pdfPanel.src=url;
 	 	
 	 	// now rendering Text content
+	 	/*
 	 	var texturl='rest/article/'+data.articleID+'/'+data.startposi+'-'+data.endposi+'/textcontent'
 	 	//console.log(texturl);
 	 	Ext.Ajax.request({
@@ -96,6 +97,7 @@ ccg.ui.updateSelectedContent= function(data,searchKey){
 	 		Ext.getCmp('contentpanel').setTitle("Article:["+data.articleID+"] -- ["+data.text+"]");
 	 		}
 	 	});
+	 	*/
 };
 
 ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
@@ -262,14 +264,6 @@ ccg.ui.metapanel=Ext.create('Ext.form.Panel', {
         {
             fieldLabel: 'Praisal Scores',
             name: 'praisalscore'
-        },
-        {
-        	xtype: 'checkboxfield',
-        	fieldLabel: 'Delete this article',
-        	value:0,
-        	inputValue:true,
-        	uncheckValue:false,
-        	name:'deleteArticle'
         }
         /*{
             xtype: 'datefield',
@@ -298,7 +292,6 @@ ccg.ui.metapanel=Ext.create('Ext.form.Panel', {
                    success: function(response, opts) {
                       var obj = Ext.decode(response.responseText);
                       console.log(obj);
-                      window.location.reload();
                    },
                    failure: function(response, opts) {
                       console.log('server-side failure with status code ' + response.status);
@@ -501,7 +494,7 @@ ccg.ui.passwordresetpanel=Ext.create('Ext.form.Panel', {
     }]
 });
 
-
+/*
 ccg.data.patterns=[];
 ccg.article.pattern.loader=function(){
 	var pattern;
@@ -529,8 +522,7 @@ ccg.article.pattern.loader=function(){
 		}
 	});
 }();
-
-//ccg.initUploadFilePanel();
+*/
 ccg.initUploadFilePanel = function(){
 	ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', { 
 	id : 'uploadfileform',
