@@ -497,6 +497,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	@Transactional
 	public List<WCategory> buildSearchCategory(List<SearchResult2> searchRes,String searchToken) {
 		// TODO Auto-generated method stub
+		/*
 		Collections.sort(searchRes, new Comparator<SearchResult2>(){
 
 			@Override
@@ -506,6 +507,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			}
 			
 		});
+		*/
 		List<WCategory> res=new ArrayList<WCategory>();  // here we store all the result of the Matched Article
 		HashMap<Integer,WCategory> lookupMap=new HashMap<Integer,WCategory>(); // this is duplicate store for lookup ref
 		for(SearchResult2 s:searchRes)
@@ -519,29 +521,33 @@ public class CCGDBSerivceImpl implements CCGDBService {
 				// lookup article Info
 				a_wc=new WCategory();
 				a_wc.setArticleID(articleID+"");
-				
+				/*
 				CCGArticleInfo info=articleInfoDAO.findById(articleID);
 				if(info != null){
-					Category[] ary=JsonHelper.fromJson(info.getToc(), Category[].class);
+					
+					//Category[] ary=JsonHelper.fromJson(info.getToc(), Category[].class);
 					// count query token
 					CCGContent content=articleDAO.findById(articleID).getContent();
 					int count=JsonHelper.countWord(content.getContent(), searchToken);
 					a_wc.setSearchCount(count);
 					a_wc.setCategorytitle("Article:["+s.getArticleTitle()+"]" +" --[Matched:"+count+"]");
 					// add all children
+					
 					for(Category c:ary)
 					{
 						a_wc.getSubCategories().add(convertCategory(c));
 					}
+					
 					// now set start/end page and position
 					a_wc.setStartPage(1);				
 					a_wc.setStartposi(1);
-					a_wc.setEndPage(ary[ary.length-1].getEndPage());
-					a_wc.setEndposi(ary[ary.length-1].getEndPosition());
+					//a_wc.setEndPage(ary[ary.length-1].getEndPage());
+					//a_wc.setEndposi(ary[ary.length-1].getEndPosition());
 					// add to the collection
 					res.add(a_wc);
 					lookupMap.put(articleID, a_wc);
 				}
+				*/
 
 				//CCGArticleInfo info=articleInfoDAO.findById(articleID);
 				//Category[] ary=JsonHelper.fromJson(info.getToc(), Category[].class);
@@ -580,6 +586,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 				
 		}
 		// convert sorted map to results
+		
 		Collections.sort(res,new Comparator<WCategory>(){
 
 			@Override
@@ -589,11 +596,13 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			}
 			
 		});
+		
 		for(WCategory wc:res)
 		{
 			wc.setEndPage(wc.getSubCategories().get(0).getStartPage());
 			wc.setEndposi(500);
 		}
+		
 		return res;
 	}
 	
