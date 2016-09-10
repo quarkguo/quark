@@ -71,15 +71,56 @@ ccg.ui.updateSelectedContent= function(data,searchKey){
 		if(searchKey!=null)
 		{
 			var query=escape(searchKey);
-			url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/'+query+'/download';
+			url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/download';
 			if(data.startPage==data.endPage)
 			{
 				url='rest/article/'+data.articleID+'/'+data.startPage+'/'+query+'/download';
+				//Ext.getCmp("navipanel").show();
+				Ext.getCmp("previcon").show();
+				Ext.getCmp("previcon").page=data.startPage;
+				Ext.getCmp("previcon").articleID=data.articleID;
+				Ext.getCmp("previcon").key=query;
+				Ext.getCmp("nexticon").show();
+				// now build the category panel
+				var naviurl="rest/article/article/"+data.articleID+"/"+data.startPage+"/flatcategory";
+				console.log(naviurl);
+				Ext.Ajax.request({
+			 		url:naviurl,
+			 		callback: function(options,success,response) {
+			 		var ary= Ext.util.JSON.decode(response.responseText);
+			 		//console.log(o);
+			 		Ext.getCmp("navipanel").removeAll();
+			 			for(var i=0;i<ary.length&&i<5;i++)
+			 			{
+			 				var ele=ary[i];
+			 				var item=Ext.create('Ext.toolbar.TextItem');
+			 				var ar=ele.text;
+			 				if(ar.length>26) ar=ar.substring(0,24)+"...";
+			 				item.html="<font color=green size=-2><u>["+ar+"]</u></font>";
+			 				item.data=ele;
+			 				Ext.getCmp("navipanel").add(item);
+			 			}
+			 			Ext.getCmp("navipanel").show();
+			 		}
+			 	});
 			}
+			else
+			{	
+				Ext.getCmp("navipanel").hide();
+				Ext.getCmp("previcon").hide();
+				Ext.getCmp("nexticon").hide();
+			}
+		}
+		else
+		{
+			Ext.getCmp("navipanel").hide();
+			Ext.getCmp("previcon").hide();
+			Ext.getCmp("nexticon").hide();
 		}
 	 	var pdfPanel=document.getElementById('pdfcontent');
 	 	pdfPanel.src=url;
 	 	
+	 	// here hide the navigate panel and hide prev/next button
 	 	// now rendering Text content
 	 	/*
 	 	var texturl='rest/article/'+data.articleID+'/'+data.startposi+'-'+data.endposi+'/textcontent'
