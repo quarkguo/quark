@@ -2,25 +2,25 @@
     { "text":"Elements",
     "icon":"images/docs.jpg",
     "cls":"file",
-    leaf: true,
+    "leaf": true,
     "id":"v1"
     },
         { "text":"Three Body: Dark Forest",
     "icon":"images/docs.jpg",
     "cls":"file",
-    leaf: true,
+    "leaf": true,
     "id":"v2"
     },
         { "text":"Lun Yu",
     "icon":"images/docs.jpg",
     "cls":"file",
-    leaf: true,
+    "leaf": true,
     "id":"v3"
     },
         { "text":"Content Management System",
     "icon":"images/docs.jpg",
     "cls":"file",
-    leaf: true,
+    "leaf": true,
     "id":"v4"
     }
 ]
