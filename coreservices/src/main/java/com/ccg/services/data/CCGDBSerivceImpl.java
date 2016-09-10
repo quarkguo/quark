@@ -497,6 +497,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	@Transactional
 	public List<WCategory> buildSearchCategory(List<SearchResult2> searchRes,String searchToken) {
 		// TODO Auto-generated method stub
+		/*
 		Collections.sort(searchRes, new Comparator<SearchResult2>(){
 
 			@Override
@@ -506,6 +507,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			}
 			
 		});
+		*/
 		List<WCategory> res=new ArrayList<WCategory>();  // here we store all the result of the Matched Article
 		HashMap<Integer,WCategory> lookupMap=new HashMap<Integer,WCategory>(); // this is duplicate store for lookup ref
 		for(SearchResult2 s:searchRes)
@@ -519,29 +521,33 @@ public class CCGDBSerivceImpl implements CCGDBService {
 				// lookup article Info
 				a_wc=new WCategory();
 				a_wc.setArticleID(articleID+"");
-				
+				/*
 				CCGArticleInfo info=articleInfoDAO.findById(articleID);
 				if(info != null){
-					Category[] ary=JsonHelper.fromJson(info.getToc(), Category[].class);
+					
+					//Category[] ary=JsonHelper.fromJson(info.getToc(), Category[].class);
 					// count query token
 					CCGContent content=articleDAO.findById(articleID).getContent();
 					int count=JsonHelper.countWord(content.getContent(), searchToken);
 					a_wc.setSearchCount(count);
 					a_wc.setCategorytitle("Article:["+s.getArticleTitle()+"]" +" --[Matched:"+count+"]");
 					// add all children
+					
 					for(Category c:ary)
 					{
 						a_wc.getSubCategories().add(convertCategory(c));
 					}
+					
 					// now set start/end page and position
 					a_wc.setStartPage(1);				
 					a_wc.setStartposi(1);
-					a_wc.setEndPage(ary[ary.length-1].getEndPage());
-					a_wc.setEndposi(ary[ary.length-1].getEndPosition());
+					//a_wc.setEndPage(ary[ary.length-1].getEndPage());
+					//a_wc.setEndposi(ary[ary.length-1].getEndPosition());
 					// add to the collection
 					res.add(a_wc);
 					lookupMap.put(articleID, a_wc);
 				}
+				*/
 
 				//CCGArticleInfo info=articleInfoDAO.findById(articleID);
 				//Category[] ary=JsonHelper.fromJson(info.getToc(), Category[].class);
@@ -575,11 +581,12 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			thepage.setEndPage(pageNumber);
 			thepage.setLeaf(true);
 			thepage.setIcon("images/docs.jpg");
-			thepage.setCategorytitle("<font color='#ff4444'>[Matched Page: #"+pageNumber+"]</font>");
+			thepage.setCategorytitle("<font color='purple'>[Matched Page: #"+pageNumber+"]</font>");
 			a_wc.getSubCategories().add(thepage);			
 				
 		}
 		// convert sorted map to results
+		
 		Collections.sort(res,new Comparator<WCategory>(){
 
 			@Override
@@ -589,11 +596,13 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			}
 			
 		});
+		
 		for(WCategory wc:res)
 		{
 			wc.setEndPage(wc.getSubCategories().get(0).getStartPage());
 			wc.setEndposi(500);
 		}
+		
 		return res;
 	}
 	
@@ -627,7 +636,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 				thepage.setEndPage(pageNumber);
 				thepage.setLeaf(true);
 				thepage.setIcon("images/docs.jpg");
-				thepage.setCategorytitle("<font color='#ff4444'>[Matched Page: #"+pageNumber+"]</font>");
+				thepage.setCategorytitle("<font color='purple'>[Matched Page: #"+pageNumber+"]</font>");
 				root.getSubCategories().add(thepage);
 				root.setLeaf(false);
 				System.out.println("added .....->"+pageNumber);
@@ -665,4 +674,53 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		
 		return newList;
 	}
+
+	@Override
+	public List<WCategory> getFlatCategory(int articleID, int page) {
+		// TODO Auto-generated method stub
+		List<WCategory> res=new ArrayList<WCategory>();
+		CCGArticleInfo info=articleInfoDAO.findById(articleID);
+		Category[] ary=JsonHelper.fromJson(info.getToc(), Category[].class);
+		WCategory ac=new WCategory();
+		ac.setArticleID(articleID+"");
+		ac.setLeaf(false);
+		ac.setStartPage(1);
+		ac.setEndPage(ary[ary.length-1].getEndPage());
+		ac.setCategorytitle("Article:"+articleID);
+		res.add(ac);
+		for(Category c:ary)
+		{
+			WCategory wc=convertCategory(c);
+			if(matchCategoryWithPage(wc,page,res)) break;
+			
+		}
+		return res;
+	}
+	
+	boolean matchCategoryWithPage(WCategory root, int page,List<WCategory> l)
+	{
+		boolean found=false;
+		if(root.getStartPage()<=page&&root.getEndPage()>=page)
+		{
+			l.add(root);
+			found=true;
+			if(root.getSubCategories()!=null&&root.getSubCategories().size()>0)
+			{			
+				for(WCategory sub:root.getSubCategories())
+				{
+					if(matchCategoryWithPage(sub,page,l)) break;
+				}
+			}
+			root.getSubCategories().clear();
+		}
+		if(found)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 }

@@ -361,6 +361,7 @@ public class TestHandler {
 			// extract selected pages
 			InputStream is = new FileInputStream(pdfFile);
 			PdfUtil.extractSelectPage(is, outputStream, pages);
+			outputStream.flush();
 			is.close();
 		}
 	}

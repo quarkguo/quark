@@ -235,6 +235,20 @@ public class ArticleHandler {
 		return "done";
 	}	
 	
+	@RequestMapping(value="/article/{articleID}/{page}/flatcategory",method=RequestMethod.GET)
+	public ResponseEntity<String> getCategoryByPage(
+			@PathVariable("articleID") Integer articleID,
+			@PathVariable("page") Integer page 
+			)
+	{
+		//dataservice.deleteArticle(articleId);
+		List<WCategory> wclist=dataservice.getFlatCategory(articleID, page);
+		String json = toJson(wclist);
+		 HttpHeaders responseHeaders = new HttpHeaders();
+		    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+		return  new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
+	}	
+	
 	
 	private String toJson(Object obj){
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();

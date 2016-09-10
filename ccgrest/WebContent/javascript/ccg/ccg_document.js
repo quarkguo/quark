@@ -41,10 +41,13 @@ ccg.data.buildSearchStore = function(jsondata,querystr){
 ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
     store: ccg.data.doccategorystore,
     minHeight: 240,
+    maxHeight: 400,
 //    width: 300,
     title: 'Document Cateogry',
     useArrows: true,
     autoScroll: true,
+    overflowY : 'scroll',
+    scroll:'vertical',
     autoload:false,
     tools:[
 	{
@@ -64,23 +67,80 @@ ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
         }
     },
 });
+
+ccg.ui.handleContentTBClick = function(index)
+{
+	 console.log(index);
+	 var np=Ext.getCmp("navipanel");
+	 var data=np.items.get(index).data;
+	 var url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/download'
+	 //ccg.ui.updateSelectedContent(data);
+		var pdfPanel=document.getElementById('pdfcontent');
+	 	pdfPanel.src=url;
+	 
+	 //console.log(eledata);
+	 // here we update the content
+};
 ccg.ui.updateSelectedContent= function(data,searchKey){
 	 	// rendering PDF document
-		Ext.getCmp('contenttabpanel').setActiveTab(0);
+		//Ext.getCmp('contenttabpanel').setActiveTab(0);
 		var url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/download'
 		if(searchKey!=null)
 		{
 			var query=escape(searchKey);
-			url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/'+query+'/download';
+			url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/download';
 			if(data.startPage==data.endPage)
 			{
 				url='rest/article/'+data.articleID+'/'+data.startPage+'/'+query+'/download';
+				//Ext.getCmp("navipanel").show();
+				Ext.getCmp("previcon").show();
+				Ext.getCmp("previcon").page=data.startPage;
+				Ext.getCmp("previcon").articleID=data.articleID;
+				Ext.getCmp("previcon").key=query;
+				Ext.getCmp("nexticon").show();
+				// now build the category panel
+				var naviurl="rest/article/article/"+data.articleID+"/"+data.startPage+"/flatcategory";
+				console.log(naviurl);
+				Ext.Ajax.request({
+			 		url:naviurl,
+			 		callback: function(options,success,response) {
+			 		var ary= Ext.util.JSON.decode(response.responseText);
+			 		//console.log(o);
+			 		Ext.getCmp("navipanel").removeAll();
+			 			for(var i=0;i<ary.length&&i<5;i++)
+			 			{
+			 				var ele=ary[i];
+			 				var item=Ext.create('Ext.toolbar.TextItem'
+			 				);
+			 				var ar=ele.text;
+			 				if(ar.length>26) ar=ar.substring(0,24)+"...";
+			 				item.html="<a href='#' onclick='ccg.ui.handleContentTBClick("+i+");return false;'><font color=green size=-2><u>["+ar+"]</u></font></a>";
+			 				item.data=ele;
+			 				Ext.getCmp("navipanel").add(item);
+			 			}
+			 			Ext.getCmp("navipanel").show();
+			 		}
+			 	});
 			}
+			else
+			{	
+				Ext.getCmp("navipanel").hide();
+				Ext.getCmp("previcon").hide();
+				Ext.getCmp("nexticon").hide();
+			}
+		}
+		else
+		{
+			Ext.getCmp("navipanel").hide();
+			Ext.getCmp("previcon").hide();
+			Ext.getCmp("nexticon").hide();
 		}
 	 	var pdfPanel=document.getElementById('pdfcontent');
 	 	pdfPanel.src=url;
 	 	
+	 	// here hide the navigate panel and hide prev/next button
 	 	// now rendering Text content
+	 	/*
 	 	var texturl='rest/article/'+data.articleID+'/'+data.startposi+'-'+data.endposi+'/textcontent'
 	 	//console.log(texturl);
 	 	Ext.Ajax.request({
@@ -96,6 +156,7 @@ ccg.ui.updateSelectedContent= function(data,searchKey){
 	 		Ext.getCmp('contentpanel').setTitle("Article:["+data.articleID+"] -- ["+data.text+"]");
 	 		}
 	 	});
+	 	*/
 };
 
 ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
@@ -178,13 +239,15 @@ ccg.ui.relateddoclist = function (datastore,searchkey){
 	var index=Ext.getCmp('categorytabpanel').items.length;
 	var c=ccg.ui.mycolors[index-1];
 	var panel=Ext.create('Ext.tree.Panel', {
-	minHeight: 240,
-	maxHeight:320,
+	minHeight: 320,
+	maxHeight:360,
 	style: {borderColor:c, borderStyle:'double', borderWidth:'3px'},
     store: datastore,
     title: 'Related Content for:['+searchkey+']',   
     useArrows: true,
     closable: true,
+    autoScroll:true,
+    scroll:'vertical',
     listeners: {
             itemclick: function(s,r) {
             	
@@ -262,14 +325,6 @@ ccg.ui.metapanel=Ext.create('Ext.form.Panel', {
         {
             fieldLabel: 'Praisal Scores',
             name: 'praisalscore'
-        },
-        {
-        	xtype: 'checkboxfield',
-        	fieldLabel: 'Delete this article',
-        	value:0,
-        	inputValue:true,
-        	uncheckValue:false,
-        	name:'deleteArticle'
         }
         /*{
             xtype: 'datefield',
@@ -298,7 +353,6 @@ ccg.ui.metapanel=Ext.create('Ext.form.Panel', {
                    success: function(response, opts) {
                       var obj = Ext.decode(response.responseText);
                       console.log(obj);
-                      window.location.reload();
                    },
                    failure: function(response, opts) {
                       console.log('server-side failure with status code ' + response.status);
@@ -501,7 +555,7 @@ ccg.ui.passwordresetpanel=Ext.create('Ext.form.Panel', {
     }]
 });
 
-
+/*
 ccg.data.patterns=[];
 ccg.article.pattern.loader=function(){
 	var pattern;
@@ -529,8 +583,7 @@ ccg.article.pattern.loader=function(){
 		}
 	});
 }();
-
-//ccg.initUploadFilePanel();
+*/
 ccg.initUploadFilePanel = function(){
 	ccg.ui.uploadfilepanel=Ext.create('Ext.form.Panel', { 
 	id : 'uploadfileform',

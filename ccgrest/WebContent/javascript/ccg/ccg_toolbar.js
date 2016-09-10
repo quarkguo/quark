@@ -56,11 +56,13 @@ ccg.ui.loadDocCategory=function(arcID)
 
  ccg.ui.doclist =Ext.create('Ext.tree.Panel', {
      store: ccg.data.docliststore,
-     title: 'Document List',     
+ //    title: 'Document List',     
      useArrows: true,    
      frame:true,
      minHeight:'280',
+     maxHeight: 360,
      border:true,
+     autoScroll: true,
      listeners: {
          itemclick: function(s,r) {           
         	 if(r.data.leaf)
