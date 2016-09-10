@@ -326,8 +326,10 @@ public class TestHandler {
 		File pdfFile = new File(filename);
 		response.setHeader("content-disposition", "inline; filename=" + pdfFile.getName());
 		response.setContentType("application/pdf");		
-		
-		getParticalPdf(pdfFile, selectedPages, response.getOutputStream());
+		OutputStream out = response.getOutputStream();
+		getParticalPdf(pdfFile, selectedPages, out);
+		out.flush();
+		out.close();
 	}	
 
 	private void getParticalPdf(File pdfFile, String selectedPages, OutputStream outputStream) throws IOException, DocumentException{
@@ -357,12 +359,12 @@ public class TestHandler {
 			pages.add(Integer.parseInt(selectedPages));
 		}	
 		
-		synchronized(this){
+		//synchronized(this){
 			// extract selected pages
 			InputStream is = new FileInputStream(pdfFile);
 			PdfUtil.extractSelectPage(is, outputStream, pages);
 			is.close();
-		}
+		//}
 	}
 	
 	@RequestMapping(value="/article/{articleId}/{selectedPages}/{highlightRegEx}/download",method=RequestMethod.GET)
@@ -376,8 +378,10 @@ public class TestHandler {
 		String filename = content.getUrl();
 		File originalFile = new File(filename);
 		
+		//if(highlightRegEx.startsWith("\" ") && highlightRegEx.)
 		System.out.println("=========>>>>" + selectedPages);
 		System.out.println("=========>>>>" + highlightRegEx);
+		
 
 		ByteArrayOutputStream particalPdfOutStream = new ByteArrayOutputStream();
 		
@@ -388,9 +392,10 @@ public class TestHandler {
 		
 		response.setHeader("content-disposition", "inline; filename=" + originalFile.getName());
 		response.setContentType("application/pdf");
-		
-		PdfUtil.textHighlight(is, response.getOutputStream(), highlightRegEx);
-	
+		OutputStream out = response.getOutputStream();
+		PdfUtil.textHighlight(is, out, highlightRegEx);
+		//out.flush();
+		//out.close();
 	}	
 	
 	
