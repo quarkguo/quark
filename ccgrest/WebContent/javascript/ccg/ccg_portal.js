@@ -84,13 +84,8 @@ Ext.onReady(function(){
 							layout:'hbox',
 							hidden:true,
 							items:[							    
-							],
-							listeners:{
-							    click : function(s,r) {
-							    	console.log("clicking...")
-							    	console.log(r);
-							    }
-							}
+							]
+							
 			       	       },
 			       	       /*
 			       	       	{xtype:'tbfill'},

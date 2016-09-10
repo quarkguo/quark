@@ -41,10 +41,13 @@ ccg.data.buildSearchStore = function(jsondata,querystr){
 ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
     store: ccg.data.doccategorystore,
     minHeight: 240,
+    maxHeight: 400,
 //    width: 300,
     title: 'Document Cateogry',
     useArrows: true,
     autoScroll: true,
+    overflowY : 'scroll',
+    scroll:'vertical',
     autoload:false,
     tools:[
 	{
@@ -64,9 +67,23 @@ ccg.ui.doccategory =Ext.create('Ext.tree.Panel', {
         }
     },
 });
+
+ccg.ui.handleContentTBClick = function(index)
+{
+	 console.log(index);
+	 var np=Ext.getCmp("navipanel");
+	 var data=np.items.get(index).data;
+	 var url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/download'
+	 //ccg.ui.updateSelectedContent(data);
+		var pdfPanel=document.getElementById('pdfcontent');
+	 	pdfPanel.src=url;
+	 
+	 //console.log(eledata);
+	 // here we update the content
+};
 ccg.ui.updateSelectedContent= function(data,searchKey){
 	 	// rendering PDF document
-		Ext.getCmp('contenttabpanel').setActiveTab(0);
+		//Ext.getCmp('contenttabpanel').setActiveTab(0);
 		var url='rest/article/'+data.articleID+'/'+data.startPage+'-'+data.endPage+'/download'
 		if(searchKey!=null)
 		{
@@ -93,10 +110,11 @@ ccg.ui.updateSelectedContent= function(data,searchKey){
 			 			for(var i=0;i<ary.length&&i<5;i++)
 			 			{
 			 				var ele=ary[i];
-			 				var item=Ext.create('Ext.toolbar.TextItem');
+			 				var item=Ext.create('Ext.toolbar.TextItem'
+			 				);
 			 				var ar=ele.text;
 			 				if(ar.length>26) ar=ar.substring(0,24)+"...";
-			 				item.html="<font color=green size=-2><u>["+ar+"]</u></font>";
+			 				item.html="<a href='#' onclick='ccg.ui.handleContentTBClick("+i+");return false;'><font color=green size=-2><u>["+ar+"]</u></font></a>";
 			 				item.data=ele;
 			 				Ext.getCmp("navipanel").add(item);
 			 			}
@@ -221,13 +239,15 @@ ccg.ui.relateddoclist = function (datastore,searchkey){
 	var index=Ext.getCmp('categorytabpanel').items.length;
 	var c=ccg.ui.mycolors[index-1];
 	var panel=Ext.create('Ext.tree.Panel', {
-	minHeight: 240,
-	maxHeight:320,
+	minHeight: 320,
+	maxHeight:360,
 	style: {borderColor:c, borderStyle:'double', borderWidth:'3px'},
     store: datastore,
     title: 'Related Content for:['+searchkey+']',   
     useArrows: true,
     closable: true,
+    autoScroll:true,
+    scroll:'vertical',
     listeners: {
             itemclick: function(s,r) {
             	

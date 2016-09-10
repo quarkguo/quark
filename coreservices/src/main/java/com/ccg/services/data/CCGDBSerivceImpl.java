@@ -581,7 +581,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			thepage.setEndPage(pageNumber);
 			thepage.setLeaf(true);
 			thepage.setIcon("images/docs.jpg");
-			thepage.setCategorytitle("<font color='#ff4444'>[Matched Page: #"+pageNumber+"]</font>");
+			thepage.setCategorytitle("<font color='purple'>[Matched Page: #"+pageNumber+"]</font>");
 			a_wc.getSubCategories().add(thepage);			
 				
 		}
@@ -636,7 +636,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 				thepage.setEndPage(pageNumber);
 				thepage.setLeaf(true);
 				thepage.setIcon("images/docs.jpg");
-				thepage.setCategorytitle("<font color='#ff4444'>[Matched Page: #"+pageNumber+"]</font>");
+				thepage.setCategorytitle("<font color='purple'>[Matched Page: #"+pageNumber+"]</font>");
 				root.getSubCategories().add(thepage);
 				root.setLeaf(false);
 				System.out.println("added .....->"+pageNumber);
@@ -681,6 +681,13 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		List<WCategory> res=new ArrayList<WCategory>();
 		CCGArticleInfo info=articleInfoDAO.findById(articleID);
 		Category[] ary=JsonHelper.fromJson(info.getToc(), Category[].class);
+		WCategory ac=new WCategory();
+		ac.setArticleID(articleID+"");
+		ac.setLeaf(false);
+		ac.setStartPage(1);
+		ac.setEndPage(ary[ary.length-1].getEndPage());
+		ac.setCategorytitle("Article:"+articleID);
+		res.add(ac);
 		for(Category c:ary)
 		{
 			WCategory wc=convertCategory(c);
