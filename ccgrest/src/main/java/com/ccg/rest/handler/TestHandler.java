@@ -423,11 +423,14 @@ public class TestHandler {
 		if(highlightRegEx == null){
 			highlightRegEx = "";
 		}
+		
 		if(highlightRegEx.startsWith("\"") && highlightRegEx.endsWith("\"")){
 			highlightRegEx = highlightRegEx.substring(1, highlightRegEx.length() - 1);
+		}else{
+			highlightRegEx = highlightRegEx.replaceAll("\\s+?", "|");
 		}
 		
-		
+		System.out.println("=============HighlightRegEx: " + highlightRegEx);
 		
 		File tempFile = File.createTempFile(originalFile.getName(), ".tmp");		
 		
