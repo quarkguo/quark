@@ -27,6 +27,7 @@ import org.pdfclown.util.math.geom.Quad;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
+import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
 
 public class PdfUtil {
 	
@@ -43,8 +44,24 @@ public class PdfUtil {
 	
 		PdfReader reader = new PdfReader(is);
 		reader.selectPages(pagesNumbers);
-		PdfStamper stamper = new PdfStamper(reader, os);
+		PdfStamper stamper = new PdfStamper(reader, os);		
 		stamper.close();
+		
+		PdfReader newreader = new PdfReader(newFile.getAbsolutePath());
+		int numberOfPages = newreader.getNumberOfPages();
+		newreader.close();
+		if(numberOfPages == 0){
+			// copy theend.pdf to outptu file
+			pagesNumbers = new ArrayList<Integer>();
+			pagesNumbers.add(1);
+			is = PdfUtil.class.getResourceAsStream("theend.pdf");
+			os = new FileOutputStream(newFile);
+			reader = new PdfReader(is);
+			reader.selectPages(pagesNumbers);
+			stamper = new PdfStamper(reader, os);
+			stamper.close();
+			is.close();
+		}
 	}
 	
 	public static void textHighlight(File originalFile, File newFile, String textRegEx) throws IOException{

@@ -90,8 +90,16 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	public String getArticleListJson() {
 		// TODO Auto-generated method stub
 		List<Map<String,Object>> tmp=new ArrayList<Map<String,Object>>();
-		List<CCGArticle> res=articleDAO.findAll();	
+		List<CCGArticle> res=articleDAO.findAll();
 		
+		Collections.sort(res, new Comparator<CCGArticle>(){
+
+			@Override
+			public int compare(CCGArticle o1, CCGArticle o2) {
+				return o2.getArticleID() - o1.getArticleID();
+			}			
+		});
+				
 		for(CCGArticle art:res)
 		{
 			HashMap<String,Object> map=new HashMap<String,Object>();
