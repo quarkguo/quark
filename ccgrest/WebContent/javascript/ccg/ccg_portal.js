@@ -45,35 +45,21 @@ Ext.onReady(function(){
 		    },
 			items:[
 			       	{			
-			       		xtype:'tabpanel',
+			       		xtype:'panel',
 			       		region:'north',
 			       		//title:'Article Content',
 			       		id:'contenttabpanel',
-			       		activeTab:0,
+			       		//activeTab:0,
 			       		style: {
 			             color: '#66b3ff'			             
 			       		},
 			       	//	flex:1,
 			       		height:"98%",
 			       		autoScroll: true,
-			       		items:[
-			       		    {
-			       		    	title:'Original Content',
-			       		    	bodyBorder: true,
-			       		    	border:true,
-			       		    	html:'<iframe name="pdfcontent" id="pdfcontent" width=100% height=100% border=0 />'
-			       		    }
-			       		    /*,
-			       		   {
-			       		       title:'Text Content',
-			       			   xtype:'panel',
-			       			   id:'contentpanel',
-			       			   bodyBorder: true,
-			       			   border:true,
-			       			   frame:true,
-			       			   html:' test 1'
-			       		   }	*/		       		   
-			       		]
+			       		bodyBorder: true,
+	       		    	border:true,	       		    	
+	       		    	html:'<iframe name="pdfcontent" id="pdfcontent" width=100% height=100% border=0 />'
+			       		
 			       	}
 			       	],
 			       	tools:[

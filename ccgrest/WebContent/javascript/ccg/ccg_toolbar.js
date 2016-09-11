@@ -133,64 +133,35 @@ Ext.define('com.ccg.toolbar',{
 		        	 flex:1
 		         },
 		         
-		         {
-			        	text: 'PDF',
-			        	iconCls: 'edit',
-			        	handler: function(){
-	                    	Ext.create('Ext.window.Window', {
-	                    		title: ccg.data.currentArticle.title,
-	                    		width: 800,
-	                    		height: 400,
-	                    	    listeners:{
-	                    	    	beforeclose:function(win) {
-	                    	    		this.hide();
-	                    	        	 return false; 
-	                    	        }
-	                    	    },
-	                    		items: {
-	                    			xtype: 'component',
-	                    			autoEl: {
-	                    				tag: 'iframe',
-	                    				style: 'height: 100%; width: 100%; border: none',
-	                    				//src: 'downloadArticle?articleId=' + ccg.data.currentArticle.id
-	                    				src: 'rest/article/' + ccg.data.currentArticle.id + '/download'
-	                    			}
-	                    		},
-	                    	}).show();
-			        	}
-			         },     
-		             
+		        
 		    {
+			        xtype:'button',
                     text: 'Content Ingestion',
                     iconCls: 'edit',                    
-                    displayText: 'Content Ingestion',
+                    //displayText: 'Content Ingestion',
+                    icon:'images/od-ingest.png',
                     handler: function(){
                     	console.log('upload file....');
                     	console.log(ccg.ui.uploadfilepanel);
                     	ccg.ui.uploadfilepanel.show();
                     	
                     }
-		    },
-		    {
-                    text: 'Content Management',
-                    iconCls: 'file',                    
-                    displayText: 'Content Management'                  	 
-		    }
-		    ,
-		    {
-                    text: 'Content Builder',
-                    iconCls: 'file',                    
-                    displayText: 'Content Management'                  	 
 		    }
 		    ,
 		    {
                     text: 'Admin',
-                    iconCls: 'file',                    
-                    displayText: 'Content Management'                  	 
+                    iconCls: 'file',    
+                    icon:'images/profile.png',                 
+                    displayText: 'Content Management',
+                    handler: function(){
+                    	window.open("ccg_admin.html");
+                    }
+                  
 		    },
 		    {
                 text: 'Profile',
-                iconCls: 'file',     
+                iconCls: 'file',  
+                icon:'images/usericon.png',    
                 handler: function() {
                    
                     ccg.ui.userprofilepanel.show();
@@ -214,6 +185,7 @@ Ext.define('com.ccg.toolbar',{
 		    },
 		    {
                 text: 'Reset Password',
+                icon:'images/login_icon.png',    
                 iconCls: 'file',     
                 handler: function() {
                     var userprofileurl="rest/user/profile";
@@ -237,7 +209,8 @@ Ext.define('com.ccg.toolbar',{
 		    },
 		    {
                 text: 'Logout',
-                iconCls: 'file',     
+                iconCls: 'file',   
+                icon:'images/logout.png',    
                 handler: function() {                    
                     //console.log(ccg.ui.contentsearchPanel);
                 	 Ext.Ajax.request({
