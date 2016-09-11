@@ -17,7 +17,7 @@ Ext.onReady(function(){
 		     split:true,
 		     collapsible:true,
 		     height:'100%',
-		     width:"60%",
+		     width:"40%",
 			items:[
 			   	ccg.ui.doclist,
 			   	{			
