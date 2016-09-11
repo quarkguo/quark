@@ -52,6 +52,11 @@ ccg.ui.loadDocCategory=function(arcID)
     		 alert("load data error!!");
     	 }
      });
+     
+     var pdfurl = "rest/article/"+arcID+"/download";
+     var pdfPanel=document.getElementById('pdfcontent');
+	 pdfPanel.src=pdfurl;
+
 };
 
  ccg.ui.doclist =Ext.create('Ext.tree.Panel', {
