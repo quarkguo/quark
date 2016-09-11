@@ -92,7 +92,7 @@ ccg.ui.updateSelectedContent= function(data,searchKey){
 			if(data.startPage==data.endPage)
 			{
 				url='rest/article/'+data.articleID+'/'+data.startPage+'/'+query+'/download';
-				//Ext.getCmp("navipanel").show();
+				Ext.getCmp("navipanel").show();
 				Ext.getCmp("previcon").show();
 				Ext.getCmp("previcon").page=data.startPage;
 				Ext.getCmp("previcon").articleID=data.articleID;
