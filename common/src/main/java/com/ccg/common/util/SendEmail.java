@@ -1,5 +1,6 @@
 package com.ccg.common.util;
 
+import java.text.MessageFormat;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -8,15 +9,18 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import com.ccg.common.data.user.NewUserEmailConfig;
+import com.ccg.util.ConfigurationManager;
+
 public class SendEmail {
 	
-	public void sendEmail(String subject, String content, String fromEmail, String[] toEmails){
+	public static void sendEmail(String subject, String content, String fromEmail, String[] toEmails){
 
 
         Properties props = new Properties();  
         props.put("mail.smtp.host", "pop-server.satx.rr.com");  
         //props.put("mail.smtp.auth", "true");  
-        props.put("mail.debug", "true");  
+        props.put("mail.debug", "false");  
         props.put("mail.smtp.port", 25);  
         props.put("mail.smtp.socketFactory.port", 25);  
         props.put("mail.smtp.starttls.enable", "true");
@@ -51,4 +55,35 @@ public class SendEmail {
         }
     		
 	}
+	
+	public static void sendCreateNewUserEmail(String emailAddress, String password){
+		/*
+		 * Email template, please put this template at location of
+		 * 		apache-tomcat-8.0.33/ccgconfig/com.ccg.common.data.user.NewUserEmailConfig.xml
+		 
+			<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+			<newUserEmailConfig>
+			    <subject>Your New Account Information</subject>
+			    <fromEmail>admin@ccg.com</fromEmail>
+			    <content>
+			A new account has been create for you.
+			Account ID: {0}
+			Password: {1}
+			Please login and change your passwod.
+			    </content>
+			</newUserEmailConfig>		 
+		*/
+		String[] toEmails = {emailAddress};
+		
+		NewUserEmailConfig config = ConfigurationManager.getConfig(NewUserEmailConfig.class);
+		String content = config.getContent();
+		String subject = config.getSubject();
+		String fromEmail = config.getFromEmail();
+
+		MessageFormat mf = new MessageFormat(content);
+		Object[] objArray = {emailAddress, password};
+		content = mf.format(objArray);
+		content = content.replace("\n", "<br />");		
+		sendEmail(subject, content, fromEmail, toEmails);		
+	}	
 }

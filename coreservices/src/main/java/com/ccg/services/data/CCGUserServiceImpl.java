@@ -12,6 +12,8 @@ import com.ccg.common.data.Article;
 import com.ccg.common.data.user.User;
 import com.ccg.common.data.user.UserGroup;
 import com.ccg.common.data.user.UserProfile;
+import com.ccg.common.util.SendEmail;
+import com.ccg.common.util.StringUtils;
 import com.ccg.dataaccess.dao.api.CCGArticleDAO;
 import com.ccg.dataaccess.dao.api.CCGGroupArticleAccessDAO;
 import com.ccg.dataaccess.dao.api.CCGGroupMembersDAO;
@@ -61,8 +63,12 @@ public class CCGUserServiceImpl implements CCGUserService{
 		user.setUseremail(useremail);
 		user.setCreatedTS(new Date(System.currentTimeMillis()));
 		user.setLastUpdateTS(new Date(System.currentTimeMillis()));
-		user.setPassword("password");
+		String password = StringUtils.generateRandomPassword();
+		user.setPassword(password);
 		userDAO.save(user);
+		
+		SendEmail.sendCreateNewUserEmail(useremail, password);
+		
 		return true;
 	}
 
