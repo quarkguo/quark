@@ -28,6 +28,7 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		catch(Exception e)
 		{
 			System.out.println("processing normal category fail, adopt default processing");
+			e.printStackTrace();
 			this.processDocumentDefault(_PAGESPERCATEGORY_);
 		}
 		return aInfo;
@@ -38,6 +39,8 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		
 	  //  prepareDocument(is);		
 		identifyArticleCategoryPattern();
+		System.out.println("####Found pattern -->["+this.articleCategoryPattern.getRoot()+"]");
+		//System.out.println(this.);
 		List<Category> list=parseAll();		
 		mergeCategorys(list);
 		aInfo.setCategoryList(list);
@@ -356,35 +359,46 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		}
 		CategoryRegexPattern res=new CategoryRegexPattern();
 		int max_matches=0;
+		int max_TOC_pattern=0;
 		for(String cat1regex:CategoryRegexPattern._ROOT_LIST_)
 		{
-			List<Category> mathces=this.extractCategory(aInfo.getContent(), cat1regex, 0);
+			List<Category> matches=this.extractCategory(aInfo.getContent(), cat1regex, 0);
 			// first check key pattern
-			if(mathces!=null&&mathces.size()>0)
+			int cur_toc_pattern_match=0;
+
+			if(matches!=null&&matches.size()>0)
 			{
-				Category first=mathces.get(0);
-				if(first.getTitle().indexOf("......")>-1)
+				for(Category c:matches)
 				{
-					res.setRoot(cat1regex);
-					this.articleCategoryPattern=res;
-					return res;
+					if(c.getTitle().indexOf("...")>-1)
+					{
+						cur_toc_pattern_match++;
+					}
 				}
 			}
-			if(max_matches<mathces.size())
+			if(max_TOC_pattern<cur_toc_pattern_match&&cur_toc_pattern_match>0)
 			{
 				res.setRoot(cat1regex);
-				max_matches=mathces.size();
+				max_TOC_pattern=cur_toc_pattern_match;
+			}
+			
+			if((max_matches<matches.size())&&(max_TOC_pattern==0))
+			{
+				res.setRoot(cat1regex);
+				max_matches=matches.size();
 			}
 		}
-		if(max_matches==0)
+		if(max_matches==0&&max_TOC_pattern==0)
 		{
 			throw new Exception ("no supported pattern matches!");
 		}
 		else
 		{
-			this.articleCategoryPattern=res;
+			this.articleCategoryPattern=res;	
+			//System.out.println("find pattern:"+res.getRoot());
 			return res;
 		}
+		
 	}
 	
 	public void buildPageNumber(Category c)
@@ -405,8 +419,10 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		List<Category> matches=this.extractCategory(aInfo.getContent(), articleCategoryPattern.getRoot(), 0);
 		for(Category c:matches)
 		{
-			parseCategoryRecursively(c,articleCategoryPattern,1);
 		//	c.printMe(System.out);
+			parseCategoryRecursively(c,articleCategoryPattern,1);
+			System.out.println("------------------------------------------");
+			c.printMe(System.out);
 		}
 		return matches;
 	}
@@ -450,7 +466,7 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		int max_index=-1;
 		int cur_size=0;
 		int cur_index=-1;		
-		
+
 		for(Category c:raw_list)
 		{
 			boolean flag=c.doesCategoryHasContent();
@@ -482,7 +498,34 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 				cur_index=-1;
 			}
 		}
+		// now further correction for table of content and "...."
+		// check for table to content
+		// check for  first "...."
+		int i_toc=-1;
+		int i_toc_sign=-1;
+		for(int index=max_index;index<raw_list.size();index++)
+		{
+			String title=raw_list.get(index).getTitle();
+			if(i_toc==-1&&title.indexOf("Table of Content")>-1)
+			{
+				i_toc=index+1;
+			}
+			if(i_toc_sign==-1&&title.indexOf("....")>-1)
+			{
+				i_toc_sign=index;
+			}
+		}
+		if(i_toc_sign!=-1)
+		{
+			max_index=i_toc_sign;
+		}
+		else if(i_toc!=-1)
+		{
+			max_index=i_toc;
+		}
 		System.out.println("max_size:"+max_size);
+		System.out.println("start index :"+max_index);
+		System.out.println("start title:"+raw_list.get(max_index).getTitle());
 		return max_index;
 	}
 	
@@ -491,6 +534,7 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		// find the start index
 		int start_index=this.findTableContentStartIndex(raw_list);
 		// find the end position of the table of content
+		
 		List<String> titles=new ArrayList<String>();
 		int last_index=-1;
 		for(int i=start_index;i<raw_list.size();i++)
@@ -498,16 +542,21 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 			Category c=raw_list.get(i);
 			last_index=i;
 			if(c.doesCategoryHasContent()) break;
-			titles.add(c.getTitle());
+			//System.out.println("Adding title>>>>>>"+c.getTitle());
+			//titles.add(c.getTitle());
+			c.getTitlesFlat(titles);
 		}
-
 		
+		for(String t:titles)
+		{
+			System.out.println("XXXXXXXXX "+t);
+		}
 		// find matching title
 		boolean found=false;
 		for(int j=last_index;j<raw_list.size();j++)
 		{
 			Category l=raw_list.get(j);
-			if(searchTitle(l.getTitle().trim(),titles))
+			if(searchTitleDeep(l,titles))
 			{
 				last_index=j;
 				found=true;
@@ -570,6 +619,22 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		}
 	}
 	
+	public boolean searchTitleDeep(Category c,List<String> l)
+	{
+		List<String> titles=new ArrayList<String>();
+		c.getTitlesFlat(titles);
+		for(String t:titles)
+		{
+			for(String t_toc:l)
+			{
+				if(t_toc.indexOf(t)==0)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	public boolean searchTitle(String title, List<String> l)
 	{
 		for(String c:l)

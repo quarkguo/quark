@@ -21,11 +21,11 @@ public class ExtractCategoryTestCase {
 				new File("C:\\ccgworkspace\\testfiles\\test1.pdf"));
 		ExtractArticleInfoAuto extract = new ExtractArticleInfoAuto();
 		ArticleInfo ainfo=extract.processArticle(is);
-/*		for(Category c:ainfo.categoryList)
+		for(Category c:ainfo.categoryList)
 		{
 			c.printMe(System.out);
 		}
-		*/
+		/*
 		String json=JsonHelper.toJson(ainfo.categoryList.toArray());
 		System.out.println(json);
 		Category[] res=JsonHelper.fromJson(json,Category[].class);
@@ -33,6 +33,7 @@ public class ExtractCategoryTestCase {
 		{
 			c.printMe(System.out);
 		}
+		*/
 		
 	}
 	//@Test
@@ -40,7 +41,7 @@ public class ExtractCategoryTestCase {
 	{
 		InputStream is = new FileInputStream(
 				//new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
-				new File("C:\\ccgworkspace\\testfiles\\test5.pdf"));
+				new File("C:\\ccgworkspace\\testfiles\\test14.pdf"));
 		ExtractArticleInfoAuto extract = new ExtractArticleInfoAuto();
 		extract.prepareDocument(is);		
 		ArticleInfo info=extract.aInfo;

@@ -244,6 +244,16 @@ public class Category {
 		return true;
 	}
 	
-	
+	public  void getTitlesFlat(List<String> list)
+	{
+		list.add(this.getTitle());
+		if(this.subCategory!=null&& this.subCategory.size()>0)
+		{
+			for(Category sub:subCategory)
+			{
+				sub.getTitlesFlat(list);
+			}
+		}
+	}
 	
 }
