@@ -63,12 +63,20 @@ public class CCGUserServiceImpl implements CCGUserService{
 		user.setUseremail(useremail);
 		user.setCreatedTS(new Date(System.currentTimeMillis()));
 		user.setLastUpdateTS(new Date(System.currentTimeMillis()));
-		String password = StringUtils.generateRandomPassword();
-		user.setPassword(password);
+		//String password = StringUtils.generateRandomPassword();
+		//user.setPassword(password);
+		user.setPassword(useremail);
 		userDAO.save(user);
 		
-		SendEmail.sendCreateNewUserEmail(useremail, password);
-		
+		List<UserGroup> groupList = getUserGroupList();
+		for(UserGroup group : groupList){
+			if("user".equalsIgnoreCase(group.getGroupname())){
+				Integer userGroupId = group.getGroupId();
+				String[] users = {useremail};				
+				this.addUserToGroup(users, "" + userGroupId);
+			}
+		}
+		//SendEmail.sendCreateNewUserEmail(useremail, password);		
 		return true;
 	}
 
