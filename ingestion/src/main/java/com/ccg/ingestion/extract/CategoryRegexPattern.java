@@ -2,15 +2,15 @@ package com.ccg.ingestion.extract;
 
 public class CategoryRegexPattern {
 	
-	private String root="(\\nExecutive+\\sSummary)|(\\n\\d+\\s+\\w)|(\\nAppendix)";
+	private String root="(\\nExecutive+\\sSummary)|(\\n\\d(1,3)+\\s{1,4}+[\\D\\d])|(\\nAppendix)";
 	private String head="\\n\\d+";
-	private String tail="\\s+\\w";
+	private String tail="\\s{1,4}+\\w";
 	private String ext="\\.[0-9A-H]+";
 
 	final public static String[] _ROOT_LIST_={
-			"(\\nExecutive+\\sSummary)|(\\n\\d{1,3}+\\s+[\\D\\d])|(\\nAppendix)|(\\nFigure\\s\\d+\\:)|(\\nTable\\s\\d+\\:)",
-			"(\\nExecutive+\\sSummary)|(\\n\\d{1,3}+\\.0\\s+[\\D\\d])|(\\nAppendix)|(\\nFigure\\s\\d+\\:)|(\\nTable\\s\\d+\\:)",
-			"(\\nExecutive+\\sSummary)|(\\r?\\n\\d{1,3}+\\.\\s+[\\D\\d])|(\\nAppendix)|(\\nFigure\\s\\d+\\:)|(\\nTable\\s\\d+\\:)"
+			"(\\nExecutive+\\sSummary)|(\\n\\d{1,3}+\\s{1,4}+[\\D\\d])|(\\nAppendix)|(\\nFigure\\s\\d+\\:)|(\\nTable\\s\\d+\\:)",
+			"(\\nExecutive+\\sSummary)|(\\n\\d{1,3}+\\.0\\s{1,4}+[\\D\\d])|(\\nAppendix)|(\\nFigure\\s\\d+\\:)|(\\nTable\\s\\d+\\:)",
+			"(\\nExecutive+\\sSummary)|(\\r?\\n\\d{1,3}+\\.\\s{1,4}+[\\D\\d])|(\\nAppendix)|(\\nFigure\\s\\d+\\:)|(\\nTable\\s\\d+\\:)"
 	};
 
 	public String getRoot() {

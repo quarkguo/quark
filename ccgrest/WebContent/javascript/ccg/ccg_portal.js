@@ -24,8 +24,7 @@ Ext.onReady(function(){
 					region:'north',
 					   split:true,				   
 					   xtype:'tabpanel',				   
-					   id:'categorytabpanel',
-					     collapsible:true,
+					   id:'categorytabpanel',					     
 					     activeTab:0,
 					items:[
 					       ccg.ui.doccategory

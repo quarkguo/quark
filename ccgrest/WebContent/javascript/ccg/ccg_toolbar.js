@@ -62,6 +62,7 @@ ccg.ui.loadDocCategory=function(arcID)
      minHeight:'280',
      maxHeight: 360,
      border:true,
+     collapsible:true,
      autoScroll: true,
      listeners: {
          itemclick: function(s,r) {           
