@@ -327,6 +327,15 @@ public class CCGUserServiceImpl implements CCGUserService{
 		userGroupDAO.delete(g);
 	}
 
-	
+	@Override
+	@Transactional
+	public List<String> getUserGroups(String useremail) {
+		List<CCGGroupMembers> groupMember = groupMembersDAO.getUserGroup(useremail);
+		List<String> result = new ArrayList<String>();
+		for(CCGGroupMembers member : groupMember){
+			result.add(member.getGroup().getGroupname());
+		}
+		return result;
+	}
 
 }

@@ -69,6 +69,14 @@ public class UserHandler {
 		
 	}
 	
+	@RequestMapping(value="user/groups", method=RequestMethod.GET)
+	public List<String> isAdminUser(HttpServletRequest request){
+		String username = request.getRemoteUser();
+		return userService.getUserGroups(username);
+	}
+	
+	
+	
 	@RequestMapping(value="admin/createUser",method=RequestMethod.POST)
 	public String createUser(@RequestBody CreateUser input)
 	{	
@@ -207,6 +215,8 @@ public class UserHandler {
 		System.out.println(id);
 		return userService.getGroupArticlesCandidate(id);
 	}
+	
+	
 }
 
 class UpdateProfile{String imageURL, phone, address,userID,username,name;}

@@ -397,6 +397,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		
 		ArticleContent content = getArticleContent(articleId);
 		String filename = content.getUrl();
+		content.getMetatpe();
 		System.out.println("========== file name====" + filename);
 		List<String> pageContents = this.getPdfPageContentAsList(filename);
 		int pageNumber = 0;
