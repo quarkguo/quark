@@ -314,6 +314,9 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	public void saveOrUpdateArticleMetaData(ArticleMetaData metadata) {
 		boolean update = true;
 		CCGArticleMetadata ccgMetadata = metadataDAO.findById(metadata.getArticleId());
+		CCGArticle ccgArticle = articleDAO.findById(metadata.getArticleId());
+		ccgArticle.setTitle(metadata.getTitle());
+		articleDAO.update(ccgArticle);
 		
 		if(ccgMetadata == null){
 			ccgMetadata = new CCGArticleMetadata();

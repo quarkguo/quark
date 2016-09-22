@@ -119,6 +119,7 @@ ccg.ui.updateSelectedContent= function(data,searchKey){
 			 				Ext.getCmp("navipanel").add(item);
 			 			}
 			 			Ext.getCmp("navipanel").show();
+			 			console.log("===== navipanel show");
 			 		}
 			 	});
 			}
@@ -621,6 +622,12 @@ ccg.initUploadFilePanel = function(){
 				change: function(fld, value) {
 					var newValue = value.replace(/C:\\fakepath\\/g, '');
 					fld.setRawValue(newValue);
+					console.log(fld);
+					console.log(ccg.ui.uploadfilepanel.getForm().findField("title"));
+					//ccg.ui.uploadfilepanel.getForm().findField("title").setRawValue(newValue);
+					var position = newValue.indexOf(".");
+					var title = newValue.substring(0, position);
+					this.up('form').getForm().findField('title').setRawValue(title);
 				}
 			}
 	    },		
@@ -706,13 +713,13 @@ ccg.initUploadFilePanel = function(){
                     				},
                     				success: function(responseMsg){
                     					waitbox.hide();
+                    					ccg.ui.uploadfilepanel.getForm().findField("title").setRawValue('');
                     					Ext.MessageBox.confirm("Success", "Do you want load another one?", function(btn){
                     						if(btn === 'no'){
                     							ccg.ui.uploadfilepanel.hide();
                     							window.location.reload();
                     						}
                     					});
-                    					
                     				},
                     				failure: function(responseMsg){
                     					waitbox.hide();
