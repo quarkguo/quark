@@ -29,7 +29,6 @@ public interface CCGUserService {
 	public void removeDocFromGroup(int groupID, int docID);
 	public void deleteUser(int userID);
 	public void deleteGroup(int groupID);
-	public List<String> getUserGroups(String useremail);
 	
 	
 }

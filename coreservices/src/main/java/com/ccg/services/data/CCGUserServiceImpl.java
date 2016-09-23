@@ -12,8 +12,6 @@ import com.ccg.common.data.Article;
 import com.ccg.common.data.user.User;
 import com.ccg.common.data.user.UserGroup;
 import com.ccg.common.data.user.UserProfile;
-import com.ccg.common.util.SendEmail;
-import com.ccg.common.util.StringUtils;
 import com.ccg.dataaccess.dao.api.CCGArticleDAO;
 import com.ccg.dataaccess.dao.api.CCGGroupArticleAccessDAO;
 import com.ccg.dataaccess.dao.api.CCGGroupMembersDAO;
@@ -63,20 +61,8 @@ public class CCGUserServiceImpl implements CCGUserService{
 		user.setUseremail(useremail);
 		user.setCreatedTS(new Date(System.currentTimeMillis()));
 		user.setLastUpdateTS(new Date(System.currentTimeMillis()));
-		//String password = StringUtils.generateRandomPassword();
-		//user.setPassword(password);
-		user.setPassword(useremail);
+		user.setPassword("password");
 		userDAO.save(user);
-		
-		List<UserGroup> groupList = getUserGroupList();
-		for(UserGroup group : groupList){
-			if("user".equalsIgnoreCase(group.getGroupname())){
-				Integer userGroupId = group.getGroupId();
-				String[] users = {useremail};				
-				this.addUserToGroup(users, "" + userGroupId);
-			}
-		}
-		//SendEmail.sendCreateNewUserEmail(useremail, password);		
 		return true;
 	}
 
@@ -327,15 +313,6 @@ public class CCGUserServiceImpl implements CCGUserService{
 		userGroupDAO.delete(g);
 	}
 
-	@Override
-	@Transactional
-	public List<String> getUserGroups(String useremail) {
-		List<CCGGroupMembers> groupMember = groupMembersDAO.getUserGroup(useremail);
-		List<String> result = new ArrayList<String>();
-		for(CCGGroupMembers member : groupMember){
-			result.add(member.getGroup().getGroupname());
-		}
-		return result;
-	}
+	
 
 }

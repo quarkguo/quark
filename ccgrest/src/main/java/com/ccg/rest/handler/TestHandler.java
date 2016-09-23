@@ -1,5 +1,7 @@
 package com.ccg.rest.handler;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -307,6 +309,10 @@ public class TestHandler {
 			}
 			os.flush();
 			is.close();			
+		//} catch (Exception e) {
+			// TODO Auto-generated catch block
+		//	e.printStackTrace();
+		//}		
 	}	
 	
 	@RequestMapping(value="/article/{articleId}/{selectedPages}/download",method=RequestMethod.GET)
@@ -318,56 +324,12 @@ public class TestHandler {
 		ArticleContent content = dataservice.getArticleContent(articleId);
 		String filename = content.getUrl();
 		File pdfFile = new File(filename);
-		File particalTemp = File.createTempFile(pdfFile.getName(), selectedPages);
-		
-		getParticalPdf(pdfFile, selectedPages, particalTemp);
-
 		response.setHeader("content-disposition", "inline; filename=" + pdfFile.getName());
 		response.setContentType("application/pdf");		
 		
-		OutputStream out = response.getOutputStream();
-		InputStream is = new FileInputStream(particalTemp);
-		byte[] buffer = new byte[1024];
-		int length = -1;
-		while((length = is.read(buffer)) != -1){
-			out.write(buffer, 0, length);
-		}
-		out.flush();
-		particalTemp.delete();
+		getParticalPdf(pdfFile, selectedPages, response.getOutputStream());
 	}	
 
-	private void getParticalPdf(File pdfFile, String selectedPages, File newFile) throws IOException, DocumentException{
-		List<Integer> pages = new ArrayList<Integer>();
-		
-		int startPage = 0;
-		int endPage = 0;
-		
-		// page range 1-5 (from page 1 to page 5)
-		if(selectedPages.indexOf("-") != -1){
-			String[] pageRanges = selectedPages.split("-");
-			startPage = Integer.parseInt(pageRanges[0]);
-			endPage = Integer.parseInt(pageRanges[1]);
-			if(endPage < startPage){
-				endPage = startPage;
-			}
-			for(int i = startPage; i < endPage + 1; i++ ){
-				pages.add(i);
-			}
-		}else if(selectedPages.indexOf(",") != -1){
-			// selected pages: 1,4,5,9 (page 1, page 4, page 5 and page 9)
-			String[] pageRanges = selectedPages.split(",");
-			for(String string : pageRanges){
-				pages.add(Integer.parseInt(string));
-			}	
-		}else{
-			// single page: 5 (page 5)
-			pages.add(Integer.parseInt(selectedPages));
-		}	
-		
-		PdfUtil.extractSelectPageIntoNewFile(pdfFile, newFile, pages);		
-	}	
-	
-	
 	private void getParticalPdf(File pdfFile, String selectedPages, OutputStream outputStream) throws IOException, DocumentException{
 		
 		List<Integer> pages = new ArrayList<Integer>();
@@ -395,15 +357,14 @@ public class TestHandler {
 			pages.add(Integer.parseInt(selectedPages));
 		}	
 		
-		//synchronized(this){
+		synchronized(this){
 			// extract selected pages
 			InputStream is = new FileInputStream(pdfFile);
 			PdfUtil.extractSelectPage(is, outputStream, pages);
 			outputStream.flush();
 			is.close();
-		//}
+		}
 	}
-
 	
 	@RequestMapping(value="/article/{articleId}/{selectedPages}/{highlightRegEx}/download",method=RequestMethod.GET)
 	public void downloadParticalArticleAndHighlightText(
@@ -414,80 +375,24 @@ public class TestHandler {
 	{
 		ArticleContent content = dataservice.getArticleContent(articleId);
 		String filename = content.getUrl();
-		
 		File originalFile = new File(filename);
 		
 		System.out.println("=========>>>>" + selectedPages);
 		System.out.println("=========>>>>" + highlightRegEx);
-		
-		if(highlightRegEx == null){
-			highlightRegEx = "";
-		}
-		
-		if(highlightRegEx.startsWith("\"") && highlightRegEx.endsWith("\"")){
-			highlightRegEx = highlightRegEx.substring(1, highlightRegEx.length() - 1);
-		}else{
-			highlightRegEx = highlightRegEx.replaceAll("\\s+?", "|");
-		}
-		
-		System.out.println("=============HighlightRegEx: " + highlightRegEx);
-		
-		File tempFile = File.createTempFile(originalFile.getName(), ".tmp");		
-		
-		getParticalPdf(originalFile, selectedPages, tempFile);
 
+		ByteArrayOutputStream particalPdfOutStream = new ByteArrayOutputStream();
+		
+		getParticalPdf(originalFile, selectedPages, particalPdfOutStream);
+		
+		byte[] particalPdfBytes = particalPdfOutStream.toByteArray();		
+		InputStream is = new ByteArrayInputStream(particalPdfBytes);	
+		
 		response.setHeader("content-disposition", "inline; filename=" + originalFile.getName());
 		response.setContentType("application/pdf");
 		
-		File highlightedTempFile = File.createTempFile(originalFile.getName(), "highlight");		
-		PdfUtil.textHighlight(tempFile, highlightedTempFile, highlightRegEx);
-		
-		OutputStream out = response.getOutputStream();
-		InputStream is = new FileInputStream(highlightedTempFile);
-		byte[] buffer = new byte[1024];
-		int length = -1;
-		while( (length = is.read(buffer)) != -1){
-			out.write(buffer, 0, length);
-		}
-		out.flush();
-		is.close();
-		//out.close();
-		tempFile.delete();
-		highlightedTempFile.delete();
-	}		
+		PdfUtil.textHighlight(is, response.getOutputStream(), highlightRegEx);
 	
-	
-//	@RequestMapping(value="/article/{articleId}/{selectedPages}/{highlightRegEx}/download",method=RequestMethod.GET)
-//	public void downloadParticalArticleAndHighlightText(
-//			@PathVariable("articleId") Integer articleId, 
-//			@PathVariable("selectedPages") String selectedPages,
-//			@PathVariable("highlightRegEx") String highlightRegEx,
-//			HttpServletResponse response) throws Exception
-//	{
-//		ArticleContent content = dataservice.getArticleContent(articleId);
-//		String filename = content.getUrl();
-//		File originalFile = new File(filename);
-//		
-//		//if(highlightRegEx.startsWith("\" ") && highlightRegEx.)
-//		System.out.println("=========>>>>" + selectedPages);
-//		System.out.println("=========>>>>" + highlightRegEx);
-//		
-//
-//		ByteArrayOutputStream particalPdfOutStream = new ByteArrayOutputStream();
-//		
-//		getParticalPdf(originalFile, selectedPages, particalPdfOutStream);
-//		
-//		byte[] particalPdfBytes = particalPdfOutStream.toByteArray();		
-//		InputStream is = new ByteArrayInputStream(particalPdfBytes);	
-//		
-//		response.setHeader("content-disposition", "inline; filename=" + originalFile.getName());
-//		response.setContentType("application/pdf");
-//		
-//		OutputStream out = response.getOutputStream();
-//		PdfUtil.textHighlight(is, out, highlightRegEx);
-//		//out.flush();
-//		//out.close();
-//	}	
+	}	
 	
 	
 	
@@ -536,5 +441,3 @@ public class TestHandler {
 //		return this.message;
 //	}
 //}
-
-

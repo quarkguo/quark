@@ -90,16 +90,8 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	public String getArticleListJson() {
 		// TODO Auto-generated method stub
 		List<Map<String,Object>> tmp=new ArrayList<Map<String,Object>>();
-		List<CCGArticle> res=articleDAO.findAll();
+		List<CCGArticle> res=articleDAO.findAll();	
 		
-		Collections.sort(res, new Comparator<CCGArticle>(){
-
-			@Override
-			public int compare(CCGArticle o1, CCGArticle o2) {
-				return o2.getArticleID() - o1.getArticleID();
-			}			
-		});
-				
 		for(CCGArticle art:res)
 		{
 			HashMap<String,Object> map=new HashMap<String,Object>();
@@ -314,9 +306,6 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	public void saveOrUpdateArticleMetaData(ArticleMetaData metadata) {
 		boolean update = true;
 		CCGArticleMetadata ccgMetadata = metadataDAO.findById(metadata.getArticleId());
-		CCGArticle ccgArticle = articleDAO.findById(metadata.getArticleId());
-		ccgArticle.setTitle(metadata.getTitle());
-		articleDAO.update(ccgArticle);
 		
 		if(ccgMetadata == null){
 			ccgMetadata = new CCGArticleMetadata();
@@ -400,7 +389,6 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		
 		ArticleContent content = getArticleContent(articleId);
 		String filename = content.getUrl();
-		content.getMetatpe();
 		System.out.println("========== file name====" + filename);
 		List<String> pageContents = this.getPdfPageContentAsList(filename);
 		int pageNumber = 0;

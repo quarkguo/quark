@@ -92,7 +92,7 @@ ccg.ui.updateSelectedContent= function(data,searchKey){
 			if(data.startPage==data.endPage)
 			{
 				url='rest/article/'+data.articleID+'/'+data.startPage+'/'+query+'/download';
-				Ext.getCmp("navipanel").show();
+				//Ext.getCmp("navipanel").show();
 				Ext.getCmp("previcon").show();
 				Ext.getCmp("previcon").page=data.startPage;
 				Ext.getCmp("previcon").articleID=data.articleID;
@@ -119,7 +119,6 @@ ccg.ui.updateSelectedContent= function(data,searchKey){
 			 				Ext.getCmp("navipanel").add(item);
 			 			}
 			 			Ext.getCmp("navipanel").show();
-			 			console.log("===== navipanel show");
 			 		}
 			 	});
 			}
@@ -326,15 +325,7 @@ ccg.ui.metapanel=Ext.create('Ext.form.Panel', {
         {
             fieldLabel: 'Praisal Scores',
             name: 'praisalscore'
-        },
-        {
-        	xtype: 'checkboxfield',
-        	fieldLabel: 'Delete this article',
-        	value:0,
-        	inputValue:true,
-        	uncheckValue:false,
-        	name:'deleteArticle'
-        }        
+        }
         /*{
             xtype: 'datefield',
             fieldLabel: 'Created Date',
@@ -362,7 +353,6 @@ ccg.ui.metapanel=Ext.create('Ext.form.Panel', {
                    success: function(response, opts) {
                       var obj = Ext.decode(response.responseText);
                       console.log(obj);
-                      window.location.reload();
                    },
                    failure: function(response, opts) {
                       console.log('server-side failure with status code ' + response.status);
@@ -622,12 +612,6 @@ ccg.initUploadFilePanel = function(){
 				change: function(fld, value) {
 					var newValue = value.replace(/C:\\fakepath\\/g, '');
 					fld.setRawValue(newValue);
-					console.log(fld);
-					console.log(ccg.ui.uploadfilepanel.getForm().findField("title"));
-					//ccg.ui.uploadfilepanel.getForm().findField("title").setRawValue(newValue);
-					var position = newValue.indexOf(".");
-					var title = newValue.substring(0, position);
-					this.up('form').getForm().findField('title').setRawValue(title);
 				}
 			}
 	    },		
@@ -713,13 +697,13 @@ ccg.initUploadFilePanel = function(){
                     				},
                     				success: function(responseMsg){
                     					waitbox.hide();
-                    					ccg.ui.uploadfilepanel.getForm().findField("title").setRawValue('');
                     					Ext.MessageBox.confirm("Success", "Do you want load another one?", function(btn){
                     						if(btn === 'no'){
                     							ccg.ui.uploadfilepanel.hide();
-                    							window.location.reload();
+                    							
                     						}
                     					});
+                    					window.location.reload();
                     				},
                     				failure: function(responseMsg){
                     					waitbox.hide();

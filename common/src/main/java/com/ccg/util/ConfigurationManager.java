@@ -18,17 +18,10 @@ public class ConfigurationManager {
 	
 	private static Map<String, Object> config = Collections.synchronizedMap(new HashMap<String, Object>(101));	
 
-	
-	public static <T>T getConfig(Class<T> type){
-		String key = type.getName() + ".xml";
-		return getConfig(type, key);
-	}
-
 	@SuppressWarnings("unchecked")
-	public static  <T>T getConfig(Class<T> type, String filename){
+	public static  <T>T getConfig(Class<T> type){
 		T t = null;
-		String key = filename;
-		
+		String key = type.getName() + ".xml";
 		if(config.containsKey(key)){
 			t = (T)config.get(key);
 		}else{	
@@ -36,12 +29,7 @@ public class ConfigurationManager {
 			String configDirectory = catalinaHome + File.separator + "ccgconfig" + File.separator;
 			
 			// check file location
-			File configFile = null;
-			if(filename.startsWith("/")){  // absolute path
-				configFile = new File(filename);
-			}else{
-				configFile = new File(configDirectory + key);
-			}
+			File configFile = new File(configDirectory + key);
 			InputStream is = null;
 			try {
 				if(configFile.exists()){
@@ -52,7 +40,7 @@ public class ConfigurationManager {
 				
 				t = (T)XML.fromXml(is, type);
 				
-				//System.out.println(XML.toXml(t));
+				System.out.println(XML.toXml(t));
 				
 				config.put(key, t);
 			} catch (Exception e) {

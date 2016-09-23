@@ -23,14 +23,6 @@ public class CCGGroupMembersDAOImpl extends CCGBaseDAOImpl<CCGGroupMembers, Inte
 	}
 
 	@Override
-	public List<CCGGroupMembers> getUserGroup(String useremail){
-		Query q = entityManager.createQuery("from CCGGroupMembers where useremail =:member");
-		q.setParameter("member", useremail);
-		List<CCGGroupMembers> list = q.getResultList();
-		return list;
-	}
-	
-	@Override
 	public void deleteUserFromMemberGroup(String useremail) {
 		System.out.println("...."+useremail);
 		// TODO Auto-generated method stub
