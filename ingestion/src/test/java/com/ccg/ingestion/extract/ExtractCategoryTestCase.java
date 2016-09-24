@@ -18,7 +18,7 @@ public class ExtractCategoryTestCase {
 	{
 		InputStream is = new FileInputStream(
 				//new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
-				new File("C:\\ccgworkspace\\testfiles\\test1.pdf"));
+				new File("C:\\ccgworkspace\\testfiles\\test16.pdf"));
 		ExtractArticleInfoAuto extract = new ExtractArticleInfoAuto();
 		ArticleInfo ainfo=extract.processArticle(is);
 		for(Category c:ainfo.categoryList)
@@ -72,14 +72,21 @@ public class ExtractCategoryTestCase {
 	//@Test
 	public void testmatchedPattern()
 	{
-		String pstr="\\n\\d+\\.\\d+\\.\\d+\\.\\d+\\s+\\w";
-		String text="\r\n2.2.9 Organizational Resources and Management .......................................................... 23 \n2.2.9.1 Organizational Chart ...................................................................................... 23";
+		/*
+		String pstr="\\d{1,3}+\\xA0\\s";
+		String text="1† PSIM Solution ......................................................................................................................... 4†";
+		char[] c_list=text.toCharArray();
+		System.out.println((int)c_list[1]);
+		System.out.println((int)c_list[2]);
 		Pattern p = Pattern.compile(pstr);
 		Matcher m=p.matcher(text);
 		while(m.find())
 		{
 			System.out.println(m.start());
 		}
-
+		*/
+		String s1="1† PSIM Solution ......................................................................................................................... 4†";
+		String s2="1 PSIM Solution ";
+		System.out.println(s1.indexOf(s2));
 	}
 }

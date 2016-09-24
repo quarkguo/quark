@@ -81,6 +81,7 @@ ccg.ui.handleContentTBClick = function(index)
 	 //console.log(eledata);
 	 // here we update the content
 };
+
 ccg.ui.updateSelectedContent= function(data,searchKey){
 	 	// rendering PDF document
 		//Ext.getCmp('contenttabpanel').setActiveTab(0);

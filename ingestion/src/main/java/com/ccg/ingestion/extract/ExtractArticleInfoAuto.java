@@ -44,13 +44,13 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		List<Category> list=parseAll();		
 		mergeCategorys(list);
 		aInfo.setCategoryList(list);
-	/*
+	
 		System.out.println("---> raw");
 		for(Category c:list)
 		{
 			c.printMe(System.out);
 		}
-		*/
+		
 		List<Category> tableofcontent=findTableOfContent(list);
 		
 		List<Category> main=buildMainCategory(tableofcontent);
@@ -556,6 +556,7 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		for(int j=last_index;j<raw_list.size();j++)
 		{
 			Category l=raw_list.get(j);
+			System.out.println("search end: on --->"+l.getTitle());
 			if(searchTitleDeep(l,titles))
 			{
 				last_index=j;
@@ -627,7 +628,7 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		{
 			for(String t_toc:l)
 			{
-				if(t_toc.indexOf(t)==0)
+				if(t_toc.toUpperCase().indexOf(t.toUpperCase())==0)
 				{
 					return true;
 				}
@@ -639,7 +640,7 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 	{
 		for(String c:l)
 		{
-			if(c.indexOf(title)==0)
+			if(c.toUpperCase().indexOf(title.toUpperCase())==0)
 			{
 				return true;
 			}

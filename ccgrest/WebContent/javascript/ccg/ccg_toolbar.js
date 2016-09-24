@@ -147,9 +147,11 @@ Ext.define('com.ccg.toolbar',{
 		    {
 			        xtype:'button',
                     text: 'Content Ingestion',
+                    id:'Ingestion',
                     iconCls: 'edit',                    
                     //displayText: 'Content Ingestion',
                     icon:'images/od-ingest.png',
+                    hidden:true,
                     handler: function(){
                     	console.log('upload file....');
                     	console.log(ccg.ui.uploadfilepanel);
@@ -160,9 +162,12 @@ Ext.define('com.ccg.toolbar',{
 		    ,
 		    {
                     text: 'Admin',
+                    id:'Admin',
                     iconCls: 'file',    
                     icon:'images/profile.png',                 
                     displayText: 'Content Management',
+                    //disabled:true,
+                    hidden: true,
                     handler: function(){
                     	window.open("ccg_admin.html");
                     }
@@ -233,7 +238,25 @@ Ext.define('com.ccg.toolbar',{
                 	 });
                 }
 		    }
-		  ]
+		  ],
+		listeners:{
+	         beforerender: function(component, eOpts){
+	        		Ext.Ajax.request({
+	        	 		url:'rest/user/groups',
+	        	 		callback: function(options,success,response) {
+	        	 			var groups = Ext.util.JSON.decode(response.responseText);
+	        	 			console.log(groups);
+	        	 			if(groups.indexOf('admin') > -1){
+	        	 				Ext.getCmp("Admin").show();
+	        	 				Ext.getCmp("Ingestion").show();
+	        	 			}
+	        	 		}	
+	        	 	});
+	        	 
+	                //console.log(btn2);
+	                console.log("before");
+	            }
+		}	
 	});
 
 Ext.define('com.ccg.admintoolbar',{
