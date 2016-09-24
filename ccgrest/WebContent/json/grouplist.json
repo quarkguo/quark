@@ -1,29 +1,29 @@
 [
   { "text":"Admin Group",
-     leaf: true,
+     "leaf": true,
      "icon":"images/groupnode_1.png",
     "id":"1"
     },
     { "text":"Avenger",
     "icon":"images/groupnode_1.png",
     "cls":"file",
-    leaf: true,
+    "leaf": true,
     "id":"v2"
     },
     { "text":"Open Group",
     "icon":"images/groupnode_1.png",
     "cls":"file",
-    leaf: true,
+    "leaf": true,
     "id":"v3"
     },
     { "text":"Security",
     "icon":"images/groupnode_1.png",
     "cls":"file",
-    leaf: true,
+    "leaf": true,
     "id":"v4"
     },
    { "text":"Marketing",
-    leaf: true,
+    "leaf": true,
     "id":"v5",
     "icon":"images/groupnode_1.png"
   

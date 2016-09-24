@@ -27,6 +27,7 @@ import org.pdfclown.util.math.geom.Quad;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
+import com.itextpdf.text.pdf.parser.PdfReaderContentParser;
 
 public class PdfUtil {
 	
@@ -36,7 +37,96 @@ public class PdfUtil {
 		PdfStamper stamper = new PdfStamper(reader, os);
 		stamper.close();
 	}
+	
+	public static void extractSelectPageIntoNewFile(File originalPdfFile, File newFile, List<Integer> pagesNumbers) throws IOException, DocumentException{
+		InputStream is = new FileInputStream(originalPdfFile);
+		OutputStream os = new FileOutputStream(newFile);
+	
+		PdfReader reader = new PdfReader(is);
+		reader.selectPages(pagesNumbers);
+		PdfStamper stamper = new PdfStamper(reader, os);		
+		stamper.close();
+		
+		PdfReader newreader = new PdfReader(newFile.getAbsolutePath());
+		int numberOfPages = newreader.getNumberOfPages();
+		newreader.close();
+		if(numberOfPages == 0){
+			// copy theend.pdf to outptu file
+			pagesNumbers = new ArrayList<Integer>();
+			pagesNumbers.add(1);
+			is = PdfUtil.class.getResourceAsStream("theend.pdf");
+			os = new FileOutputStream(newFile);
+			reader = new PdfReader(is);
+			reader.selectPages(pagesNumbers);
+			stamper = new PdfStamper(reader, os);
+			stamper.close();
+			is.close();
+		}
+	}
+	
+	public static void textHighlight(File originalFile, File newFile, String textRegEx) throws IOException{
+		
+		org.pdfclown.files.File file = new org.pdfclown.files.File(originalFile.getAbsolutePath());
+		
+		Pattern pattern = Pattern.compile(textRegEx, Pattern.CASE_INSENSITIVE);
+		TextExtractor textExtractor = new TextExtractor(true, true);
+		
+		for (final Page page : file.getDocument().getPages()) {
+			//System.out.println("\nScanning page " + (page.getIndex() + 1) + "...\n");
 
+			// 2.1. Extract the page text!
+			Map<Rectangle2D, List<ITextString>> textStrings = textExtractor.extract(page);
+
+			// 2.2. Find the text pattern matches!
+			final Matcher matcher = pattern.matcher(TextExtractor.toString(textStrings));
+
+			// 2.3. Highlight the text pattern matches!
+			textExtractor.filter(textStrings, new TextExtractor.IIntervalFilter() {
+				@Override
+				public boolean hasNext() {
+					return matcher.find();
+				}
+
+				@Override
+				public Interval<Integer> next() {
+					return new Interval<Integer>(matcher.start(), matcher.end());
+				}
+
+				@Override
+				public void process(Interval<Integer> interval, ITextString match) {
+					// Defining the highlight box of the text pattern match...
+					List<Quad> highlightQuads = new ArrayList<Quad>();
+					{
+						/*
+						 * NOTE: A text pattern match may be split across
+						 * multiple contiguous lines, so we have to define a
+						 * distinct highlight box for each text chunk.
+						 */
+						Rectangle2D textBox = null;
+						for (TextChar textChar : match.getTextChars()) {
+							Rectangle2D textCharBox = textChar.getBox();
+							if (textBox == null) {
+								textBox = (Rectangle2D) textCharBox.clone();
+							} else {
+								if (textCharBox.getY() > textBox.getMaxY()) {
+									highlightQuads.add(Quad.get(textBox));
+									textBox = (Rectangle2D) textCharBox.clone();
+								} else {
+									textBox.add(textCharBox);
+								}
+							}
+						}
+						highlightQuads.add(Quad.get(textBox));
+					}
+					// Highlight the text pattern match!
+					new TextMarkup(page, null, MarkupTypeEnum.Highlight, highlightQuads);
+				}
+			});
+			
+			file.save(newFile, SerializationModeEnum.Standard);	
+		}
+		
+	}
 	public static void textHighlight(InputStream inputStream, OutputStream outputStream, String textRegEx) throws IOException{
 			
 		org.pdfclown.files.File file = new org.pdfclown.files.File(new Buffer(inputStream));
@@ -97,7 +187,7 @@ public class PdfUtil {
 			});
 			
 			file.save(new org.pdfclown.bytes.OutputStream(outputStream), SerializationModeEnum.Standard);	
-			outputStream.flush();
+		//	outputStream.flush();
 			/*
 			try{
 				file.close();
