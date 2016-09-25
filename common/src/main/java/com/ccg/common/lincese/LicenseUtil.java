@@ -8,6 +8,7 @@ import com.ccg.common.security.CCGSecurityException;
 import com.ccg.common.security.MyPrivateKey;
 import com.ccg.common.security.MyPublicKey;
 import com.ccg.common.security.SecurityUtil;
+import com.ccg.util.ConfigurationManager;
 
 public class LicenseUtil {
 	
@@ -44,5 +45,33 @@ public class LicenseUtil {
 			throw new RuntimeException(e);
 		}
 		
+	}
+	
+	public static License getLicenseFromClassPath() {
+		License license = null;
+		try{
+			//InputStream is = ClassLoader.class.getResourceAsStream("/license.xml");
+			license = ConfigurationManager.getConfig(License.class, "license.xml");
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return license;
+	}
+	
+	public static String hasValidLicense() throws LicenseExpiredException, InvalidLicenseException{
+		License license = getLicenseFromClassPath();
+		if(license == null){
+			throw new InvalidLicenseException("No license found!");
+		}
+		varify(license);		
+		// give warning before license expired.
+		Date expireDate = license.getGoodBeforeDate();
+		Date now = new Date();
+		int days = (int)((expireDate.getTime() - now.getTime())/(1000*60*60*24));
+		if(days < 30){
+			return "Your license will expired in " + days + " days";
+		}else{
+			return "";
+		}
 	}
 }

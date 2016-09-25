@@ -3,6 +3,7 @@ package com.ccg.rest.handler;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,9 @@ import com.ccg.common.data.Article;
 import com.ccg.common.data.user.User;
 import com.ccg.common.data.user.UserGroup;
 import com.ccg.common.data.user.UserProfile;
+import com.ccg.common.lincese.InvalidLicenseException;
+import com.ccg.common.lincese.LicenseExpiredException;
+import com.ccg.common.lincese.LicenseUtil;
 import com.ccg.services.data.CCGUserService;
 
 @RestController
@@ -73,6 +77,22 @@ public class UserHandler {
 	public List<String> isAdminUser(HttpServletRequest request){
 		String username = request.getRemoteUser();
 		return userService.getUserGroups(username);
+	}
+	
+
+	@RequestMapping(value="user/licenseinfo", method=RequestMethod.GET)
+	public String hasValidLicense(HttpServletRequest request, HttpServletResponse response){
+		String result = "";
+		try {
+			result = LicenseUtil.hasValidLicense();			
+		} catch (LicenseExpiredException e) {
+			result = e.getMessage();
+			e.printStackTrace();
+		} catch (InvalidLicenseException e) {
+			result = e.getMessage();
+			e.printStackTrace();
+		}
+		return result;		
 	}
 	
 	

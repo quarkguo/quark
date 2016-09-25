@@ -9,14 +9,23 @@ import com.ccg.util.ConfigurationManager;
 import com.ccg.util.XML;
 
 public class LicenseTest {
-	public static void main(String[] args) throws InvalidLicenseException {
+	public static void main(String[] args) {
 		
 		try{
 			createLicense();
 			validLicense();
 			
+			
+			License license = LicenseUtil.getLicenseFromClassPath();			
+			if(license != null){
+				LicenseUtil.varify(license);
+			}else{
+				throw new RuntimeException("No license found in classpath");
+			}						
 		}catch(LicenseExpiredException e){
 			System.out.println(e.getMessage());
+		}catch(InvalidLicenseException e){
+			e.printStackTrace();
 		}
 	}
 	
@@ -29,12 +38,12 @@ public class LicenseTest {
 	public static void createLicense() {
 		// create a license
 		License license = new License();
-		license.setClientName("new client");
+		license.setClientName("Test Licnse");
 		
 		// license expired after one yest
 		Calendar c = Calendar.getInstance();
 		//c.add(Calendar.YEAR, 1);
-		c.add(Calendar.DATE, -1);
+		c.add(Calendar.DATE, 30);
 		license.setGoodBeforeDate(new Date(c.getTimeInMillis()));
 		
 		license.setIssuedBy("ccg");

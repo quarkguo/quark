@@ -47,6 +47,8 @@ var ccglogin=
 	        		url:'j_security_check',
 	        		 success: function(form, action) {
 	        			//does nothing since it will not to typical Json request
+	        			console.log("login success");
+	        			 ccg.ui.userfeatureupdate();
                       },
                       failure: function(form, action) {
                     	  console.log(action.response);
@@ -64,6 +66,7 @@ var ccglogin=
 	    }]
 	});
 })
+Ext.util.Cookies.clear('showlicenseinfo');
 </script>
 </head>
 <body>

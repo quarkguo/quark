@@ -26,6 +26,10 @@ import com.ccg.common.data.CategoryContent;
 import com.ccg.common.data.SearchResult2;
 import com.ccg.common.data.SubCategoryContent;
 import com.ccg.common.data.WCategory;
+import com.ccg.common.lincese.InvalidLicenseException;
+import com.ccg.common.lincese.License;
+import com.ccg.common.lincese.LicenseExpiredException;
+import com.ccg.common.lincese.LicenseUtil;
 import com.ccg.dataaccess.dao.api.CCGArticleDAO;
 import com.ccg.dataaccess.dao.api.CCGArticleInfoDAO;
 import com.ccg.dataaccess.dao.api.CCGArticleMetadataDAO;
@@ -90,16 +94,27 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	public String getArticleListJson() {
 		// TODO Auto-generated method stub
 		List<Map<String,Object>> tmp=new ArrayList<Map<String,Object>>();
-		List<CCGArticle> res=articleDAO.findAll();
+		List<CCGArticle> res = null;
 		
-		Collections.sort(res, new Comparator<CCGArticle>(){
+		try {
+			LicenseUtil.hasValidLicense();
+			res = articleDAO.findAll();
+			Collections.sort(res, new Comparator<CCGArticle>(){
 
-			@Override
-			public int compare(CCGArticle o1, CCGArticle o2) {
-				return o2.getArticleID() - o1.getArticleID();
-			}			
-		});
-				
+				@Override
+				public int compare(CCGArticle o1, CCGArticle o2) {
+					return o2.getArticleID() - o1.getArticleID();
+				}			
+			});			
+		} catch (LicenseExpiredException | InvalidLicenseException | RuntimeException e) {
+			e.printStackTrace();
+			CCGArticle article = new CCGArticle();
+			article.setTitle(e.getMessage());
+			article.setArticleID(0);
+			res = new ArrayList<CCGArticle>();
+			res.add(article);
+		}		
+		
 		for(CCGArticle art:res)
 		{
 			HashMap<String,Object> map=new HashMap<String,Object>();

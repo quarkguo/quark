@@ -346,10 +346,27 @@ ccg.ui.metapanel=Ext.create('Ext.form.Panel', {
     	beforeclose:function(win) {
     		 ccg.ui.metapanel.hide();
         	 return false; 
+        },
+        beforerender: function(component, eOpts){
+    		Ext.Ajax.request({
+    	 		url:'rest/user/groups',
+    	 		callback: function(options,success,response) {
+    	 			var groups = Ext.util.JSON.decode(response.responseText);
+    	 			console.log(groups);
+    	 			if(groups.indexOf('admin') > -1){
+    	 				Ext.getCmp("metasubmit").enable();
+    	 			}
+    	 		}	
+    	 	});
+    	 
+            //console.log(btn2);
+            console.log("before");
         }
     },
     buttons: [{
         text: 'Submit',
+        id: 'metasubmit',
+        disabled: true,
         handler: function () {
             var form = this.up('form').getForm();
             if (form.isValid()) {

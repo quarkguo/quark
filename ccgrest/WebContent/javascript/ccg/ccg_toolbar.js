@@ -6,6 +6,7 @@ ccg.data.currentArticle={};
 ccg.article={};
 ccg.article.pattern={};
 ccg.data.pattern=[];
+ccg.data.licensemessage = false;
 
 ccg.data.docliststore = Ext.create('Ext.data.TreeStore', {
         proxy: {
@@ -252,9 +253,20 @@ Ext.define('com.ccg.toolbar',{
 	        	 			}
 	        	 		}	
 	        	 	});
-	        	 
-	                //console.log(btn2);
-	                console.log("before");
+	            },
+	            afterlayout: function(){
+	        		Ext.Ajax.request({
+	        	 		url:'rest/user/licenseinfo',
+	        	 		callback: function(options,success,response) {
+	        	 			var licenseinfo = response.responseText;
+	        	 			console.log(response.responseText);
+	        	 			var showlicenseinfo = Ext.util.Cookies.get('showlicenseinfo');
+	        	 			if(licenseinfo.length != 0 && !showlicenseinfo){
+	        	 				var abx = Ext.Msg.alert('License Warning!!!', response.responseText);
+	        	 				Ext.util.Cookies.set('showlicenseinfo', true);
+	        	 			}
+	        	 		}	
+	        	 	});
 	            }
 		}	
 	});

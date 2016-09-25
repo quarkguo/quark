@@ -66,7 +66,7 @@ public class SecurityUtil {
 		
 		System.out.println(SecurityUtil.base64Encode(sig));
 		
-		boolean b = SecurityUtil.verify(MyPublicKey.getKey(), "Hello Wrold".getBytes(), sig);
+		boolean b = SecurityUtil.verify(MyPublicKey.getKey(), "Hello World".getBytes(), sig);
 		
 		System.out.println(b);
 	}
