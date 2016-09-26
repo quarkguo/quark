@@ -24,12 +24,16 @@ public class ConfigurationManager {
 		return getConfig(type, key);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static  <T>T getConfig(Class<T> type, String filename){
+		return getConfig(type, filename, true );
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static  <T>T getConfig(Class<T> type, String filename, boolean cache){
 		T t = null;
 		String key = filename;
 		
-		if(config.containsKey(key)){
+		if(cache && config.containsKey(key)){
 			t = (T)config.get(key);
 		}else{	
 			String catalinaHome = System.getProperty("catalina.home");
@@ -53,8 +57,9 @@ public class ConfigurationManager {
 				t = (T)XML.fromXml(is, type);
 				
 				//System.out.println(XML.toXml(t));
-				
-				config.put(key, t);
+				if(cache){
+					config.put(key, t);
+				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

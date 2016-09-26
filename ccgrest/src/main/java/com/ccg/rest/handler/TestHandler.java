@@ -31,6 +31,9 @@ import com.ccg.common.data.CategoryContent;
 import com.ccg.common.data.SearchResult2;
 import com.ccg.common.data.SubCategoryContent;
 import com.ccg.common.data.WCategory;
+import com.ccg.common.lincese.InvalidLicenseException;
+import com.ccg.common.lincese.LicenseExpiredException;
+import com.ccg.common.lincese.LicenseUtil;
 import com.ccg.common.pdf.util.PdfUtil;
 import com.ccg.ingestion.extract.ArticleCategoryPatternConfig;
 import com.ccg.services.data.CCGDBService;
@@ -245,35 +248,27 @@ public class TestHandler {
 		}
 		
 		String json = "";
+		List<SearchResult2> srList = new ArrayList<SearchResult2>();
 		try {
+			LicenseUtil.hasValidLicense();
 			SearchEngine se = new SearchEngine();
-			List<SearchResult2> srList = se.search2(query, default_limit);
-			srList = dataservice.filterDeletedResult(srList);
-			
-			List<WCategory> res=dataservice.buildSearchCategory(srList,query);
-			json = toJson(res);
-			
-		//	System.out.println("Search Result: " + json);
-			
+			srList = se.search2(query, default_limit);
+		} catch (LicenseExpiredException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidLicenseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 			json = e.getMessage();
 		}
-		
-		
-		
-		
-//		RestResponseMessage rrm = new RestResponseMessage();
-//		List<CCGArticle> articleList = dataservice.getAllCCGArticle();
-//		Indexer indexer = new Indexer();
-//		try{
-//			indexer.rebuildIndexes(articleList);;
-//			rrm.setSuccess();
-//		}catch(Exception e){
-//			rrm.setFailed();
-//			rrm.setMessage(e.getMessage());
-//			e.printStackTrace();
-//		}
+
+		srList = dataservice.filterDeletedResult(srList);
+
+		List<WCategory> res = dataservice.buildSearchCategory(srList, query);
+		json = toJson(res);
+			
 		//json = toJson(rrm);
 	    HttpHeaders responseHeaders = new HttpHeaders();
 	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -440,8 +435,13 @@ public class TestHandler {
 		response.setContentType("application/pdf");
 		
 		File highlightedTempFile = File.createTempFile(originalFile.getName(), "highlight");		
-		PdfUtil.textHighlight(tempFile, highlightedTempFile, highlightRegEx);
-		
+		try{
+			PdfUtil.textHighlight(tempFile, highlightedTempFile, highlightRegEx);
+		}catch(Exception e){
+			e.printStackTrace();
+			// failed to highlight, just show the file without highlight
+			highlightedTempFile = tempFile;
+		}
 		OutputStream out = response.getOutputStream();
 		InputStream is = new FileInputStream(highlightedTempFile);
 		byte[] buffer = new byte[1024];

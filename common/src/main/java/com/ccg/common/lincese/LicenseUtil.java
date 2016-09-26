@@ -51,7 +51,7 @@ public class LicenseUtil {
 		License license = null;
 		try{
 			//InputStream is = ClassLoader.class.getResourceAsStream("/license.xml");
-			license = ConfigurationManager.getConfig(License.class, "license.xml");
+			license = ConfigurationManager.getConfig(License.class, "license.xml", false);
 		}catch(Exception e){
 			e.printStackTrace();
 		}
