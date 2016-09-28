@@ -44,13 +44,13 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		List<Category> list=parseAll();		
 		mergeCategorys(list);
 		aInfo.setCategoryList(list);
-	/*
+	
 		System.out.println("---> raw");
 		for(Category c:list)
 		{
 			c.printMe(System.out);
 		}
-		*/
+		
 		List<Category> tableofcontent=findTableOfContent(list);
 		
 		List<Category> main=buildMainCategory(tableofcontent);
@@ -158,11 +158,16 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 	
 	public List<int[]> getIntersetArea(int start, int end, int exclude_start, int exclude_end)
 	{
+		System.out.println("A:"+start+" B:"+end+" C:"+exclude_start+" D:"+exclude_end);
 		List<int[]> res=new ArrayList<int[]>();
 		if(end<=exclude_end&&start>=exclude_start)
 		{
 			// none
 			
+		}
+		else if( start>=end)
+		{
+			// none
 		}
 		else if(start<exclude_start&&end>exclude_end)
 		{
@@ -290,6 +295,7 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 	public Category searchByTitleMatch(Category tb_item, int  start, int end)
 	{
 		String searchToken=tb_item.getTitle();
+		if(searchToken.length()<10) return null; // why 10???
 		int posi=searchToken.indexOf("....");
 		// preprocess remove tailing token
 		if(posi>0)
@@ -299,11 +305,17 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		 else
 		{
 		   posi=searchToken.lastIndexOf(" ");
-		   searchToken=searchToken.substring(0,posi).trim();
+		   if(posi>-1)
+		   {
+			   searchToken=searchToken.substring(0,posi).trim();
+		   }
 		}
-
+		
+		
 		// trying to find match
 		// always try to find first match
+		System.out.println("[start:"+start+" end:"+end);
+		
 		String content=aInfo.getUpperCaseContent().substring(start, end);
 		searchToken=searchToken.toUpperCase();
 		boolean found=false;
@@ -312,6 +324,7 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		if(matchPosi>-1)
 		{
 			found=true;
+			System.out.println("Found token:"+searchToken);
 		}
 		while(matchPosi==-1)
 		{
@@ -319,6 +332,7 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 			if(posi>-1)
 			{
 				searchToken=searchToken.substring(0,posi);
+				System.out.println("search token..."+searchToken);
 			}
 			else
 			{
@@ -556,6 +570,7 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		for(int j=last_index;j<raw_list.size();j++)
 		{
 			Category l=raw_list.get(j);
+			System.out.println("search end: on --->"+l.getTitle());
 			if(searchTitleDeep(l,titles))
 			{
 				last_index=j;
@@ -627,7 +642,7 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		{
 			for(String t_toc:l)
 			{
-				if(t_toc.indexOf(t)==0)
+				if(t_toc.toUpperCase().indexOf(t.toUpperCase())==0)
 				{
 					return true;
 				}
@@ -639,7 +654,7 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 	{
 		for(String c:l)
 		{
-			if(c.indexOf(title)==0)
+			if(c.toUpperCase().indexOf(title.toUpperCase())==0)
 			{
 				return true;
 			}

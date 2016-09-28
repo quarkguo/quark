@@ -92,9 +92,10 @@ public class ExtractArticleInfo {
 	protected void setContent(){
 		StringBuffer sb = new StringBuffer();
 		for(PageInfo pageInfo : pageList){
-			sb.append(pageInfo.content);
+			sb.append(pageInfo.content.replaceAll("\\xA0",""));
 		}
 		aInfo.setContent(sb.toString());
+		
 	}
 	
 	protected void removePageHeaderAndFooter(List<String> pageHeader, List<String> pageFooter){
