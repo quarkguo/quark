@@ -18,7 +18,7 @@ public class ExtractCategoryTestCase {
 	{
 		InputStream is = new FileInputStream(
 				//new File("/Users/zchen323/Downloads/HH60Gsimulatorproposal_sample.docx.pdf"));
-				new File("C:\\ccgworkspace\\testfiles\\test16.pdf"));
+				new File("C:\\ccgworkspace\\testfiles\\newtest2.pdf"));
 		ExtractArticleInfoAuto extract = new ExtractArticleInfoAuto();
 		ArticleInfo ainfo=extract.processArticle(is);
 		for(Category c:ainfo.categoryList)
@@ -74,7 +74,7 @@ public class ExtractCategoryTestCase {
 	{
 		/*
 		String pstr="\\d{1,3}+\\xA0\\s";
-		String text="1† PSIM Solution ......................................................................................................................... 4†";
+		String text="1� PSIM Solution ......................................................................................................................... 4�";
 		char[] c_list=text.toCharArray();
 		System.out.println((int)c_list[1]);
 		System.out.println((int)c_list[2]);
@@ -85,7 +85,7 @@ public class ExtractCategoryTestCase {
 			System.out.println(m.start());
 		}
 		*/
-		String s1="1† PSIM Solution ......................................................................................................................... 4†";
+		String s1="1� PSIM Solution ......................................................................................................................... 4�";
 		String s2="1 PSIM Solution ";
 		System.out.println(s1.indexOf(s2));
 	}
