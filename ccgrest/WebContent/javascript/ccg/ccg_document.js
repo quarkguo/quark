@@ -289,7 +289,7 @@ ccg.ui.docmainpanel=Ext.create("Ext.panel.Panel",{
 
 ccg.ui.metapanel=Ext.create('Ext.form.Panel', {  
     title: 'Document Metadata', 
-    width: 300,
+    width: 500,
     bodyPadding: 10,
     defaultType: 'textfield',
     frame: true,
@@ -301,31 +301,54 @@ ccg.ui.metapanel=Ext.create('Ext.form.Panel', {
     items: [
             {
             	fieldLabel: 'Article ID',
+            	anchor : '100%',
+            	labelAlign: 'right',
             	name: 'articleId'
             	
             },
         {
             fieldLabel: 'Title',
+            anchor : '100%',
+            labelAlign: 'right',
             name: 'title'
         },
+		{
+			xtype : 'textarea',
+			fieldLabel : 'Description',
+			name: 'description',
+			//value: 'items: \nitem2\n\n\nitem3:\n',
+			height: 150,
+			labelAlign: 'right',
+			anchor : '100%',
+		},
         {
             fieldLabel: 'Type',
+            anchor : '100%',
+            labelAlign: 'right',
             name: 'type'
         },
         {
             fieldLabel: 'Author',
+            anchor : '100%',
+            labelAlign: 'right',
             name: 'author'
         },
         {
             fieldLabel: 'Company',
+            anchor : '100%',
+            labelAlign: 'right',
             name: 'company'
         },
         {
             fieldLabel: 'Accept Status',
+            anchor : '100%',
+            labelAlign: 'right',
             name: 'acceptStatus'
         },
         {
             fieldLabel: 'Praisal Scores',
+            anchor : '100%',
+            labelAlign: 'right',
             name: 'praisalscore'
         },
         {
@@ -334,6 +357,8 @@ ccg.ui.metapanel=Ext.create('Ext.form.Panel', {
         	value:0,
         	inputValue:true,
         	uncheckValue:false,
+        	anchor : '100%',
+        	labelAlign: 'right',
         	name:'deleteArticle'
         }        
         /*{
