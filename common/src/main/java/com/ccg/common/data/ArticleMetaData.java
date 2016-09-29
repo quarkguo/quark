@@ -1,5 +1,6 @@
 package com.ccg.common.data;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ArticleMetaData {
@@ -10,6 +11,7 @@ public class ArticleMetaData {
 	private String company;
 	private String acceptStatus;
 	private Float praisalscore;
+	private String description;
 	
 	private Date createDate;
 	private Date lastUpdateDate;
@@ -76,7 +78,31 @@ public class ArticleMetaData {
 	}
 	public void setDeleteArticle(boolean deleteArticle) {
 		this.deleteArticle = deleteArticle;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}	
 	
-	
+	public String toString(){
+
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");		
+		StringBuffer sb = new StringBuffer();
+		sb.append("title:" + title).append("\n");
+		sb.append("type:" + type).append("\n");
+		sb.append("author:" + author).append("\n");
+		sb.append("company:" + company).append("\n");
+		sb.append("accept status:" + acceptStatus).append("\n");
+		sb.append("praisal score:" + praisalscore).append("\n");
+		sb.append("description:" + description).append("\n");
+		if(createDate != null){
+			sb.append("create date:" + format.format(createDate)).append("\n");	
+		}
+		if(lastUpdateDate != null){
+			sb.append("last update date:" + format.format(lastUpdateDate)).append("\n");
+		}
+		return sb.toString();
+	}
 }

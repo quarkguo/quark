@@ -172,8 +172,10 @@ public class ArticleHandler {
 		
 		ArticleMetaData meta = fromJson(input, ArticleMetaData.class);
 		
+		 meta.setDescription("this is a test");
+		
 		json = toJson(meta);
-		System.out.println(json);
+		System.out.println("===" + json);
 		
 		dataservice.saveOrUpdateArticleMetaData(meta);
 		

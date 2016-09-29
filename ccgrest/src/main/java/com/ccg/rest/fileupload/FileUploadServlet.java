@@ -81,6 +81,7 @@ public class FileUploadServlet extends HttpServlet {
 			String company = request.getParameter("company");
 			String acceptStatus = request.getParameter("status");
 			String title=request.getParameter("title");
+			
 			RequestData data = new RequestData();
 			data.setAcceptStatus(acceptStatus);
 			data.setArticleType(type);
@@ -89,6 +90,7 @@ public class FileUploadServlet extends HttpServlet {
 			data.setFilepath(path);
 			data.setPattern(pattern);
 			data.setTitle(title);
+			data.setDescription(description);
 			
 
 			String categoryString = helper.getCategoryForVerify(data);

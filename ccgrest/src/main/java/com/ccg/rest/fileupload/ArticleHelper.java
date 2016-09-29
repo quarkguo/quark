@@ -188,11 +188,13 @@ public class ArticleHelper {
 		meta.setTitle(title);
 		meta.setType(requestData.getArticleType());
 		meta.setAcceptStatus(requestData.getAcceptStatus());
+		meta.setDescription(requestData.getDescription());
 		
 		dataservice.saveOrUpdateArticleMetaData(meta);
 		
 		try{
 			dataservice.indexingArticle2(articleId);
+			dataservice.indexMetadata(articleId);
 		}catch(Exception e){
 			throw new IOException(e.getMessage());
 		}

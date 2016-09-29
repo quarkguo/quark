@@ -168,7 +168,6 @@ public class TestHandler {
 		System.out.println("====>>>" + input + "<<<<<====");
 		
 		ArticleMetaData meta = fromJson(input, ArticleMetaData.class);
-		
 		json = toJson(meta);
 		
 		System.out.println(json);
@@ -176,6 +175,14 @@ public class TestHandler {
 			dataservice.deleteArticle(meta.getArticleId());
 		}else{
 			dataservice.saveOrUpdateArticleMetaData(meta);
+			try {
+				System.out.println("====>>>>meta: " + meta.getArticleId());
+				dataservice.indexMetadata(meta.getArticleId());
+				System.out.println("====>>>>meta end: " + meta.getArticleId());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		
 		
@@ -210,6 +217,31 @@ public class TestHandler {
 		return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
 	}		
 	
+	@RequestMapping(method=RequestMethod.GET, value="/indexing/article/{articleId}/metadata")
+	public ResponseEntity<String> indexingArticleMetadata(@PathVariable("articleId") Integer articleId) {
+		String json = "";
+		GenericResponseMessage response = new GenericResponseMessage();
+		//CCGArticle article = dataservice.getCCGArticleById(articleId);
+		//Indexer indexer = new Indexer();
+		try{
+			//indexer.indexArticle(article);
+			
+			dataservice.indexMetadata(articleId);
+			
+			response.code = 0;
+			response.status = "success";
+		}catch(Exception e){
+			response.status = "fail";
+			response.code = 1;
+			response.message = e.getMessage();
+			e.printStackTrace();
+		}
+		json = toJson(response);
+	    HttpHeaders responseHeaders = new HttpHeaders();
+	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+		return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
+	}		
+	
 	@RequestMapping(method=RequestMethod.GET, value="/indexing/article/all")
 	public ResponseEntity<String> indexingAllArticle() {
 		String json = "";
@@ -219,6 +251,7 @@ public class TestHandler {
 		try{
 			//indexer.rebuildIndexes(articleList);;
 			dataservice.indexingAll2();
+			dataservice.indexMetadataAll();
 			response.code = 0;
 			response.status = "success";
 		}catch(Exception e){

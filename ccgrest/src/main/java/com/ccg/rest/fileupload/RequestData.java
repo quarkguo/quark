@@ -8,6 +8,7 @@ public class RequestData {
 	String acceptStatus;
 	String pattern;
 	String title;
+	String description;
 	
 	public String getFilename() {
 		return filename;
@@ -50,6 +51,12 @@ public class RequestData {
 	}
 	public void setPattern(String pattern) {
 		this.pattern = pattern;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	

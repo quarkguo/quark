@@ -40,5 +40,7 @@ public interface CCGDBService {
 	public List<WCategory> buildSearchCategory(List<SearchResult2> searchRes,String searchToken);
 	public List<SearchResult2> filterDeletedResult( List<SearchResult2> searchResultList);
 	public List<WCategory> getFlatCategory(int artileID,int page);
+	public void indexMetadata(Integer articleId) throws Exception;
+	public void indexMetadataAll() throws Exception;
 
 }

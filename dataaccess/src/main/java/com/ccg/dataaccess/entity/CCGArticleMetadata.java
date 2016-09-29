@@ -102,6 +102,15 @@ public class CCGArticleMetadata implements Serializable {
 	public void setPraisalscore(float praisalscore) {
 		this.praisalscore = praisalscore;
 	}
+	@Column(name = "description")
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	
 	private Integer articleID;
 	private String type;
 	private String title;
@@ -111,5 +120,6 @@ public class CCGArticleMetadata implements Serializable {
 	private Date lastUpdateTS;
 	private String acceptStatus;
 	private float praisalscore;
+	private String description;
 	
 }

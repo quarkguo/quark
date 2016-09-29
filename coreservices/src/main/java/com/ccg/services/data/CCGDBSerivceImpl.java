@@ -320,6 +320,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			metadata.setTitle(ccgMetadata.getTitle());
 			metadata.setType(ccgMetadata.getType());
 			metadata.setArticleId(articleId);
+			metadata.setDescription(ccgMetadata.getDescription());
 		}
 		return metadata;
 	}
@@ -342,6 +343,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		ccgMetadata.setAuthor(metadata.getAuthor());
 		ccgMetadata.setCompany(metadata.getCompany());
 		ccgMetadata.setCreatedTS(metadata.getCreateDate());
+		ccgMetadata.setDescription(metadata.getDescription());
 		
 		if(metadata.getLastUpdateDate() == null){
 			ccgMetadata.setLastUpdateTS(new Date());
@@ -432,6 +434,36 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		}
 		indexer.closeIndexWriter();
 	}	
+	
+	@Override
+	@Transactional(readOnly=true)
+	public void indexMetadata(Integer articleId) throws Exception{
+		Indexer indexer = new Indexer();
+		IndexWriter writer = indexer.getMetaIndexWriter(false);
+		ArticleMetaData metadata = getArticleMetaDataByArticleId(articleId);
+		String metaString = metadata.toString();
+		
+		indexer.indexingMetadata("" + articleId, metadata.getTitle(), metaString, writer);
+		indexer.closeMetaIndexWriter();		
+	}
+	
+	@Override
+	@Transactional(readOnly=true)
+	public void indexMetadataAll() throws Exception{
+		List<ArticleBasicInfo> articleList = this.getArticleBasicInfo();
+		
+		Indexer indexer = new Indexer();
+		IndexWriter writer = indexer.getMetaIndexWriter(true);
+
+		for(ArticleBasicInfo info : articleList){
+			Integer articleId = info.getArticleID();
+			ArticleMetaData metadata = getArticleMetaDataByArticleId(articleId);
+			String metaString = metadata.toString();			
+			indexer.indexingMetadata("" + articleId, metadata.getTitle(), metaString, writer);
+		}
+		indexer.closeMetaIndexWriter();
+	}	
+	
 	
 	@Override
 	@Transactional(readOnly=true)

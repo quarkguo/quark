@@ -31,16 +31,20 @@ import com.ccg.util.ConfigurationManager;
 public class Indexer {
 	
 	private String indexLocation = ".";
+	private String metaIndexLocation = "./meta";
 	
     /** Creates a new instance of Indexer */
     public Indexer() {
     	Properties prop = ConfigurationManager.getConfig("ccg.properties");
     	indexLocation = prop.getProperty("index.repository");
+    	metaIndexLocation = prop.getProperty("metaindex.repository");
     	
     	System.out.println("===Index Location: " + indexLocation);
+    	System.out.println("===MetaIndex Location: " + metaIndexLocation);    
     }
  
     private IndexWriter indexWriter = null;
+    private IndexWriter metaIndexWriter = null;
     
     
 //    public IndexWriter getJdbcIndexWriter(boolean create) throws IOException{
@@ -99,6 +103,39 @@ public class Indexer {
         }
         return indexWriter;
    }    
+ 
+    public IndexWriter getMetaIndexWriter(boolean create) {
+    	
+    	if(create){
+    		File metaIndexDirectory = new File(metaIndexLocation);
+    		System.out.println("++++++ delete: " + metaIndexDirectory.getAbsolutePath());
+    		deleteDirectory(metaIndexDirectory);
+    	}
+    	//indexWriter.deleteDocuments(arg0);
+        if (metaIndexWriter == null) {
+            Directory metaIndexDir = null;
+			try {
+				metaIndexDir = FSDirectory.open(new File(metaIndexLocation));
+				System.out.println("====>>> " + metaIndexDir.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_10_2, new StandardAnalyzer());
+            try {
+				metaIndexWriter = new IndexWriter(metaIndexDir, config);
+			} catch (IOException e) {
+				e.printStackTrace();
+				if(metaIndexWriter != null){
+					try {
+						metaIndexWriter.close();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+        }
+        return metaIndexWriter;
+   }    
    
     public void closeIndexWriter() {
         if (indexWriter != null) {
@@ -110,7 +147,18 @@ public class Indexer {
 			}
         }
    }
-        
+    public void closeMetaIndexWriter() {
+        if (metaIndexWriter != null) {
+            try {
+				metaIndexWriter.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+   }
+
+    
  	public void indexingCategory(String catId, String catTitle, String catContent,
  			String articleId, String articleTitle, IndexWriter writer){
     	
@@ -150,6 +198,21 @@ public class Indexer {
 			} 					
  	}
  	
+ 	public void indexingMetadata(String articleId, String articleTitle, String metadata, IndexWriter writer){
+		try {
+	 	       Document doc = new Document();
+		        doc.add(new StringField("aId", articleId, Field.Store.YES));
+		        doc.add(new StringField("aTitle", articleTitle, Field.Store.YES));
+		        doc.add(new StringField("aPageNum", "meta_" + System.currentTimeMillis(), Field.Store.YES));    	        
+		        
+		        String fullSearchableText = metadata;
+		        doc.add(new TextField(INDEX.CONTENT, fullSearchableText, Field.Store.NO));
+		        writer.addDocument(doc);
+		        
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 					
+ 	}
  	
  	
     private boolean deleteDirectory(File directory) {

@@ -28,14 +28,21 @@ import com.ccg.util.JSON;
 
 public class SearchEngine {
 	private IndexSearcher searcher = null;
+	private IndexSearcher metaSearcher = null;
+	
 	private QueryParser parser = null;
+	
 	private String indexLocation = ".";
+	private String metaIndexLocation = "./meta";
 
 	/** Creates a new instance of SearchEngine */
 	public SearchEngine() throws IOException {
 		Properties prop = ConfigurationManager.getConfig("ccg.properties");
 		indexLocation = prop.getProperty("index.repository");
+		metaIndexLocation = prop.getProperty("metaindex.repository");
 		searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(indexLocation))));
+		metaSearcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(metaIndexLocation))));
+		
 		parser = new QueryParser(INDEX.CONTENT, new StandardAnalyzer());
 	}
 
@@ -95,6 +102,32 @@ public class SearchEngine {
 	 //   sortSearchResult(result);
 	    return result;
 	}
+
+	public List<SearchResult2> metaSearch(String queryString, int n) throws IOException, ParseException{
+		List<SearchResult2> result = new ArrayList<SearchResult2>();
+		
+		Query query = parser.parse(queryString);
+		TopDocs topDocs = metaSearcher.search(query, n);
+	    ScoreDoc[] hits = topDocs.scoreDocs;
+	    for (int i = 0; i < hits.length; i++) {
+	            Document doc = getDocument(hits[i].doc);
+	            SearchResult2 sr = new SearchResult2();
+	            List<IndexableField> fields=doc.getFields();
+
+	            sr.setArticleId(doc.get("aId"));
+	            sr.setArticleTitle(doc.get("aTitle"));
+	            sr.setPageNumber(doc.get("aPageNum"));
+	            sr.setScore(hits[i].score);
+	            result.add(sr);
+	        }
+	 //   sortSearchResult(result);
+	    return result;
+	}	
+	
+	List<SearchResult2> getLatestUpdatedMeta(List<SearchResult2> result){
+		
+		return null;
+	}
 	
 	public HashMap<Integer,List<Integer>> sortSearchResult(List<SearchResult2> data)
 	{
@@ -123,8 +156,4 @@ public class SearchEngine {
 		}
 		return res;
 	}
-		
-	
-	
-	
 }
