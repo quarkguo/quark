@@ -198,12 +198,12 @@ public class Indexer {
 			} 					
  	}
  	
- 	public void indexingMetadata(String articleId, String articleTitle, String metadata, IndexWriter writer){
+ 	public void indexingMetadata(String articleId, String articleTitle, String lastupdatetime, String metadata, IndexWriter writer){
 		try {
 	 	       Document doc = new Document();
 		        doc.add(new StringField("aId", articleId, Field.Store.YES));
 		        doc.add(new StringField("aTitle", articleTitle, Field.Store.YES));
-		        doc.add(new StringField("aPageNum", "meta_" + System.currentTimeMillis(), Field.Store.YES));    	        
+		        doc.add(new StringField("aPageNum", lastupdatetime, Field.Store.YES));    	        
 		        
 		        String fullSearchableText = metadata;
 		        doc.add(new TextField(INDEX.CONTENT, fullSearchableText, Field.Store.NO));

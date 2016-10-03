@@ -32,13 +32,14 @@ public interface CCGDBService {
 	public CCGArticle getCCGArticleById(Integer articleId);
 	public List<CCGArticle> getAllCCGArticle();
 	public void deleteArticle(int articleID);
-	public void indexingArticle(Integer articleId);
-	public void indexingAll();
+	//public void indexingArticle(Integer articleId);
+	//public void indexingAll();
 	public void indexingArticle2(Integer articleId) throws Exception;
 	public void indexingAll2() throws Exception;
 	public CCGArticleInfo saveArticleInfo(CCGArticleInfo info);
 	public List<WCategory> buildSearchCategory(List<SearchResult2> searchRes,String searchToken);
 	public List<SearchResult2> filterDeletedResult( List<SearchResult2> searchResultList);
+	public List<SearchResult2> filterOldMeta(List<SearchResult2> searchResultList);
 	public List<WCategory> getFlatCategory(int artileID,int page);
 	public void indexMetadata(Integer articleId) throws Exception;
 	public void indexMetadataAll() throws Exception;

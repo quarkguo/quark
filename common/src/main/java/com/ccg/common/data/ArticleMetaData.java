@@ -105,4 +105,18 @@ public class ArticleMetaData {
 		}
 		return sb.toString();
 	}
+	
+	public String toHTML(){
+		StringBuffer sb = new StringBuffer();
+		sb.append("<html><head></head><body>");
+		sb.append("<h1>" + title + "</h1>");
+		sb.append("<b>Description: </b><br />" + description + "<br />");
+		sb.append("<b>Type: </b>" + type + "<br />");
+		sb.append("<b>Author: </b>" + author + "<br />");
+		sb.append("<b>Company: </b>" + company + "<br />");
+		sb.append("<b>Accept Status: </b>" + acceptStatus + "<br />");
+		sb.append("<b>Praisal Score: </b>" + praisalscore + "<br />");
+		sb.append("</body></htmm>");
+		return sb.toString();
+	}
 }

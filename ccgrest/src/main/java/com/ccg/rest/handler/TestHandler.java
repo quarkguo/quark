@@ -123,7 +123,7 @@ public class TestHandler {
 	@RequestMapping(method=RequestMethod.GET, value="/category/{categoryId}/content")
 	public ResponseEntity<String> getCategoryContentById(@PathVariable("categoryId") Integer categoryId, HttpServletRequest request) {
 		// TODO security check
-		String user = request.getRemoteUser();
+//		String user = request.getRemoteUser();
 		
 		
 		CategoryContent content = dataservice.getCategoryContentById(categoryId);
@@ -145,16 +145,6 @@ public class TestHandler {
 	ResponseEntity<String> getArticleMetadata(@PathVariable("articleId") Integer articleId) {
 		String json = "";
 		ArticleMetaData metadata = dataservice.getArticleMetaDataByArticleId(articleId);		
-//		meta.setAcceptStatus("acceptStatus");
-//		meta.setArtileId(articleId);
-//		meta.setAuthor("author");
-//		meta.setCompany("company");
-//		meta.setCreateDate(new Date());
-//		meta.setLastUpdateDate(new Date());
-//		meta.setPraisalscore(12.0f);
-//		meta.setTitle("title");
-//		meta.setType("type");
-		
 		json = toJson(metadata);
 		
 	    HttpHeaders responseHeaders = new HttpHeaders();
@@ -196,13 +186,8 @@ public class TestHandler {
 	public ResponseEntity<String> indexingArticle(@PathVariable("articleId") Integer articleId) {
 		String json = "";
 		GenericResponseMessage response = new GenericResponseMessage();
-		//CCGArticle article = dataservice.getCCGArticleById(articleId);
-		//Indexer indexer = new Indexer();
 		try{
-			//indexer.indexArticle(article);
-			
-			dataservice.indexingArticle(articleId);
-			
+			dataservice.indexingArticle2(articleId);			
 			response.code = 0;
 			response.status = "success";
 		}catch(Exception e){
@@ -221,13 +206,8 @@ public class TestHandler {
 	public ResponseEntity<String> indexingArticleMetadata(@PathVariable("articleId") Integer articleId) {
 		String json = "";
 		GenericResponseMessage response = new GenericResponseMessage();
-		//CCGArticle article = dataservice.getCCGArticleById(articleId);
-		//Indexer indexer = new Indexer();
-		try{
-			//indexer.indexArticle(article);
-			
-			dataservice.indexMetadata(articleId);
-			
+		try{			
+			dataservice.indexMetadata(articleId);			
 			response.code = 0;
 			response.status = "success";
 		}catch(Exception e){
@@ -246,10 +226,7 @@ public class TestHandler {
 	public ResponseEntity<String> indexingAllArticle() {
 		String json = "";
 		GenericResponseMessage response = new GenericResponseMessage();
-		//List<CCGArticle> articleList = dataservice.getAllCCGArticle();
-		//Indexer indexer = new Indexer();
 		try{
-			//indexer.rebuildIndexes(articleList);;
 			dataservice.indexingAll2();
 			dataservice.indexMetadataAll();
 			response.code = 0;
@@ -269,6 +246,7 @@ public class TestHandler {
 	@RequestMapping(method=RequestMethod.GET, value="/search")
 	public ResponseEntity<String> search(
 			@RequestParam(value="query", required=false) String query,
+			@RequestParam(value="type", required=false) String type,
 			@RequestParam(value="limit", required=false) String limit) {
 		
 		int default_limit = 1000;
@@ -281,11 +259,25 @@ public class TestHandler {
 		}
 		
 		String json = "";
-		List<SearchResult2> srList = new ArrayList<SearchResult2>();
-		try {
+		List<SearchResult2> srListArticle = new ArrayList<SearchResult2>();
+		List<SearchResult2> srListMeta = new ArrayList<SearchResult2>();
+		
+		
+		try {			
+			/////////////////////////////
+			// check license
 			LicenseUtil.hasValidLicense();
+			/////////////////////////////			
+			
 			SearchEngine se = new SearchEngine();
-			srList = se.search2(query, default_limit);
+			if("a".equals(type)){
+				srListArticle = se.search2(query, default_limit);
+			}else if("m".equals(type)){
+				srListMeta = se.metaSearch(query, default_limit);
+			}else{
+				srListArticle = se.search2(query, default_limit);
+				srListMeta = se.metaSearch(query, default_limit);
+			}
 		} catch (LicenseExpiredException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -297,11 +289,21 @@ public class TestHandler {
 			json = e.getMessage();
 		}
 
-		srList = dataservice.filterDeletedResult(srList);
+		srListArticle = dataservice.filterDeletedResult(srListArticle);
+		srListMeta = dataservice.filterDeletedResult(srListMeta);
+		//srListMeta = dataservice.filterOldMeta(srListMeta);
+		
+		// merge meta to article
+		srListArticle.addAll(srListMeta);
+		
+		
+		
 
-		List<WCategory> res = dataservice.buildSearchCategory(srList, query);
+		List<WCategory> res = dataservice.buildSearchCategory(srListArticle, query);
 		json = toJson(res);
-			
+		
+		System.out.println("====>>>\n" + json);
+		
 		//json = toJson(rrm);
 	    HttpHeaders responseHeaders = new HttpHeaders();
 	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -361,6 +363,7 @@ public class TestHandler {
 			out.write(buffer, 0, length);
 		}
 		out.flush();
+		is.close();
 		particalTemp.delete();
 	}	
 
@@ -396,41 +399,41 @@ public class TestHandler {
 	}	
 	
 	
-	private void getParticalPdf(File pdfFile, String selectedPages, OutputStream outputStream) throws IOException, DocumentException{
-		
-		List<Integer> pages = new ArrayList<Integer>();
-		
-		int startPage = 0;
-		int endPage = 0;
-		
-		// page range 1-5 (from page 1 to page 5)
-		if(selectedPages.indexOf("-") != -1){
-			String[] pageRanges = selectedPages.split("-");
-			startPage = Integer.parseInt(pageRanges[0]);
-			endPage = Integer.parseInt(pageRanges[1]);
-			
-			for(int i = startPage; i < endPage + 1; i++ ){
-				pages.add(i);
-			}
-		//	selected pages: 1,4,5,9 (page 1, page 4, page 5 and page 9)
-		}else if(selectedPages.indexOf(",") != -1){			
-			String[] pageRanges = selectedPages.split(",");
-			for(String string : pageRanges){
-				pages.add(Integer.parseInt(string));
-			}
-		// single page: 5 (page 5)	
-		}else{
-			pages.add(Integer.parseInt(selectedPages));
-		}	
-		
-		//synchronized(this){
-			// extract selected pages
-			InputStream is = new FileInputStream(pdfFile);
-			PdfUtil.extractSelectPage(is, outputStream, pages);
-			outputStream.flush();
-			is.close();
-		//}
-	}
+//	private void getParticalPdf(File pdfFile, String selectedPages, OutputStream outputStream) throws IOException, DocumentException{
+//		
+//		List<Integer> pages = new ArrayList<Integer>();
+//		
+//		int startPage = 0;
+//		int endPage = 0;
+//		
+//		// page range 1-5 (from page 1 to page 5)
+//		if(selectedPages.indexOf("-") != -1){
+//			String[] pageRanges = selectedPages.split("-");
+//			startPage = Integer.parseInt(pageRanges[0]);
+//			endPage = Integer.parseInt(pageRanges[1]);
+//			
+//			for(int i = startPage; i < endPage + 1; i++ ){
+//				pages.add(i);
+//			}
+//		//	selected pages: 1,4,5,9 (page 1, page 4, page 5 and page 9)
+//		}else if(selectedPages.indexOf(",") != -1){			
+//			String[] pageRanges = selectedPages.split(",");
+//			for(String string : pageRanges){
+//				pages.add(Integer.parseInt(string));
+//			}
+//		// single page: 5 (page 5)	
+//		}else{
+//			pages.add(Integer.parseInt(selectedPages));
+//		}	
+//		
+//		//synchronized(this){
+//			// extract selected pages
+//			InputStream is = new FileInputStream(pdfFile);
+//			PdfUtil.extractSelectPage(is, outputStream, pages);
+//			outputStream.flush();
+//			is.close();
+//		//}
+//	}
 
 	
 	@RequestMapping(value="/article/{articleId}/{selectedPages}/{highlightRegEx}/download",method=RequestMethod.GET)
@@ -460,33 +463,43 @@ public class TestHandler {
 		
 		System.out.println("=============HighlightRegEx: " + highlightRegEx);
 		
-		File tempFile = File.createTempFile(originalFile.getName(), ".tmp");		
-		
-		getParticalPdf(originalFile, selectedPages, tempFile);
+		if(selectedPages.equals("-1")){
+			
+			ArticleMetaData metadata = dataservice.getArticleMetaDataByArticleId(articleId);
+			String html = metadata.toHTML();
+			response.setContentType("text/html");
+			html = html.replaceAll(highlightRegEx, "<span style='background:yellow;'>" + highlightRegEx + "</span>");
+			response.getWriter().println(html);			
+		} else {
 
-		response.setHeader("content-disposition", "inline; filename=" + originalFile.getName());
-		response.setContentType("application/pdf");
-		
-		File highlightedTempFile = File.createTempFile(originalFile.getName(), "highlight");		
-		try{
-			PdfUtil.textHighlight(tempFile, highlightedTempFile, highlightRegEx);
-		}catch(Exception e){
-			e.printStackTrace();
-			// failed to highlight, just show the file without highlight
-			highlightedTempFile = tempFile;
+			File tempFile = File.createTempFile(originalFile.getName(), ".tmp");
+
+			getParticalPdf(originalFile, selectedPages, tempFile);
+
+			response.setHeader("content-disposition", "inline; filename=" + originalFile.getName());
+			response.setContentType("application/pdf");
+
+			File highlightedTempFile = File.createTempFile(originalFile.getName(), "highlight");
+			try {
+				PdfUtil.textHighlight(tempFile, highlightedTempFile, highlightRegEx);
+			} catch (Exception e) {
+				e.printStackTrace();
+				// failed to highlight, just show the file without highlight
+				highlightedTempFile = tempFile;
+			}
+			OutputStream out = response.getOutputStream();
+			InputStream is = new FileInputStream(highlightedTempFile);
+			byte[] buffer = new byte[1024];
+			int length = -1;
+			while ((length = is.read(buffer)) != -1) {
+				out.write(buffer, 0, length);
+			}
+			out.flush();
+			is.close();
+			// out.close();
+			tempFile.delete();
+			highlightedTempFile.delete();
 		}
-		OutputStream out = response.getOutputStream();
-		InputStream is = new FileInputStream(highlightedTempFile);
-		byte[] buffer = new byte[1024];
-		int length = -1;
-		while( (length = is.read(buffer)) != -1){
-			out.write(buffer, 0, length);
-		}
-		out.flush();
-		is.close();
-		//out.close();
-		tempFile.delete();
-		highlightedTempFile.delete();
 	}		
 	
 	

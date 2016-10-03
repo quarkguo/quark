@@ -393,20 +393,20 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		}
 	}
 	
-	@Override
-	@Transactional(readOnly=true)
-	public void indexingArticle(Integer articleId){
-		CCGArticle article = articleDAO.findById(articleId);
-		List<CCGCategory> list = article.getCategorylist();	
-		Indexer indexer = new Indexer();
-		IndexWriter writer = indexer.getIndexWriter(false);
-		for(CCGCategory cat : list){
-			indexer.indexingCategory("" + cat.getCategoryID(), cat.getCategorytitle(),
-					cat.getCategorycontent(), "" + article.getArticleID(), article.getTitle(), writer);
-		}
-		
-		indexer.closeIndexWriter();
-	}
+//	@Override
+//	@Transactional(readOnly=true)
+//	public void indexingArticle(Integer articleId){
+//		CCGArticle article = articleDAO.findById(articleId);
+//		List<CCGCategory> list = article.getCategorylist();	
+//		Indexer indexer = new Indexer();
+//		IndexWriter writer = indexer.getIndexWriter(false);
+//		for(CCGCategory cat : list){
+//			indexer.indexingCategory("" + cat.getCategoryID(), cat.getCategorytitle(),
+//					cat.getCategorycontent(), "" + article.getArticleID(), article.getTitle(), writer);
+//		}
+//		
+//		indexer.closeIndexWriter();
+//	}
 	
 	@Override
 	@Transactional(readOnly=true)
@@ -442,51 +442,51 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		IndexWriter writer = indexer.getMetaIndexWriter(false);
 		ArticleMetaData metadata = getArticleMetaDataByArticleId(articleId);
 		String metaString = metadata.toString();
-		
-		indexer.indexingMetadata("" + articleId, metadata.getTitle(), metaString, writer);
-		indexer.closeMetaIndexWriter();		
+		indexer.indexingMetadata("" + articleId, metadata.getTitle(), "" + metadata.getLastUpdateDate(), metaString, writer);
+		indexer.closeMetaIndexWriter();
+		System.out.println("===closed index writer");
 	}
 	
 	@Override
 	@Transactional(readOnly=true)
 	public void indexMetadataAll() throws Exception{
-		List<ArticleBasicInfo> articleList = this.getArticleBasicInfo();
-		
-		Indexer indexer = new Indexer();
-		IndexWriter writer = indexer.getMetaIndexWriter(true);
-
-		for(ArticleBasicInfo info : articleList){
-			Integer articleId = info.getArticleID();
-			ArticleMetaData metadata = getArticleMetaDataByArticleId(articleId);
-			String metaString = metadata.toString();			
-			indexer.indexingMetadata("" + articleId, metadata.getTitle(), metaString, writer);
-		}
-		indexer.closeMetaIndexWriter();
+//		List<ArticleBasicInfo> articleList = this.getArticleBasicInfo();
+//		
+//		Indexer indexer = new Indexer();
+//		IndexWriter writer = indexer.getMetaIndexWriter(true);
+//
+//		for(ArticleBasicInfo info : articleList){
+//			Integer articleId = info.getArticleID();
+//			ArticleMetaData metadata = getArticleMetaDataByArticleId(articleId);
+//			String metaString = metadata.toString();			
+//			indexer.indexingMetadata("" + articleId, metadata.getTitle(), "" + metadata.getLastUpdateDate(), metaString, writer);
+//		}
+//		indexer.closeIndexWriter();
 	}	
 	
 	
-	@Override
-	@Transactional(readOnly=true)
-	public void indexingAll(){
-		List<ArticleBasicInfo> articleList = this.getArticleBasicInfo();
-		
-		Indexer indexer = new Indexer();
-		IndexWriter writer = indexer.getIndexWriter(true);
-
-		for(ArticleBasicInfo info : articleList){
-			Integer articleId = info.getArticleID();
-			
-			CCGArticle article = articleDAO.findById(articleId);
-			List<CCGCategory> list = article.getCategorylist();	
-						
-			for(CCGCategory cat : list){
-				indexer.indexingCategory("" + cat.getCategoryID(), cat.getCategorytitle(),
-						cat.getCategorycontent(), "" + article.getArticleID(), article.getTitle(), writer);
-			}
-		}
-		
-		indexer.closeIndexWriter();
-	}
+//	@Override
+//	@Transactional(readOnly=true)
+//	public void indexingAll(){
+//		List<ArticleBasicInfo> articleList = this.getArticleBasicInfo();
+//		
+//		Indexer indexer = new Indexer();
+//		IndexWriter writer = indexer.getIndexWriter(true);
+//
+//		for(ArticleBasicInfo info : articleList){
+//			Integer articleId = info.getArticleID();
+//			
+//			CCGArticle article = articleDAO.findById(articleId);
+//			List<CCGCategory> list = article.getCategorylist();	
+//						
+//			for(CCGCategory cat : list){
+//				indexer.indexingCategory("" + cat.getCategoryID(), cat.getCategorytitle(),
+//						cat.getCategorycontent(), "" + article.getArticleID(), article.getTitle(), writer);
+//			}
+//		}
+//		
+//		indexer.closeIndexWriter();
+//	}
 
 	@Override
 	@Transactional(readOnly=true)
@@ -571,6 +571,11 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		HashMap<Integer,WCategory> lookupMap=new HashMap<Integer,WCategory>(); // this is duplicate store for lookup ref
 		for(SearchResult2 s:searchRes)
 		{
+			System.out.println("====>>>> searchResult: " + s.getArticleId());
+			System.out.println("====>>>> searchResult: " + s.getArticleTitle());
+			System.out.println("====>>>> searchResult: " + s.getPageNumber());
+			
+			
 			Integer articleID=new Integer(s.getArticleId());
 			int pageNumber=Integer.parseInt(s.getPageNumber());
 			WCategory a_wc=lookupMap.get(articleID);
@@ -635,13 +640,19 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			// now insert new category into the existi category list
 			System.out.println("trying to add page...."+pageNumber+" in "+a_wc.getStartPage()+"-"+a_wc.getEndPage());
 			WCategory thepage=new WCategory();
+			//if()
 			thepage.setArticleID(a_wc.getArticleID());
 			thepage.setStartPage(pageNumber);
 			thepage.setEndPage(pageNumber);
 			thepage.setLeaf(true);
 			thepage.setIcon("images/docs.jpg");
-			thepage.setCategorytitle("<font color='purple'>[Matched Page: #"+pageNumber+"]</font>");
-			a_wc.getSubCategories().add(thepage);			
+			if(pageNumber == -1){
+				thepage.setCategorytitle("<font color='purple'>[Matched Page: # Meta Data]</font>");
+				a_wc.getSubCategories().add(0,thepage);				
+			}else{
+				thepage.setCategorytitle("<font color='purple'>[Matched Page: #"+pageNumber+"]</font>");
+				a_wc.getSubCategories().add(thepage);
+			}
 				
 		}
 		// convert sorted map to results
@@ -658,7 +669,11 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		
 		for(WCategory wc:res)
 		{
-			wc.setEndPage(wc.getSubCategories().get(0).getStartPage());
+			if(wc.getSubCategories().get(0).getStartPage() == -1){
+				;//wc.setEndPage(wc.getSubCategories().get(1).getStartPage());	
+			}else{
+				wc.setEndPage(wc.getSubCategories().get(0).getStartPage());
+			}
 			wc.setEndposi(500);
 		}
 		
@@ -728,12 +743,26 @@ public class CCGDBSerivceImpl implements CCGDBService {
 				 }
 			 }
 		}
-		System.out.println("===filtered search results:");
-		System.out.println(JSON.toJson(newList));
-		
 		return newList;
 	}
 
+	public List<SearchResult2> filterOldMeta(List<SearchResult2> searchResultList){
+		// the last change data from list should match the last change date from db
+		
+		List<SearchResult2> newList = new ArrayList<SearchResult2>();
+		for(SearchResult2 result : searchResultList){
+			Integer articleId = Integer.parseInt(result.getArticleId());
+			CCGArticleMetadata meta = metadataDAO.findById(articleId);
+			String lastupdateTime = "" + meta.getLastUpdateTS();
+			if(lastupdateTime.equals(result.getPageNumber())){
+				// match
+				result.setPageNumber("-1");  // -1 indicate metadata page 
+				newList.add(result);
+			}
+		}
+		return newList;
+	}
+	
 	@Override
 	public List<WCategory> getFlatCategory(int articleID, int page) {
 		// TODO Auto-generated method stub

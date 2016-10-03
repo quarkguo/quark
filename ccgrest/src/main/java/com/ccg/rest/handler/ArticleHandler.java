@@ -184,51 +184,51 @@ public class ArticleHandler {
 	    return new ResponseEntity<String>(input, responseHeaders, HttpStatus.CREATED);
 	}	
 	
-	@RequestMapping(method=RequestMethod.GET, value="/search")
-	public ResponseEntity<String> search(
-			@RequestParam(value="query", required=false) String query,
-			@RequestParam(value="limit", required=false) String limit) {
-		
-		int default_limit = 100;
-		if(limit != null){
-			try{
-				default_limit = Integer.parseInt(limit);
-			}catch(Exception e){
-				;
-			}
-		}
-		
-		String json = "";
-		try {
-			SearchEngine se = new SearchEngine();
-			List<SearchResult> srList = se.search(query, default_limit);
-			json = toJson(srList);
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			json = e.getMessage();
-		}
-		
-		
-		
-		
-//		RestResponseMessage rrm = new RestResponseMessage();
-//		List<CCGArticle> articleList = dataservice.getAllCCGArticle();
-//		Indexer indexer = new Indexer();
-//		try{
-//			indexer.rebuildIndexes(articleList);;
-//			rrm.setSuccess();
-//		}catch(Exception e){
-//			rrm.setFailed();
-//			rrm.setMessage(e.getMessage());
-//			e.printStackTrace();
+//	@RequestMapping(method=RequestMethod.GET, value="/search")
+//	public ResponseEntity<String> search(
+//			@RequestParam(value="query", required=false) String query,
+//			@RequestParam(value="limit", required=false) String limit) {
+//		
+//		int default_limit = 100;
+//		if(limit != null){
+//			try{
+//				default_limit = Integer.parseInt(limit);
+//			}catch(Exception e){
+//				;
+//			}
 //		}
-		//json = toJson(rrm);
-	    HttpHeaders responseHeaders = new HttpHeaders();
-	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-		return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
-	}			
+//		
+//		String json = "";
+//		try {
+//			SearchEngine se = new SearchEngine();
+//			List<SearchResult> srList = se.search(query, default_limit);
+//			json = toJson(srList);
+//			
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			json = e.getMessage();
+//		}
+//		
+//		
+//		
+//		
+////		RestResponseMessage rrm = new RestResponseMessage();
+////		List<CCGArticle> articleList = dataservice.getAllCCGArticle();
+////		Indexer indexer = new Indexer();
+////		try{
+////			indexer.rebuildIndexes(articleList);;
+////			rrm.setSuccess();
+////		}catch(Exception e){
+////			rrm.setFailed();
+////			rrm.setMessage(e.getMessage());
+////			e.printStackTrace();
+////		}
+//		//json = toJson(rrm);
+//	    HttpHeaders responseHeaders = new HttpHeaders();
+//	    responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+//		return new ResponseEntity<String>(json, responseHeaders, HttpStatus.CREATED);
+//	}			
 	
 	@RequestMapping(value="/article/{articleId}/delete",method=RequestMethod.GET)
 	public String deleteArticle(@PathVariable("articleId") Integer articleId)
