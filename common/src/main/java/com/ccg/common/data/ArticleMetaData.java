@@ -90,19 +90,22 @@ public class ArticleMetaData {
 
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");		
 		StringBuffer sb = new StringBuffer();
-		sb.append("title:" + title).append("\n");
-		sb.append("type:" + type).append("\n");
-		sb.append("author:" + author).append("\n");
-		sb.append("company:" + company).append("\n");
-		sb.append("accept status:" + acceptStatus).append("\n");
-		sb.append("praisal score:" + praisalscore).append("\n");
-		sb.append("description:" + description).append("\n");
+		sb.append("title: " + title).append("\n");
+		sb.append("type: " + type).append("\n");
+		sb.append("author: " + author).append("\n");
+		sb.append("company: " + company).append("\n");
+		sb.append("accept status: " + acceptStatus).append("\n");
+		sb.append("praisal score: " + praisalscore).append("\n");
+		sb.append("description: " + description).append("\n");
 		if(createDate != null){
-			sb.append("create date:" + format.format(createDate)).append("\n");	
+			sb.append("create date: " + format.format(createDate)).append("\n");	
 		}
 		if(lastUpdateDate != null){
-			sb.append("last update date:" + format.format(lastUpdateDate)).append("\n");
+			sb.append("last update date: " + format.format(lastUpdateDate)).append("\n");
 		}
+		
+		System.out.println(sb.toString());
+		
 		return sb.toString();
 	}
 	

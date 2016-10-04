@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,6 +34,7 @@ import com.ccg.common.data.SearchResult2;
 import com.ccg.common.data.SubCategoryContent;
 import com.ccg.common.data.WCategory;
 import com.ccg.common.lincese.InvalidLicenseException;
+import com.ccg.common.lincese.License;
 import com.ccg.common.lincese.LicenseExpiredException;
 import com.ccg.common.lincese.LicenseUtil;
 import com.ccg.common.pdf.util.PdfUtil;
@@ -50,12 +53,14 @@ public class TestHandler {
 	@Autowired
 	CCGDBService dataservice;
 	
-	@RequestMapping(value="/hello",method=RequestMethod.GET)
+	@RequestMapping(value="/client/name",method=RequestMethod.GET)
 	public String hello(ModelMap para)
 	{
-		para.addAttribute("msg","hello world message");
-		return "hello world!!";
+		License license = LicenseUtil.getLicenseFromClassPath();
+		return license.getClientName();
 	}
+	
+	
 	
 	@RequestMapping(value="/articleList",method=RequestMethod.GET)
 	public String articleList(ModelMap para)
@@ -448,9 +453,6 @@ public class TestHandler {
 		
 		File originalFile = new File(filename);
 		
-		System.out.println("=========>>>>" + selectedPages);
-		System.out.println("=========>>>>" + highlightRegEx);
-		
 		if(highlightRegEx == null){
 			highlightRegEx = "";
 		}
@@ -461,14 +463,14 @@ public class TestHandler {
 			highlightRegEx = highlightRegEx.replaceAll("\\s+?", "|");
 		}
 		
-		System.out.println("=============HighlightRegEx: " + highlightRegEx);
-		
 		if(selectedPages.equals("-1")){
 			
 			ArticleMetaData metadata = dataservice.getArticleMetaDataByArticleId(articleId);
 			String html = metadata.toHTML();
 			response.setContentType("text/html");
-			html = html.replaceAll(highlightRegEx, "<span style='background:yellow;'>" + highlightRegEx + "</span>");
+			// (?i) means CASE_INSENSITIVE.
+			html = html.replaceAll("(?i)" + highlightRegEx, "<span style='background:yellow;'>$0</span>");			
+			
 			response.getWriter().println(html);			
 		} else {
 

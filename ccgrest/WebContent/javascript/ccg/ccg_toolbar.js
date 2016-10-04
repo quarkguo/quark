@@ -7,7 +7,7 @@ ccg.article={};
 ccg.article.pattern={};
 ccg.data.pattern=[];
 ccg.data.licensemessage = false;
-
+ccg.clientname=Ext.util.Cookies.get('clientname');
 ccg.data.docliststore = Ext.create('Ext.data.TreeStore', {
         proxy: {
             type: 'ajax',
@@ -139,7 +139,8 @@ Ext.define('com.ccg.toolbar',{
 		         },
 		         {
 		        	 xtype:'component',		        	 
-		        	 html:document.title,
+		        	 html:ccg.clientname ,
+		        	 style: 'color:white;font-weight: bold',
 		        	 cls:'.ccg-header-title',
 		        	 flex:1
 		         },
@@ -253,6 +254,7 @@ Ext.define('com.ccg.toolbar',{
 	        	 			}
 	        	 		}	
 	        	 	});
+	        		
 	            },
 	            afterlayout: function(){
 	        		Ext.Ajax.request({
