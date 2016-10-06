@@ -24,7 +24,7 @@ public class License {
 	private int numberOfUsers;
 	private List<String> module;
 	private String issuedBy;
-	private Date issuedDate;
+	private Date issuedDate = new Date();
 	private String signature;
 
 	public String getClientName() {

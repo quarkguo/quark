@@ -450,18 +450,18 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	@Override
 	@Transactional(readOnly=true)
 	public void indexMetadataAll() throws Exception{
-//		List<ArticleBasicInfo> articleList = this.getArticleBasicInfo();
-//		
-//		Indexer indexer = new Indexer();
-//		IndexWriter writer = indexer.getMetaIndexWriter(true);
-//
-//		for(ArticleBasicInfo info : articleList){
-//			Integer articleId = info.getArticleID();
-//			ArticleMetaData metadata = getArticleMetaDataByArticleId(articleId);
-//			String metaString = metadata.toString();			
-//			indexer.indexingMetadata("" + articleId, metadata.getTitle(), "" + metadata.getLastUpdateDate(), metaString, writer);
-//		}
-//		indexer.closeIndexWriter();
+		List<ArticleBasicInfo> articleList = this.getArticleBasicInfo();
+		
+		Indexer indexer = new Indexer();
+		IndexWriter writer = indexer.getMetaIndexWriter(true);
+
+		for(ArticleBasicInfo info : articleList){
+			Integer articleId = info.getArticleID();
+			ArticleMetaData metadata = getArticleMetaDataByArticleId(articleId);
+			String metaString = metadata.toString();			
+			indexer.indexingMetadata("" + articleId, metadata.getTitle(), "" + metadata.getLastUpdateDate(), metaString, writer);
+		}
+		indexer.closeMetaIndexWriter();
 	}	
 	
 	
