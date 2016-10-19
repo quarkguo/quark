@@ -5,9 +5,14 @@ public class PossiblePageHeaderOrFooter {
 	private String line1;
 	private String line2;
 	private String line3;
+	String line4;
 	
-	
-	
+	public String getLine4() {
+		return line4;
+	}
+	public void setLine4(String line4) {
+		this.line4 = line4;
+	}
 	public int getPageNumber() {
 		return pageNumber;
 	}

@@ -31,6 +31,10 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 			e.printStackTrace();
 			this.processDocumentDefault(_PAGESPERCATEGORY_);
 		}
+		if(aInfo.categoryList==null||aInfo.categoryList.size()==0)
+		{
+			this.processDocumentDefault(_PAGESPERCATEGORY_);
+		}
 		return aInfo;
 	}
 	
@@ -111,7 +115,7 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 			PageInfo pageInfo = new PageInfo();
 			pageInfo.pageNumber = i;
 			pageInfo.content = temp;
-			if(i==2||i==3) System.out.println(temp);
+	//		if(i==2||i==3) System.out.println(temp);
 			//pageInfo.numOfChars = temp.length();
 			pageList.add(pageInfo);
 			//sb.append(temp);
@@ -151,7 +155,7 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 			//ele.printMe(System.out);
 			
 			parsingSubCategoryRecursive(ele,exclu_start,exclu_end);
-			
+		
 		}
 		return main;
 	}
@@ -162,8 +166,7 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 		List<int[]> res=new ArrayList<int[]>();
 		if(end<=exclude_end&&start>=exclude_start)
 		{
-			// none
-			
+			// none			
 		}
 		else if( start>=end)
 		{
@@ -310,12 +313,10 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 			   searchToken=searchToken.substring(0,posi).trim();
 		   }
 		}
-		
-		
+
 		// trying to find match
 		// always try to find first match
-		System.out.println("[start:"+start+" end:"+end);
-		
+		System.out.println("[start:"+start+" end:"+end);		
 		String content=aInfo.getUpperCaseContent().substring(start, end);
 		searchToken=searchToken.toUpperCase();
 		boolean found=false;
@@ -718,6 +719,11 @@ public class ExtractArticleInfoAuto extends ExtractArticleInfo {
 					System.out.println("===>>> Similarity 3: " + line3_similarity);
 					if(line3_similarity > .6 && header1.getLine3().trim().length() != 0){
 						headerList.add(header1.getLine3());
+						double line4_similarity = StringSimilarity.similarity(header1.getLine4(), header2.getLine4());
+						System.out.println("===>>> Similarity 3: " + line3_similarity);
+						if(line4_similarity > .6 && header1.getLine4().trim().length() != 0){
+							headerList.add(header1.getLine4());
+						}
 					}
 				}
 			}
