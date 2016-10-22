@@ -70,6 +70,7 @@ public class Category {
 	{
 		if(title.toLowerCase().indexOf("table ")>-1) return true;
 		if(title.toLowerCase().indexOf("figure ")>-1) return true;
+		if(title.toLowerCase().indexOf("resumes ")>-1) return true;
 		return false;
 	}
 	public String getTrimTitle()
@@ -173,7 +174,7 @@ public class Category {
 	}
 	public void printMe(PrintStream ps)
 	{
-		ps.println("title: "+this.getTitle()+" "+this.startPage+","+this.endPage+ " "+this.getStartPosition()+"," +this.getEndPosition()+".."+this.doesCategoryHasContent()+".."+this.getMatchedToken());
+		ps.println("level:"+this.getLevel()+" title: "+this.getTitle()+" "+this.startPage+","+this.endPage+ " "+this.getStartPosition()+"," +this.getEndPosition()+".."+this.doesCategoryHasContent()+".."+this.getMatchedToken());
 		if(subCategory!=null&&subCategory.size()>0)
 		{
 			ps.println(".... children....");

@@ -169,6 +169,10 @@ public class ExtractArticleInfo {
 					System.out.println("===>>> Similarity 3: " + line3_similarity);
 					if(line3_similarity > .6 && header1.getLine3().trim().length() != 0){
 						headerList.add(header1.getLine3());
+						double line4_similarity = StringSimilarity.similarity(header1.getLine4(), header2.getLine4());
+						if(line4_similarity > .6 && header1.getLine4().trim().length() != 0){
+							headerList.add(header1.getLine4());
+						}
 					}
 				}
 			}
@@ -222,6 +226,9 @@ public class ExtractArticleInfo {
 			if(i == 2){
 				header.setLine3(ss[2]);
 			}
+			if(i == 3){
+				header.setLine4(ss[3]);
+			}
 		}
 		this.possibleHeaderList.add(header);
 		
@@ -237,6 +244,7 @@ public class ExtractArticleInfo {
 			if(i == ss.length -1 - 2){
 				footer.setLine3(ss[i]);
 			}
+			
 		}
 		this.possibleFooterList.add(footer);
 	}

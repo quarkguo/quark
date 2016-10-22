@@ -9,5 +9,5 @@ Ext.Ajax.request({
 		ccg.clientname=response.responseText;
 		Ext.util.Cookies.set('clientname', ccg.clientname);
 	 }
-})();;
+});
 
