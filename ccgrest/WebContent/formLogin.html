@@ -7,16 +7,14 @@
 <link rel="stylesheet" type="text/css" href="css/ext-theme-crisp-all_02.css"/>
 <script type="text/javascript" src="javascript/extjs/ext-all.js"></script>
 <script type="text/javascript" src="javascript/extjs/ext-theme-crisp.js"></script>
-<script type="text/javascript" src="javascript/ccg/ccg_data.js"></script>
+
 
 <script>
 // here define the login form
 Ext.onReady(function(){
-ccg.clientname=Ext.util.Cookies.get('clientname');
- 
 var ccglogin=
 	Ext.create('Ext.form.Panel', {  
-	    title: '<b>'+ccg.clientname+'</b>', 
+	    title: 'clientname', 
 	    width: 380,
 	    bodyPadding: 10,
 	    defaultType: 'textfield',
@@ -66,13 +64,25 @@ var ccglogin=
                       }
 	        	});
 			}
-	    }]
+	    }],
+	    listeners:{
+	         beforerender: function(component, eOpts){
+	        		Ext.Ajax.request({
+	        			 url: 'rest/client/name',
+	        			 method:"GET",
+	        			 success: function(response, opts) {
+	        				 Ext.getCmp('ccgloginpanel').setTitle('<b>'+response.responseText+'</b>');
+	        			 }
+	        		});
+	         }
+	     },
 	});
 })
 Ext.util.Cookies.clear('showlicenseinfo');
 </script>
 </head>
 <body>
+
 <br>
 <br><br><br><br><br><center>
 <div id=loginlyr></div>
