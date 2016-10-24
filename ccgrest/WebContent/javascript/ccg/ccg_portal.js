@@ -1,7 +1,7 @@
 // global variable
 
 
-
+ccg.clientname='aaaaa';
 Ext.onReady(function(){
 	// some initialization functions
 	ccg.initUploadFilePanel();

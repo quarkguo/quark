@@ -7,7 +7,18 @@ ccg.article={};
 ccg.article.pattern={};
 ccg.data.pattern=[];
 ccg.data.licensemessage = false;
-ccg.clientname=Ext.util.Cookies.get('clientname');
+//ccg.clientname=Ext.util.Cookies.get('clientname');
+Ext.Ajax.request({
+	 url: 'rest/client/name',
+	 method:"GET",
+	 success: function(response, opts) {
+		ccg.clientname = response.responseText;
+		console.log(ccg.clientname);
+	 }
+});
+console.log("======");
+console.log(ccg.clientname);
+
 ccg.data.docliststore = Ext.create('Ext.data.TreeStore', {
         proxy: {
             type: 'ajax',
@@ -138,8 +149,9 @@ Ext.define('com.ccg.toolbar',{
 		        	 cls:'ccg-logo'
 		         },
 		         {
-		        	 xtype:'component',		        	 
-		        	 html:ccg.clientname ,
+		        	 xtype:'component',
+		        	 id:'clientname',
+		        	 html:'clientname',
 		        	 style: 'color:white;font-weight: bold',
 		        	 cls:'.ccg-header-title',
 		        	 flex:1
@@ -254,6 +266,14 @@ Ext.define('com.ccg.toolbar',{
 	        	 			}
 	        	 		}	
 	        	 	});
+	        		
+	        		Ext.Ajax.request({
+	        			 url: 'rest/client/name',
+	        			 method:"GET",
+	        			 success: function(response, opts) {
+	        				 Ext.getCmp('clientname').update(response.responseText);
+	        			 }
+	        		});
 	        		
 	            },
 	            afterlayout: function(){
