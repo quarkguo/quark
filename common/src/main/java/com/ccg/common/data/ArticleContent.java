@@ -6,7 +6,7 @@ public class ArticleContent {
 	private String contentTitle;
 	private String fileName;
 	private String url;
-	private String metatpe;
+	private String metatype;
 	private String content;
 	private Integer length;
 	
@@ -34,11 +34,11 @@ public class ArticleContent {
 	public void setUrl(String url) {
 		this.url = url;
 	}
-	public String getMetatpe() {
-		return metatpe;
+	public String getMetatype() {
+		return metatype;
 	}
-	public void setMetatpe(String metatpe) {
-		this.metatpe = metatpe;
+	public void setMetatype(String metatype) {
+		this.metatype = metatype;
 	}
 	public String getContent() {
 		return content;

@@ -12,6 +12,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.lucene.index.IndexWriter;
@@ -26,13 +27,14 @@ import com.ccg.common.data.CategoryContent;
 import com.ccg.common.data.SearchResult2;
 import com.ccg.common.data.SubCategoryContent;
 import com.ccg.common.data.WCategory;
+import com.ccg.common.file.util.FileUtil;
 import com.ccg.common.lincese.InvalidLicenseException;
-import com.ccg.common.lincese.License;
 import com.ccg.common.lincese.LicenseExpiredException;
 import com.ccg.common.lincese.LicenseUtil;
 import com.ccg.dataaccess.dao.api.CCGArticleDAO;
 import com.ccg.dataaccess.dao.api.CCGArticleInfoDAO;
 import com.ccg.dataaccess.dao.api.CCGArticleMetadataDAO;
+import com.ccg.dataaccess.dao.api.CCGArticleTypeDAO;
 import com.ccg.dataaccess.dao.api.CCGCategoryDAO;
 import com.ccg.dataaccess.dao.api.CCGContentDAO;
 import com.ccg.dataaccess.dao.api.CCGGroupArticleAccessDAO;
@@ -40,13 +42,14 @@ import com.ccg.dataaccess.dao.api.CCGSubcategoryDAO;
 import com.ccg.dataaccess.entity.CCGArticle;
 import com.ccg.dataaccess.entity.CCGArticleInfo;
 import com.ccg.dataaccess.entity.CCGArticleMetadata;
+import com.ccg.dataaccess.entity.CCGArticleType;
 import com.ccg.dataaccess.entity.CCGCategory;
 import com.ccg.dataaccess.entity.CCGContent;
 import com.ccg.dataaccess.entity.CCGGroupArticleAccess;
 import com.ccg.dataaccess.entity.CCGSubcategory;
 import com.ccg.ingestion.extract.Category;
 import com.ccg.services.index.Indexer;
-import com.ccg.util.JSON;
+import com.ccg.util.ConfigurationManager;
 import com.ccg.util.JsonHelper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -78,6 +81,9 @@ public class CCGDBSerivceImpl implements CCGDBService {
 	
 	@Autowired
 	private CCGGroupArticleAccessDAO groupArticleAccessDAO;
+	
+	@Autowired
+	private CCGArticleTypeDAO articleTypeDAO;
 	
 	@Override
 	@Transactional(readOnly=false)
@@ -163,6 +169,7 @@ public class CCGDBSerivceImpl implements CCGDBService {
 			articleContent.setLength(content.getLength());
 			articleContent.setFileName(content.getFilename());
 			articleContent.setUrl(content.getUrl());
+			articleContent.setMetatype(content.getMetatype());
 		}
 		return articleContent;
 	}
@@ -393,136 +400,74 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		}
 	}
 	
-//	@Override
-//	@Transactional(readOnly=true)
-//	public void indexingArticle(Integer articleId){
-//		CCGArticle article = articleDAO.findById(articleId);
-//		List<CCGCategory> list = article.getCategorylist();	
-//		Indexer indexer = new Indexer();
-//		IndexWriter writer = indexer.getIndexWriter(false);
-//		for(CCGCategory cat : list){
-//			indexer.indexingCategory("" + cat.getCategoryID(), cat.getCategorytitle(),
-//					cat.getCategorycontent(), "" + article.getArticleID(), article.getTitle(), writer);
-//		}
-//		
-//		indexer.closeIndexWriter();
-//	}
-	
 	@Override
 	@Transactional(readOnly=true)
 	public void indexingArticle2(Integer articleId) throws Exception{
 		
-		Indexer indexer = new Indexer();
-		IndexWriter writer = indexer.getIndexWriter(false);
-		
 		ArticleContent content = getArticleContent(articleId);
+		com.ccg.services.index2.Indexer indexer = new com.ccg.services.index2.Indexer();
+		IndexWriter articleIndexWriter = indexer.getArticleWriter(content.getMetatype(), false);
+		
 		String filename = content.getUrl();
-		content.getMetatpe();
-		System.out.println("========== file name====" + filename);
 		List<String> pageContents = this.getPdfPageContentAsList(filename);
-		int pageNumber = 0;
-		
-		System.out.println("===== title: " + content.getContentTitle());
-		
+		int pageNumber = 0;		
 		for(String pageContent: pageContents){
-			indexer.indexingPage(
+			indexer.indexing(
 					"" + articleId, 
 					content.getContentTitle(), 
 					"" + ++pageNumber, 
 					pageContent, 
-					writer);
-		}
-		indexer.closeIndexWriter();
+					articleIndexWriter);
+		}		
+		indexer.closeArticleIndexWriter();
 	}	
 	
 	@Override
 	@Transactional(readOnly=true)
 	public void indexMetadata(Integer articleId) throws Exception{
-		Indexer indexer = new Indexer();
-		IndexWriter writer = indexer.getMetaIndexWriter(false);
+		com.ccg.services.index2.Indexer indexer = new com.ccg.services.index2.Indexer();
+		
 		ArticleMetaData metadata = getArticleMetaDataByArticleId(articleId);
 		String metaString = metadata.toString();
-		indexer.indexingMetadata("" + articleId, metadata.getTitle(), "" + metadata.getLastUpdateDate(), metaString, writer);
-		indexer.closeMetaIndexWriter();
-		System.out.println("===closed index writer");
+		
+		IndexWriter writer = indexer.getArticleMetaWriter(metadata.getType(), false);
+		indexer.indexing("" + articleId, metadata.getTitle(), "" + metadata.getLastUpdateDate(), metaString, writer);
+		indexer.closeArticleMetaIndexWriter();
 	}
 	
 	@Override
 	@Transactional(readOnly=true)
 	public void indexMetadataAll() throws Exception{
-		List<ArticleBasicInfo> articleList = this.getArticleBasicInfo();
+				
+		com.ccg.services.index2.Indexer.deleteAllArticleMetaIndex();
 		
-		Indexer indexer = new Indexer();
-		IndexWriter writer = indexer.getMetaIndexWriter(true);
-
+		List<ArticleBasicInfo> articleList = this.getArticleBasicInfo();
 		for(ArticleBasicInfo info : articleList){
-			Integer articleId = info.getArticleID();
-			ArticleMetaData metadata = getArticleMetaDataByArticleId(articleId);
-			String metaString = metadata.toString();			
-			indexer.indexingMetadata("" + articleId, metadata.getTitle(), "" + metadata.getLastUpdateDate(), metaString, writer);
+			this.indexMetadata(info.getArticleID());
 		}
-		indexer.closeMetaIndexWriter();
 	}	
 	
-	
-//	@Override
-//	@Transactional(readOnly=true)
-//	public void indexingAll(){
-//		List<ArticleBasicInfo> articleList = this.getArticleBasicInfo();
-//		
-//		Indexer indexer = new Indexer();
-//		IndexWriter writer = indexer.getIndexWriter(true);
-//
-//		for(ArticleBasicInfo info : articleList){
-//			Integer articleId = info.getArticleID();
-//			
-//			CCGArticle article = articleDAO.findById(articleId);
-//			List<CCGCategory> list = article.getCategorylist();	
-//						
-//			for(CCGCategory cat : list){
-//				indexer.indexingCategory("" + cat.getCategoryID(), cat.getCategorytitle(),
-//						cat.getCategorycontent(), "" + article.getArticleID(), article.getTitle(), writer);
-//			}
-//		}
-//		
-//		indexer.closeIndexWriter();
-//	}
-
 	@Override
 	@Transactional(readOnly=true)
-	public void indexingAll2() throws Exception{
-		List<ArticleBasicInfo> articleList = this.getArticleBasicInfo();
+	public void indexingAll2() throws Exception{  
+		// this is re-indexing
+		// we need delete current index file
 		
-		Indexer indexer = new Indexer();
-		IndexWriter writer = indexer.getIndexWriter(true);
-
+		Properties prop = ConfigurationManager.getConfig("ccg.properties");
+    	String indexRoot = prop.getProperty("index.repository");	
+    	File directory = new File(indexRoot);
+    	FileUtil.deleteAll(directory);
+ 		
+    	List<ArticleBasicInfo> articleList = this.getArticleBasicInfo();
+		
 		for(ArticleBasicInfo info : articleList){
-			Integer articleId = info.getArticleID();
-			try
-			{
-			ArticleContent content = getArticleContent(articleId);
-			String filename = content.getUrl();
-			System.out.println("========== file name====" + filename);
-			List<String> pageContents = this.getPdfPageContentAsList(filename);
-			int pageNumber = 0;
-			for(String pageContent: pageContents){
-				indexer.indexingPage(
-						"" + articleId, 
-						info.getTitle(), 
-						"" + ++pageNumber, 
-						pageContent, 
-						writer);
-			}
-			}
-			catch(Exception e)
-			{
-				// here continue
-			}
+			this.indexingArticle2(info.getArticleID());
+		}
+		
+		for(ArticleBasicInfo info : articleList){
+			this.indexMetadata(info.getArticleID());
 		}		
-		indexer.closeIndexWriter();
 	}	
-	
-	
 	
 	@Override
 	@Transactional
@@ -809,6 +754,34 @@ public class CCGDBSerivceImpl implements CCGDBService {
 		{
 			return false;
 		}
+	}
+
+	@Override
+	public List<String> getAllCCGArticleTypes() {
+		// TODO Auto-generated method stub
+		List<CCGArticleType> types = articleTypeDAO.findAll();
+		List<String> typename = new ArrayList<String>();
+		for(CCGArticleType type : types){
+			typename.add(type.getName());
+		}
+		Collections.sort(typename);
+		return typename;
+	}
+
+	@Override
+	@Transactional(readOnly=false)
+	public List<String> addCCGArticleType(String typename) {
+		CCGArticleType articleType = new CCGArticleType();
+		articleType.setName(typename);
+		articleTypeDAO.save(articleType);
+		
+		List<CCGArticleType> types = articleTypeDAO.findAll();
+		List<String> typenames = new ArrayList<String>();
+		for(CCGArticleType type : types){
+			typenames.add(type.getName());
+		}
+		Collections.sort(typenames);
+		return typenames;		
 	}
 
 }

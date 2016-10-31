@@ -691,12 +691,27 @@ ccg.initUploadFilePanel = function(){
 			anchor : '100%',
 		},
 		{
-			xtype : 'textfield',
+			//xtype : 'textfield',
+			xtype: 'combo',
+			id:'comboDocType',
 			fieldLabel : 'Type',
 			name: 'type',
+			store: ['default', 'a','b'],
+			value: 'default',
+			editable: false,
 			labelAlign: 'right',
 			anchor : '100%',
 		},
+		{
+		    xtype: 'component',
+		    autoEl: {
+		        tag: 'a',
+		        href: '#',
+		        html: '<p style="text-align:right">Create new type</p>',
+		    },
+
+		},
+		
 	/*	{
 			xtype : 'fieldcontainer',
 			fieldLabel : 'Category Pattern',
@@ -729,7 +744,39 @@ ccg.initUploadFilePanel = function(){
     	beforeclose:function(win) {
     		ccg.ui.uploadfilepanel.hide();
         	 return false; 
-        }
+        },
+        
+        
+	    //listeners:{
+        render:function(panel){
+        		var link = panel.getEl().down('a');
+        		link.on('click', function(e){
+        			e.preventDefault();
+        			Ext.MessageBox.prompt('New Type', 'Please enter new type:', messageBoxCallback);
+        		})
+        },
+	    //}
+        
+        beforerender: function(component, eOpts){
+            Ext.Ajax.request({
+              	 url: 'rest/config/articletype',
+              	 method:"GET",
+              	 success: function(response, opts) {
+              		 var typenames = Ext.decode(response.responseText);
+              		 console.log(typenames);
+              		Ext.getCmp('comboDocType').bindStore(typenames);
+              	 },
+              	 failure: function(response, opts) {
+              		 alert("load data error!!");
+              	 }
+            });
+    		//Ext.Ajax.request({
+    		//	 url: 'rest/client/name',
+    		//	 method:"GET",
+    		//	 success: function(response, opts) {
+    		//		 Ext.getCmp('comboDocType').bindStore(['aa', 'bb']);
+    		//	 }
+    	}
     },
     buttons: [{
         text: 'Upload',
@@ -787,4 +834,29 @@ ccg.initUploadFilePanel = function(){
         }
     }]
 });	
+}
+function messageBoxCallback(btn, text){
+	console.log(btn);
+	if(btn == 'ok'){
+		console.log('clikc on ok');
+		//Ext.getCmp('comboDocType').bindStore(['aa', 'bb', text]);
+        Ext.Ajax.request({
+         	 url: 'rest/config/savearticletype/' + text,
+         	 method:"GET",
+         	 success: function(response, opts) {
+         		var typenames = Ext.decode(response.responseText);
+         		console.log(typenames); 
+         		Ext.getCmp('comboDocType').bindStore(typenames);
+         		
+         	 },
+         	 failure: function(response, opts) {
+         		 alert("save data error!!");
+         	 }
+       });
+		
+		Ext.getCmp('comboDocType').setValue(text);
+		//console.log(Ext.getCmp('comboDocType').getStore().data);
+		//console.log(Ext.getCmp('comboDocType').store.insert(0, {value: 'text'}));
+		
+	}
 }

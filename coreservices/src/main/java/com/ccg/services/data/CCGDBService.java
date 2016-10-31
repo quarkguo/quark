@@ -32,6 +32,8 @@ public interface CCGDBService {
 	public CCGArticle getCCGArticleById(Integer articleId);
 	public List<CCGArticle> getAllCCGArticle();
 	public void deleteArticle(int articleID);
+	public List<String> getAllCCGArticleTypes();
+	public List<String> addCCGArticleType(String typename);
 	//public void indexingArticle(Integer articleId);
 	//public void indexingAll();
 	public void indexingArticle2(Integer articleId) throws Exception;

@@ -12,6 +12,14 @@
 <script>
 // here define the login form
 Ext.onReady(function(){
+
+	function submitOnEnter(field, event){
+		if(event.getKey() == event.ENTER){
+			var button = Ext.getCmp('loginbtn');
+			button.fireHandler();
+		}
+	}
+	
 var ccglogin=
 	Ext.create('Ext.form.Panel', {  
 	    title: 'clientname', 
@@ -30,20 +38,28 @@ var ccglogin=
 	            	html:'<img src="images/user-icon.jpg" width=120 height=100 align="center" />'
 	            },
 	            {
-	            fieldLabel: 'User name (Email)',
-	            name:"j_username",
-	            value:''
+		            fieldLabel: 'User name (Email)',
+		            name:"j_username",
+		            value:'',
+		            listeners:{
+		            	afterrender:function(field){
+		            		field.focus();
+		            	}	
+		            }
 	        	},
 	        	{
 	        		fieldLabel: 'Password',
 	        		name:"j_password",
 	        		value:'',
-	        		inputType:'password'
+	        		inputType:'password',
+	        		listeners: {specialkey: submitOnEnter}
 	        	}
 	    ],
 	    buttons: [{
 	        text: 'Submit'	,
+	        id:'loginbtn',
 	        handler: function () {
+	        	console.log("==== submit form");
 	        	ccglogin.getForm().submit({
 	        		url:'j_security_check',
 	        		 success: function(form, action) {

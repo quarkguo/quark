@@ -126,6 +126,7 @@ public class ArticleHelper {
 		content.setLength(info.getContent().length());
 		content.setFilename(requestData.getFilename());
 		content.setUrl(articleURL);
+		content.setMetatype(requestData.getArticleType());
 		
 		article.setContent(content);
 		article.setRfpReference(0);

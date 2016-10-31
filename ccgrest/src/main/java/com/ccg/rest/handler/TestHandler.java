@@ -233,7 +233,7 @@ public class TestHandler {
 		GenericResponseMessage response = new GenericResponseMessage();
 		try{
 			dataservice.indexingAll2();
-			dataservice.indexMetadataAll();
+			//dataservice.indexMetadataAll();
 			response.code = 0;
 			response.status = "success";
 		}catch(Exception e){
@@ -274,15 +274,15 @@ public class TestHandler {
 			LicenseUtil.hasValidLicense();
 			/////////////////////////////			
 			
-			SearchEngine se = new SearchEngine();
-			if("a".equals(type)){
-				srListArticle = se.search2(query, default_limit);
-			}else if("m".equals(type)){
-				srListMeta = se.metaSearch(query, default_limit);
-			}else{
-				srListArticle = se.search2(query, default_limit);
-				srListMeta = se.metaSearch(query, default_limit);
-			}
+			com.ccg.services.index2.SearchEngine se = new com.ccg.services.index2.SearchEngine();
+			//if("a".equals(type)){
+			//	srListArticle = se.search(query, default_limit);
+			//}else if("m".equals(type)){
+			//	srListMeta = se.metaSearch(query, default_limit);
+			//}else{
+				srListArticle = se.searchArticle(query, default_limit);
+				srListMeta = se.searchArticleMetaData(query, default_limit);
+			//}
 		} catch (LicenseExpiredException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -403,44 +403,6 @@ public class TestHandler {
 		PdfUtil.extractSelectPageIntoNewFile(pdfFile, newFile, pages);		
 	}	
 	
-	
-//	private void getParticalPdf(File pdfFile, String selectedPages, OutputStream outputStream) throws IOException, DocumentException{
-//		
-//		List<Integer> pages = new ArrayList<Integer>();
-//		
-//		int startPage = 0;
-//		int endPage = 0;
-//		
-//		// page range 1-5 (from page 1 to page 5)
-//		if(selectedPages.indexOf("-") != -1){
-//			String[] pageRanges = selectedPages.split("-");
-//			startPage = Integer.parseInt(pageRanges[0]);
-//			endPage = Integer.parseInt(pageRanges[1]);
-//			
-//			for(int i = startPage; i < endPage + 1; i++ ){
-//				pages.add(i);
-//			}
-//		//	selected pages: 1,4,5,9 (page 1, page 4, page 5 and page 9)
-//		}else if(selectedPages.indexOf(",") != -1){			
-//			String[] pageRanges = selectedPages.split(",");
-//			for(String string : pageRanges){
-//				pages.add(Integer.parseInt(string));
-//			}
-//		// single page: 5 (page 5)	
-//		}else{
-//			pages.add(Integer.parseInt(selectedPages));
-//		}	
-//		
-//		//synchronized(this){
-//			// extract selected pages
-//			InputStream is = new FileInputStream(pdfFile);
-//			PdfUtil.extractSelectPage(is, outputStream, pages);
-//			outputStream.flush();
-//			is.close();
-//		//}
-//	}
-
-	
 	@RequestMapping(value="/article/{articleId}/{selectedPages}/{highlightRegEx}/download",method=RequestMethod.GET)
 	public void downloadParticalArticleAndHighlightText(
 			@PathVariable("articleId") Integer articleId, 
@@ -557,8 +519,21 @@ public class TestHandler {
 		return patternString;
 	}		
 
+	@RequestMapping(value="/config/articletype",method=RequestMethod.GET)
+	public String getArticleTypes()
+	{
+		List<String> typenames = dataservice.getAllCCGArticleTypes();
+		String typenameJson = toJson(typenames);
+		return typenameJson;
+	}		
 	
-	
+	@RequestMapping(value="/config/savearticletype/{typename}",method=RequestMethod.GET)
+	public String addArticleType(@PathVariable("typename") String typename)
+	{
+		List<String> typenames = dataservice.addCCGArticleType(typename);
+		String typenameJson = toJson(typenames);
+		return typenameJson;
+	}	
 }
 
 //class RestResponseMessage{
