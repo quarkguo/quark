@@ -16,8 +16,8 @@ Ext.Ajax.request({
 		console.log(ccg.clientname);
 	 }
 });
-console.log("======");
-console.log(ccg.clientname);
+//console.log("======");
+//console.log(ccg.clientname);
 
 ccg.data.docliststore = Ext.create('Ext.data.TreeStore', {
         proxy: {

@@ -163,7 +163,7 @@ ccg.ui.updateSelectedContent= function(data,searchKey){
 
 ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
     title: 'Search Content', 
-    width: 300,
+    width: 360,
     bodyPadding: 10,
     defaultType: 'textfield',
     frame: true,
@@ -173,7 +173,17 @@ ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
             {
             	fieldLabel: 'Keyword:',
             	name: 'query'            	
-            }],
+            },
+            {
+            	xtype: 'checkboxgroup',            	
+            	fieldLabel: 'Articel Types',
+            	allowBlank:false,
+            	columns:3,
+            	id: 'articletype',            	
+            	items:[
+             	]
+            }
+            ],
 	            buttons: [{
                 text: 'search',
                 handler: function () {
@@ -229,6 +239,29 @@ ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
                 }
             ],
             listeners:{
+                beforerender: function(component, eOpts){
+                    Ext.Ajax.request({
+                      	 url: 'rest/config/articletype',
+                      	 method:"GET",
+                      	 success: function(response, opts) {
+                      		 var typenames = Ext.decode(response.responseText);
+                      		Ext.getCmp("articletype").removeAll();
+                      		
+                      		console.log(typenames);
+                      		
+                      		for(var i=0;i<typenames.length;i++)
+                      		{
+                      			var ele=typenames[i];
+                      			var checkbox=new Ext.form.Checkbox({boxLabelAlign:'before',boxLabel:ele,name:ele,inputValue:ele})
+                      			Ext.getCmp("articletype").items.add(checkbox);
+                      		}
+                      		Ext.getCmp("articletype").doLayout();
+                      	 },
+                      	 failure: function(response, opts) {
+                      		 alert("load data error!!");
+                      	 }
+                    });
+                },
             	beforeclose:function(win) {
                 	 ccg.ui.contentsearchPanel.hide();
                 	 return false; 

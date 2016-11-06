@@ -3,6 +3,8 @@
 
 ccg.clientname='aaaaa';
 Ext.onReady(function(){
+	// need to load the articleType
+	
 	// some initialization functions
 	ccg.initUploadFilePanel();
 	Ext.create('Ext.container.Viewport',{
@@ -81,6 +83,8 @@ Ext.onReady(function(){
 				    			tooltip: 'Search Related Content',
 				    			handler: function() 
 				    			{
+				    				// here we need to populate the article type
+				    				
 				    				ccg.ui.contentsearchPanel.show();
 				    			}
 							},
