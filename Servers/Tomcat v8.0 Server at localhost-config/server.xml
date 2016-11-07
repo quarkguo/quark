@@ -37,7 +37,7 @@
          UserDatabaseRealm to authenticate users
     -->
     <Resource auth="Container" description="User database that can be updated and saved" factory="org.apache.catalina.users.MemoryUserDatabaseFactory" name="UserDatabase" pathname="conf/tomcat-users.xml" type="org.apache.catalina.UserDatabase"/>
-    <Resource auth="Container" driverClassName="com.mysql.jdbc.Driver" maxIdle="30" maxTotal="100" maxWaitMillis="10000" name="jdbc/DatabaseName" password="ccg" type="javax.sql.DataSource" url="jdbc:mysql://72.177.234.240:3306/ccgcontent2" username="ccg"/>          
+    <Resource auth="Container" driverClassName="com.mysql.jdbc.Driver" maxIdle="30" maxTotal="100" maxWaitMillis="10000" name="jdbc/DatabaseName" password="ccg" type="javax.sql.DataSource" url="jdbc:mysql://72.177.234.240:3306/ccgcontent" username="ccg"/>          
   </GlobalNamingResources>
 
   <!-- A "Service" is a collection of one or more "Connectors" that share
@@ -135,7 +135,6 @@
              Documentation at: /docs/config/valve.html
              Note: The pattern used is equivalent to using pattern="common" -->
         <Valve className="org.apache.catalina.valves.AccessLogValve" directory="logs" pattern="%h %l %u %t &quot;%r&quot; %s %b" prefix="localhost_access_log" suffix=".txt"/>
-
       <Context docBase="ccgrest" path="/ccgrest" reloadable="true" source="org.eclipse.jst.jee.server:ccgrest"/></Host>
     </Engine>
   </Service>
