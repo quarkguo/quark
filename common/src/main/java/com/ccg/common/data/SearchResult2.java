@@ -5,6 +5,7 @@ public class SearchResult2 {
 	private String articleId;	
 	private String articleTitle;
 	private String pageNumber;
+	private String articleType;
 	private float score;
 	
 	public String getArticleId() {
@@ -31,4 +32,11 @@ public class SearchResult2 {
 	public void setScore(float score) {
 		this.score = score;
 	}
+	public String getArticleType() {
+		return articleType;
+	}
+	public void setArticleType(String articleType) {
+		this.articleType = articleType;
+	}
+	
 }

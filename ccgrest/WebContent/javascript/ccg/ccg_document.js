@@ -195,8 +195,17 @@ ccg.ui.contentsearchPanel=Ext.create('Ext.window.Window', {
                 	}
                 	var keyword=ccg.ui.contentsearchPanel.items.items[0].getValue();
                 	//console.log(keyword);
+                	var optionGroup = ccg.ui.contentsearchPanel.items.items[1].getChecked();
+                	//console.log("optionGroup");
+                	//console.log(optionGroup);
+                	var articleType = [];
+                	for(var i = 0; i < optionGroup.length; i++){
+                		articleType.push(optionGroup[i].inputValue);
+                	}
                 	
-                	var jdata={"query":keyword,"limit":500};
+                	//console.log(articleType);
+                	
+                	var jdata={"query":keyword,"limit":1000, "type":articleType};
                 	console.log(jdata);
                 	var thestore=ccg.data.buildSearchStore(jdata,keyword);
                     var searchPanel=new ccg.ui.relateddoclist(thestore,keyword);

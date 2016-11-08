@@ -34,26 +34,42 @@ public class SearchEngine {
 		indexRoot = prop.getProperty("index.repository");		
 	}
 	
-	public static List<SearchResult2> searchArticle(String queryString, int limit) throws IOException, ParseException{	
+	public static List<SearchResult2> searchArticle(String queryString, int limit, String[] types) throws IOException, ParseException{	
 		List<SearchResult2> result = new ArrayList<SearchResult2>();		
-		File directory = new File(indexRoot);	   
-		File[] files = directory.listFiles();
-		for(File f : files){
-		   if(f.isDirectory()){
-			   result.addAll(searchArticle(f.getName(), queryString, limit));
-		   }		   
+		if(types != null && types.length > 0){
+			for(String articleType : types){
+				articleType = articleType.trim();
+				articleType = articleType.replace(' ', '_');				
+				result.addAll(searchArticle(articleType, queryString, limit));
+			}
+		}else{			
+			File directory = new File(indexRoot);	   
+			File[] files = directory.listFiles();
+			for(File f : files){
+			   if(f.isDirectory()){
+				   result.addAll(searchArticle(f.getName(), queryString, limit));
+			   }		   
+			}
 		}
 		return result;
 	}
 
-	public static List<SearchResult2> searchArticleMetaData(String queryString, int limit) throws IOException, ParseException{	
-		List<SearchResult2> result = new ArrayList<SearchResult2>();		
-		File directory = new File(indexRoot);	   
-		File[] files = directory.listFiles();
-		for(File f : files){
-		   if(f.isDirectory()){
-			   result.addAll(searchArticleMetaData(f.getName(), queryString, limit));
-		   }		   
+	public static List<SearchResult2> searchArticleMetaData(String queryString, int limit, String[] types) throws IOException, ParseException{	
+		List<SearchResult2> result = new ArrayList<SearchResult2>();
+		if(types != null && types.length > 0){
+			for(String articleType : types){
+				articleType = articleType.trim();
+				articleType = articleType.replace(' ', '_');
+				result.addAll(searchArticleMetaData(articleType, queryString, limit));
+			}
+		}else{
+			File directory = new File(indexRoot);	   
+			File[] files = directory.listFiles();
+			for(File f : files){
+			   if(f.isDirectory()){
+				   result.addAll(searchArticleMetaData(f.getName(), queryString, limit));
+			   }		   
+			}
 		}
 		return result;
 	}
@@ -78,6 +94,7 @@ public class SearchEngine {
 		            sr.setArticleTitle(doc.get("aTitle"));
 		            sr.setPageNumber(doc.get("aPageNum"));	            
 		            sr.setScore(hits[i].score);
+		            sr.setArticleType(articleCategoryName);
 		            result.add(sr);
 		    }
 		}catch(IOException e){
@@ -106,6 +123,7 @@ public class SearchEngine {
 				sr.setArticleId(doc.get("aId"));
 				sr.setArticleTitle(doc.get("aTitle"));
 				sr.setPageNumber(doc.get("aPageNum"));
+				sr.setArticleType(articleCategoryName);
 	
 				sr.setScore(hits[i].score);
 				if(map.containsKey(sr.getArticleId())){
@@ -147,6 +165,9 @@ public class SearchEngine {
 	
 	private static IndexSearcher getArticleIndexSearcher(String articleCategoryName) throws IOException{
 		String indexLocation = Indexer.getArticleIndexLocation(articleCategoryName);
+		
+		System.out.println("=========>>>> indexLocation: " + indexLocation);
+		
 		IndexSearcher searcher = new IndexSearcher(DirectoryReader.open(FSDirectory.open(new File(indexLocation))));
 		return searcher;
 	}

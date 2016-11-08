@@ -267,6 +267,11 @@ public class TestHandler {
 		List<SearchResult2> srListArticle = new ArrayList<SearchResult2>();
 		List<SearchResult2> srListMeta = new ArrayList<SearchResult2>();
 		
+		System.out.println("=======articleType: " + type);
+		String[] types = null;
+		if(type != null){
+			types = type.split(",");
+		}
 		
 		try {			
 			/////////////////////////////
@@ -280,8 +285,8 @@ public class TestHandler {
 			//}else if("m".equals(type)){
 			//	srListMeta = se.metaSearch(query, default_limit);
 			//}else{
-				srListArticle = se.searchArticle(query, default_limit);
-				srListMeta = se.searchArticleMetaData(query, default_limit);
+				srListArticle = se.searchArticle(query, default_limit, types);
+				srListMeta = se.searchArticleMetaData(query, default_limit, types);
 			//}
 		} catch (LicenseExpiredException e) {
 			// TODO Auto-generated catch block
