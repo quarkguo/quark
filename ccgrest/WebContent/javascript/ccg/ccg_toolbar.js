@@ -155,12 +155,10 @@ Ext.define('com.ccg.toolbar',{
 		        	 style: 'color:white;font-weight: bold',
 		        	 cls:'.ccg-header-title',
 		        	 flex:1
-		         },
-		         
-		        
-		    {
+		         },   
+		         {
 			        xtype:'button',
-                    text: 'Content Ingestion',
+                    text: 'Content Ingestion2',
                     id:'Ingestion',
                     iconCls: 'edit',                    
                     //displayText: 'Content Ingestion',
@@ -169,12 +167,10 @@ Ext.define('com.ccg.toolbar',{
                     handler: function(){
                     	console.log('upload file....');
                     	console.log(ccg.ui.uploadfilepanel);
-                    	ccg.ui.uploadfilepanel.show();
-                    	
+                    	ccg.ui.uploadfilepanel.show();   	
                     }
-		    }
-		    ,
-		    {
+		         },
+		         {
                     text: 'Admin',
                     id:'Admin',
                     iconCls: 'file',    
@@ -186,74 +182,71 @@ Ext.define('com.ccg.toolbar',{
                     	window.open("ccg_admin.html");
                     }
                   
-		    },
-		    {
-                text: 'Profile',
-                iconCls: 'file',  
-                icon:'images/usericon.png',    
-                handler: function() {
-                   
-                    ccg.ui.userprofilepanel.show();
-                    // here we need to pull all content
-                    var userprofileurl="rest/user/profile";
-                    Ext.Ajax.request({
-                   	 url: userprofileurl,
-                   	 method:"GET",
-                   	 success: function(response, opts) {
-                   		 var jdata = Ext.decode(response.responseText);
-                   		 console.log(jdata);
-                   		ccg.ui.userprofilepanel.getForm().reset();
-                   		ccg.ui.userprofilepanel.getForm().setValues(jdata);
-                   	 },
-                   	 failure: function(response, opts) {
-                   		 alert("load data error!!");
-                   	 }
-                    });
-                }
-                                  	
-		    },
-		    {
-                text: 'Reset Password',
-                icon:'images/login_icon.png',    
-                iconCls: 'file',     
-                handler: function() {
-                    var userprofileurl="rest/user/profile";
-                    Ext.Ajax.request({
-                   	 url: userprofileurl,
-                   	 method:"GET",
-                   	 success: function(response, opts) {
-                   		 var jdata = Ext.decode(response.responseText);
-                   		 console.log(jdata);
-                   		ccg.ui.passwordresetpanel.getForm().reset();
-                   		ccg.ui.passwordresetpanel.getForm().setValues(jdata);
-                   	 },
-                   	 failure: function(response, opts) {
-                   		 alert("load data error!!");
-                   	 }
-                    });
-                    ccg.ui.passwordresetpanel.show();
-                    //ccg.ui.passwordresetpanel.getForm().setValues({useremail:"ccg"});
-                }
-                                  	
-		    },
-		    {
-                text: 'Logout',
-                iconCls: 'file',   
-                icon:'images/logout.png',    
-                handler: function() {                    
-                    //console.log(ccg.ui.contentsearchPanel);
-                	 Ext.Ajax.request({
-                       	 url: 'rest/user/logout',
-                       	 method:"GET",
-                       	 success: function(response, opts) {
-                       		 window.location="ccgportal.html";
-                       		 //window.refresh();
-                       	 }
-                	 });
-                }
-		    }
+		         },
+		         {
+	                text: 'Profile',
+	                iconCls: 'file',  
+	                icon:'images/usericon.png',    
+	                handler: function() {                   
+	                    ccg.ui.userprofilepanel.show();
+	                    // here we need to pull all content
+	                    var userprofileurl="rest/user/profile";
+	                    Ext.Ajax.request({
+		                   	 url: userprofileurl,
+		                   	 method:"GET",
+		                   	 success: function(response, opts) {
+		                   		 var jdata = Ext.decode(response.responseText);
+		                   		 console.log(jdata);
+		                   		ccg.ui.userprofilepanel.getForm().reset();
+		                   		ccg.ui.userprofilepanel.getForm().setValues(jdata);
+		                   	 },
+		                   	 failure: function(response, opts) {
+		                   		 alert("load data error!!");
+		                   	 }
+	                    });
+	                }                 	
+		         },
+		         {
+	                text: 'Reset Password',
+	                icon:'images/login_icon.png',    
+	                iconCls: 'file',     
+	                handler: function() {
+	                    var userprofileurl="rest/user/profile";
+	                    Ext.Ajax.request({
+	                   	 url: userprofileurl,
+	                   	 method:"GET",
+	                   	 success: function(response, opts) {
+	                   		 var jdata = Ext.decode(response.responseText);
+	                   		 console.log(jdata);
+	                   		ccg.ui.passwordresetpanel.getForm().reset();
+	                   		ccg.ui.passwordresetpanel.getForm().setValues(jdata);
+	                   	 },
+	                   	 failure: function(response, opts) {
+	                   		 alert("load data error!!");
+	                   	 }
+	                    });
+	                    ccg.ui.passwordresetpanel.show();
+	                    //ccg.ui.passwordresetpanel.getForm().setValues({useremail:"ccg"});
+	                }                                  	
+		         },
+		         {
+	                text: 'Logout',
+	                iconCls: 'file',   
+	                icon:'images/logout.png',    
+	                handler: function() {                    
+	                    //console.log(ccg.ui.contentsearchPanel);
+	                	 Ext.Ajax.request({
+	                       	 url: 'rest/user/logout',
+	                       	 method:"GET",
+	                       	 success: function(response, opts) {
+	                       		 window.location="ccgportal.html";
+	                       		 //window.refresh();
+	                       	 }
+	                	 });
+	                }
+		         }
 		  ],
-		listeners:{
+		  listeners:{
 	         beforerender: function(component, eOpts){
 	        		Ext.Ajax.request({
 	        	 		url:'rest/user/groups',
@@ -275,8 +268,8 @@ Ext.define('com.ccg.toolbar',{
 	        			 }
 	        		});
 	        		
-	            },
-	            afterlayout: function(){
+	         },
+	         afterlayout: function(){
 	        		Ext.Ajax.request({
 	        	 		url:'rest/user/licenseinfo',
 	        	 		callback: function(options,success,response) {
@@ -289,9 +282,9 @@ Ext.define('com.ccg.toolbar',{
 	        	 			}
 	        	 		}	
 	        	 	});
-	            }
-		}	
-	});
+	         }
+		  }	
+});
 
 Ext.define('com.ccg.admintoolbar',{
 	  extend:"Ext.toolbar.Toolbar",
