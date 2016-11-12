@@ -138,7 +138,11 @@ public class ArticleHelper {
 		for(Category c : info.getCategoryList()){
 			CCGCategory cat = new CCGCategory();
 			cat.setArticle(article);
-			cat.setCategorycontent(info.getContent().substring(c.getStartPosition(), c.getEndPosition()));
+			try{
+				cat.setCategorycontent(info.getContent().substring(c.getStartPosition(), c.getEndPosition()));
+			}catch(Exception e){
+				cat.setCategorycontent(e.getMessage());
+			}
 			cat.setCategorytitle(c.getTitle());
 			cat.setStartposi(c.getStartPosition());
 			cat.setEndposi(c.getEndPosition());

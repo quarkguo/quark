@@ -538,7 +538,22 @@ public class TestHandler {
 		List<String> typenames = dataservice.addCCGArticleType(typename);
 		String typenameJson = toJson(typenames);
 		return typenameJson;
-	}	
+	}
+	
+	@RequestMapping(method = RequestMethod.POST, value="/project/new")
+	public void addNewProject(@RequestBody String input) {
+		String json = "";
+		System.out.println("====>>>" + input + "<<<<<====");
+		
+	}
+
+	@RequestMapping(method = RequestMethod.POST, value="/project/addArticle")
+	public void addArticleToProject(@RequestBody String input) {
+		String json = "";
+		System.out.println("====>>>" + input + "<<<<<====");
+		
+	}
+	
 }
 
 //class RestResponseMessage{

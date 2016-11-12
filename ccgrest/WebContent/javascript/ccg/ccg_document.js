@@ -692,6 +692,7 @@ ccg.initUploadFilePanel = function(){
     closable : true,
     draggable: true,
     hasUpload:true,
+    modal:true,
 	items : [ 
 	    {
 	        xtype: 'filefield',
@@ -738,8 +739,8 @@ ccg.initUploadFilePanel = function(){
 			id:'comboDocType',
 			fieldLabel : 'Type',
 			name: 'type',
-			store: ['default', 'a','b'],
-			value: 'default',
+			store: [],
+			value: '--- select one ---',
 			editable: false,
 			labelAlign: 'right',
 			anchor : '100%',
@@ -902,3 +903,78 @@ function messageBoxCallback(btn, text){
 		
 	}
 }
+
+ccg.ui.projectpanel=Ext.create('Ext.form.Panel', {  
+    title: '<b>New Project</b>', 
+    width: 500,
+    bodyPadding: 10,
+    defaultType: 'textfield',
+    frame: true,
+    id:'project',
+    bodyBorder: true, 
+    floating: true,
+    closable : true,
+    draggable: false,
+    modal:true,
+    items: [
+        {
+        	fieldLabel: 'Project Name:',
+        	anchor : '100%',
+        	labelAlign: 'right',
+        	name: 'projectName'
+            	
+        },
+		{
+			xtype : 'textarea',
+			fieldLabel : 'Description:',
+			name: 'description',
+			height: 150,
+			labelAlign: 'right',
+			anchor : '100%',
+		},
+		{
+			xtype : 'textarea',
+			fieldLabel : 'Comments:',
+			name: 'comments',
+			height: 150,
+			labelAlign: 'right',
+			anchor : '100%',
+		},		
+    ],
+    listeners:{
+    	beforeclose:function(win) {
+    		 ccg.ui.projectpanel.hide();
+        	 return false; 
+        }
+    },
+    buttons: [{
+        text: 'Submit',
+        id: 'projectsubmit',
+        handler: function () {
+            var form = this.up('form').getForm();
+            if (form.isValid()) {
+               // making ajax calls
+               var urlstr="rest/project/new";
+               console.log(urlstr);
+               Ext.Ajax.request({
+                   url: urlstr,
+                   method: 'POST',
+                   jsonData: form.getValues(),
+                   success: function(response, opts) {
+                      var obj = Ext.decode(response.responseText);
+                      console.log(obj);
+                      window.location.reload();
+                   },
+                   failure: function(response, opts) {
+                      console.log('server-side failure with status code ' + response.status);
+                   }
+                });
+            }
+            else
+            {
+            	alert("invalid data!");
+            }
+            ccg.ui.projectpanel.hide();
+        }
+    }]
+});

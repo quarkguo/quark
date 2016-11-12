@@ -7,17 +7,42 @@ ccg.article={};
 ccg.article.pattern={};
 ccg.data.pattern=[];
 ccg.data.licensemessage = false;
-//ccg.clientname=Ext.util.Cookies.get('clientname');
-Ext.Ajax.request({
-	 url: 'rest/client/name',
-	 method:"GET",
-	 success: function(response, opts) {
-		ccg.clientname = response.responseText;
-		console.log(ccg.clientname);
-	 }
+ccg.currentProject={projectId:0, projectName:'My Project'}
+
+contextMenu = new Ext.menu.Menu({
+    items: [{
+        id: 'add_to_current_project',
+        text: 'Add to current project'
+    }],
+    listeners: {
+        click: function(item) {
+        	console.log(this.article);
+        	
+        	Ext.Msg.confirm("Confirmation", "Add article: <b>" + this.article.articleTitle + '</b> <br /> to Project:<b>' + ccg.currentProject.projectName + '</b>?', function(btnText){
+        		if(btnText === "no"){
+        			
+        		}else if(btnText === "yes"){
+                	var urlstr = 'rest/project/addArticle';
+                	var postdata = {'article': this.article, 'project':ccg.currentProject };
+                		
+                    Ext.Ajax.request({
+                        url: urlstr,
+                        method: 'POST',
+                        jsonData: postdata,
+                        success: function(response, opts) {
+                           //var obj = Ext.decode(response.responseText);
+                           console.log(response);
+                           //window.location.reload();
+                        },
+                        failure: function(response, opts) {
+                           console.log('server-side failure with status code ' + response.status);
+                        }
+                     });        			
+        		}     		
+        	}, this);
+        }
+    }
 });
-//console.log("======");
-//console.log(ccg.clientname);
 
 ccg.data.docliststore = Ext.create('Ext.data.TreeStore', {
         proxy: {
@@ -29,7 +54,7 @@ ccg.data.docliststore = Ext.create('Ext.data.TreeStore', {
             id: 'src',
             expanded: true
         }
-    });
+});
 
 ccg.ui.loadDocCategory=function(arcID)
 {
@@ -85,6 +110,7 @@ ccg.ui.loadDocCategory=function(arcID)
      border:true,
      collapsible:true,
      autoScroll: true,
+
      listeners: {
          itemclick: function(s,r) {           
         	 if(r.data.leaf)
@@ -97,6 +123,14 @@ ccg.ui.loadDocCategory=function(arcID)
         		 ccg.ui.loadDocCategory(arcID);
         	 }
         	 
+         },
+
+         itemcontextmenu: function(view,record,item,index,e) {
+        	 e.preventDefault();
+        	 var article={'articleId':record.data.articleID, 'articleTitle':record.data.text};
+        	 console.log(article);
+        	 contextMenu.article = article;
+        	 contextMenu.showAt(e.getXY());
          }
      },
      dockedItems: [{
@@ -158,7 +192,7 @@ Ext.define('com.ccg.toolbar',{
 		         },   
 		         {
 			        xtype:'button',
-                    text: 'Content Ingestion2',
+                    text: 'Content Ingestion',
                     id:'Ingestion',
                     iconCls: 'edit',                    
                     //displayText: 'Content Ingestion',
@@ -169,6 +203,48 @@ Ext.define('com.ccg.toolbar',{
                     	console.log(ccg.ui.uploadfilepanel);
                     	ccg.ui.uploadfilepanel.show();   	
                     }
+		         },
+//		         {
+//			        xtype:'button',
+//                    text: 'Project',
+//                    id:'project',
+//                    //iconCls: 'edit',                    
+//                    icon:'images/od-ingest.png',
+//                    handler: function(){
+//                    	console.log('upload file....');
+//                    	console.log(ccg.ui.uploadfilepanel);
+//                    	ccg.ui.uploadfilepanel.show();   	
+//                    }
+//			     },		         
+		         {
+		        	text: 'Project',
+		        	menu: {
+		        		xtype: 'menu',
+		        		items: [{
+		        			text: 'New Project',
+		        			handler: function(){
+		        				ccg.ui.projectpanel.show();
+		        			}
+		        		},{
+		        			text: 'Menu Two',
+		        			menu: {
+		        				xtype: 'menu',
+		        				items: [{
+		        					text: 'Next Level'
+		        				},{
+		        					text: 'Next Level'
+		        				},{
+		        					text: 'Next Level'
+		        				}]
+		        			}
+		        		},{
+		        			text: 'Menu Three',
+		        			scale: 'small'
+		        		},{
+		        			text: 'Menu Four',
+		        			scale: 'small'
+		        		}]
+		        	}
 		         },
 		         {
                     text: 'Admin',
